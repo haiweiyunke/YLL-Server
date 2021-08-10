@@ -1,0 +1,599 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="yll.mapper.InternetCelebrityMapper">
+
+	<resultMap id="RESULT_MAP" type="yll.entity.InternetCelebrity">
+	<id property="id" column="id" jdbcType="VARCHAR" />
+	<result property="realName" column="real_name" jdbcType="VARCHAR" />
+	<result property="idCard" column="id_card" jdbcType="VARCHAR" />
+	<result property="mcnId" column="mcn_id" jdbcType="VARCHAR" />
+	<result property="expertise" column="expertise" jdbcType="VARCHAR" />
+	<result property="cooperation" column="cooperation" jdbcType="VARCHAR" />
+	<result property="description" column="description" jdbcType="VARCHAR" />
+	<result property="personalPortraits" column="personal_portraits" jdbcType="VARCHAR" />
+	<result property="height" column="height" jdbcType="VARCHAR" />
+	<result property="microblog" column="microblog" jdbcType="VARCHAR" />
+	<result property="address" column="address" jdbcType="VARCHAR" />
+	<result property="disclosure" column="disclosure" jdbcType="INTEGER" />
+	<result property="linkFee" column="link_fee" jdbcType="VARCHAR" />
+	<result property="attendanceFee" column="attendance_fee" jdbcType="VARCHAR" />
+	<result property="specialFee" column="special_Fee" jdbcType="VARCHAR" />
+	<result property="underFee" column="under_fee" jdbcType="VARCHAR" />
+	<result property="commission" column="commission" jdbcType="VARCHAR" />
+	<result property="fenNum" column="fen_num" jdbcType="VARCHAR" />
+	<result property="other" column="other" jdbcType="VARCHAR" />
+	<result property="email" column="email" jdbcType="VARCHAR" />
+	<result property="slide" column="slide" jdbcType="INTEGER" />
+	<result property="ordinal" column="ordinal" jdbcType="INTEGER" />
+	<result property="hot" column="hot" jdbcType="INTEGER" />
+	<result property="hotOrdinal" column="hot_ordinal" jdbcType="INTEGER" />
+	<result property="image" column="image" jdbcType="LONGVARCHAR" />
+	<result property="picture" column="picture" jdbcType="LONGVARCHAR" />
+
+	<result property="remark" column="remark" jdbcType="VARCHAR" />
+	<result property="state" column="state" jdbcType="VARCHAR" />
+	<result property="enabled" column="enabled" jdbcType="INTEGER" />
+	<result property="deleted" column="deleted" jdbcType="INTEGER" />
+	<result property="creator" column="creator" jdbcType="VARCHAR" />
+	<result property="createdTime" column="created_time" jdbcType="TIMESTAMP" />
+	<result property="modifier" column="modifier" jdbcType="VARCHAR" />
+	<result property="modifiedTime" column="modified_time" jdbcType="TIMESTAMP" />
+	<result property="deleter" column="deleter" jdbcType="VARCHAR" />
+	<result property="deletedTime" column="deleted_time" jdbcType="TIMESTAMP" />
+</resultMap>
+
+	<resultMap id="RESULT_VO_MAP" type="yll.service.model.vo.InternetCelebrityVo" extends="RESULT_MAP">
+		<result property="headImg" column="head_img" jdbcType="VARCHAR" />
+		<result property="platformCode" column="platform_code" jdbcType="VARCHAR" />
+		<result property="mcnName" column="mcn_name" jdbcType="VARCHAR" />
+		<result property="fenNum" column="fen_num" jdbcType="VARCHAR" />
+		<result property="platformImg" column="platform_img" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="TABLE">dh_internet_celebrity</sql>
+
+	<sql id="COLUMNS">
+		id, real_name,  id_card, mcn_id, expertise, cooperation, description, personal_portraits, image, picture,
+		height, microblog, address,  disclosure, link_fee,  attendance_fee,  special_fee,  under_fee,  commission, other,
+		slide, ordinal, hot, hot_ordinal, remark, state, enabled,deleted, creator, created_time,
+		modifier,modified_time, deleter, deleted_time
+	</sql>
+
+	<sql id="VALUES">
+		#{id}, #{realName},  #{idCard}, #{mcnId},#{expertise}, #{cooperation}, #{description}, #{personalPortraits}, #{image}, #{picture},
+		#{height}, #{microblog},  #{address}, #{disclosure}, #{linkFee}, #{attendanceFee}, #{specialFee}, #{underFee}, #{commission}, #{other},
+		#{slide}, #{ordinal}, #{hot}, #{hotOrdinal}, #{remark}, #{state}, #{enabled},#{deleted}, #{creator}, #{createdTime},
+		#{modifier},#{modifiedTime}, #{deleter}, #{deletedTime}
+	</sql>
+
+	<sql id="SET_VALUES">
+		<trim suffixOverrides=",">
+			<if test=" realName != null">
+				real_name = #{realName},
+			</if>
+			<if test=" idCard != null">
+				id_card = #{idCard},
+			</if>
+			<if test=" image != null">
+				image = #{image},
+			</if>
+			<if test=" picture != null">
+				picture = #{picture},
+			</if>
+			<if test=" mcnId != null">
+				mcn_id = #{mcnId},
+			</if>
+			<if test=" expertise != null">
+				expertise = #{expertise},
+			</if>
+			<if test=" cooperation != null">
+				cooperation = #{cooperation},
+			</if>
+			<if test=" description != null">
+				description = #{description},
+			</if>
+			<if test=" personalPortraits != null">
+				personal_portraits = #{personalPortraits},
+			</if>
+			<if test=" height != null">
+				height = #{height},
+			</if>
+			<if test=" microblog != null">
+				microblog = #{microblog},
+			</if>
+			<if test=" address != null">
+				address = #{address},
+			</if>
+			<if test=" disclosure != null">
+				disclosure = #{disclosure},
+			</if>
+			<if test=" linkFee != null">
+				link_fee = #{linkFee},
+			</if>
+			<if test=" attendanceFee != null">
+				attendance_fee = #{attendanceFee},
+			</if>
+			<if test=" specialFee != null">
+				special_fee = #{specialFee},
+			</if>
+			<if test=" underFee != null">
+				under_fee = #{underFee},
+			</if>
+			<if test=" other != null">
+				other = #{other},
+			</if>
+			<if test=" commission != null">
+				commission = #{commission},
+			</if>
+			<if test=" slide != null">
+				slide = #{slide},
+			</if>
+			<if test=" ordinal != null">
+				ordinal = #{ordinal},
+			</if>
+			<if test=" hot != null">
+				hot = #{hot},
+			</if>
+			<if test=" hotOrdinal != null">
+				hot_ordinal = #{hotOrdinal},
+			</if>
+			<if test=" remark != null">
+				remark = #{remark},
+			</if>
+			<if test=" state != null">
+				state = #{state},
+			</if>
+			<if test=" enabled != null">
+				enabled = #{enabled},
+			</if>
+			<if test=" deleted != null">
+				deleted = #{deleted},
+			</if>
+			<if test=" creator != null">
+				creator = #{creator},
+			</if>
+			<if test=" createdTime != null">
+				created_time = #{createdTime},
+			</if>
+			<if test=" modifier != null">
+				modifier = #{modifier},
+			</if>
+			<if test=" modifiedTime != null">
+				modified_time = #{modifiedTime},
+			</if>
+			<if test=" deleter != null">
+				deleter = #{deleter},
+			</if>
+			<if test=" deletedTime != null">
+				deleted_time = #{deletedTime},
+			</if>
+		</trim>
+	</sql>
+
+	<sql id="WHERES">
+		<if test=" id != null and id != ''">
+			and id = #{id}
+		</if>
+		<if test=" realName != null and realName != '' ">
+			and real_name like CONCAT(CONCAT('%',#{realName}),'%')
+		</if>
+		<if test=" idCard != null and idCard != ''">
+			and id_card = #{idCard}
+		</if>
+		<if test=" mcnId != null and mcnId != ''">
+			and mcn_id = #{mcnId}
+		</if>
+		<if test=" disclosure != null ">
+			and disclosure = #{disclosure}
+		</if>
+		<if test=" enabled != null ">
+			and enabled = #{enabled}
+		</if>
+		<if test=" creator != null and creator != ''">
+			and creator = #{creator}
+		</if>
+		and deleted = 0
+	</sql>
+
+	<update id="save">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		) VALUES (
+		<include refid="VALUES" />
+		)
+		ON DUPLICATE KEY UPDATE
+		<include refid="SET_VALUES" />
+	</update>
+
+	<insert id="insert" parameterType="yll.entity.InternetCelebrity">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		)
+		VALUES
+		(
+		<include refid="VALUES" />
+		)
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.String">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		id =#{id}
+	</delete>
+
+	<delete id="deleteAll">
+		DELETE FROM
+		<include refid="TABLE" />
+	</delete>
+
+	<update id="update" parameterType="yll.entity.InternetCelebrity">
+		UPDATE
+		<include refid="TABLE" />
+		SET
+		<include refid="SET_VALUES" />
+		WHERE
+		id = #{id}
+	</update>
+
+	<select id="getById" parameterType="java.lang.String" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id =#{id}
+	</select>
+
+	<select id="findAll" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+	</select>
+
+	<select id="findBy" parameterType="yll.entity.InternetCelebrity" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
+	</select>
+
+	<select id="findByCondition" parameterType="yll.entity.InternetCelebrity" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
+		LIMIT 0, 1;
+	</select>
+
+	<select id="findByConditionVo" parameterType="yll.entity.InternetCelebrity" resultMap="RESULT_VO_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		, DATE_FORMAT(created_time , '%Y-%m-%d %H:%i:%s')  createdTimeStr
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
+		LIMIT 0, 1;
+	</select>
+
+	<select  id="getAppList" parameterType="yll.service.model.vo.InternetCelebrityVo" resultMap="RESULT_VO_MAP">
+	SELECT
+	ifnull(c.id, '') id,
+	ifnull(appICquery(dc.creator), '') expertise,
+	ifnull(appCelebrityCooperation(dc.creator), '') cooperation,
+	ifnull(appPlatformQuery(dc.creator), '')  platform,
+	ifnull(appPlatformQueryCode(dc.creator), '')  platform_code,
+	ifnull(appPlatformQueryRemark(dc.creator), '')  platform_img,
+	ifnull(c.nickname, '') nickname ,
+	ifnull(c.head_img, '') head_img,
+	DATE_FORMAT(c.birthday , '%Y-%m-%d') birthday,
+	ifnull(dm.mcn_name, '') mcn_name,
+	ifnull(dc.height, '') height,
+	ifnull(dc.other, '') other,
+	ifnull(ar.name, '') location,
+	ifnull(tab.fans, 0) fans,
+	ifnull(c.collects, '') as follows,
+	ifnull(c.likes, '') as likes,
+	ifnull(c.age, '') as age,
+	'internetCelebrity' as type,
+	'customer' as code
+	FROM dh_internet_celebrity dc
+	LEFT JOIN
+	customer c ON c.id = dc.creator
+	LEFT JOIN
+	dh_mcn dm ON dc.mcn_id = dm.id
+	LEFT JOIN
+	area ar ON ar.id = c.location
+	LEFT JOIN
+	(
+	SELECT
+	sum(fans) fans,
+	creator
+	FROM
+	dh_platform dp1
+	GROUP BY
+	creator
+	) tab on dc.creator = tab.creator
+	LEFT JOIN
+	(
+	SELECT
+	platform_type,
+	creator
+	FROM
+	dh_platform dp2
+	) tab_pt on dc.creator = tab_pt.creator
+	LEFT JOIN (
+	SELECT
+	link_fee_one, link_fee_two, special_fee_one, special_fee_two,
+	creator
+	FROM
+	dh_platform dp3
+	) tab_pt2 ON dc.creator = tab_pt2.creator
+	WHERE dc.id != '0'
+	<if test=" platform != null and platform != '' ">
+		and concat(',',tab_pt.platform_type,',') regexp
+		concat(',(',replace(#{platform},',','|'),'),')
+	</if>
+	<if test=" expertise != null and expertise != '' ">
+		and concat(',',expertise,',') regexp
+		concat(',(',replace(#{expertise},',','|'),'),')
+	</if>
+	<if test=" cooperation != null and cooperation != '' ">
+		and concat(',',cooperation,',') regexp
+		concat(',(',replace(#{cooperation},',','|'),'),')
+	</if>
+	<if test=" disclosure != null ">
+		and disclosure = #{disclosure}
+	</if>
+	<if test=" gender != null and gender != '' ">
+		and gender = #{gender}
+	</if>
+	<if test=" location != null and location != '' ">
+		and location = #{location}
+	</if>
+	<if test=" attendanceFeeOne != null and attendanceFeeOne != '' and attendanceFeeTwo != null and attendanceFeeTwo != '' ">
+		and (attendance_fee &gt;= ${attendanceFeeOne}  and  attendance_fee &lt; ${attendanceFeeTwo})
+	</if>
+	<if test=" attendanceFeeOne != null and attendanceFeeOne != '' and (attendanceFeeTwo == null or attendanceFeeTwo == '') ">
+		and (attendance_fee &gt;= ${attendanceFeeOne})
+	</if>
+	<if test=" underFeeOne != null and underFeeOne != '' and underFeeTwo != null and underFeeTwo != '' ">
+		and (under_fee &gt;= ${underFeeOne}  and  under_fee &lt; ${underFeeTwo})
+	</if>
+	<if test=" underFeeOne != null and underFeeOne != '' and (underFeeTwo == null or underFeeTwo == '') ">
+		and (under_fee &gt;= ${underFeeOne})
+	</if>
+	<if test=" fansOne != null and fansOne != '' and fansTwo != null and fansTwo != '' ">
+		and (tab.fans &gt;= ${fansOne}  and  tab.fans &lt; ${fansTwo})
+	</if>
+	<if test=" fansOne != null and fansOne != '' and (fansTwo == null or fansTwo == '') ">
+		and (tab.fans &gt;= ${fansOne})
+	</if>
+	<if test=" commissionOne != null and commissionOne != '' and commissionTwo != null and commissionTwo != '' ">
+		and (commission &gt;= ${commissionOne}  and  commission &lt; ${commissionTwo})
+	</if>
+	<if test=" ageOne != null and ageOne != '' and ageTwo != null and ageTwo != '' ">
+		and (age &gt;= ${ageOne}  and  age &lt; ${ageTwo})
+	</if>
+	<if test=" linkFeeOne != null and linkFeeOne != '' and linkFeeTwo != null and linkFeeTwo != '' ">
+		and
+		(
+		(tab_pt2.link_fee_one &gt;=${linkFeeOne} and tab_pt2.link_fee_one &lt;= ${linkFeeTwo})
+		or
+		(tab_pt2.link_fee_two &gt;=${linkFeeOne} and tab_pt2.link_fee_two &lt;= ${linkFeeTwo})
+		)
+	</if>
+	<if test=" specialFeeOne != null and specialFeeOne != '' and specialFeeTwo != null and specialFeeTwo != '' ">
+		and
+		(
+		(tab_pt2.special_fee_one &gt;=${specialFeeOne} and tab_pt2.special_fee_one &lt;= ${specialFeeTwo})
+		or
+		(tab_pt2.special_fee_two &gt;=${specialFeeOne} and tab_pt2.special_fee_two &lt;= ${specialFeeTwo})
+		)
+	</if>
+	<if test=" slide != null ">
+		and dc.slide = #{slide}
+	</if>
+	<if test=" hot != null ">
+		and dc.hot = #{hot}
+	</if>
+	<if test=" state != null ">
+		and dc.state = #{state}
+	</if>
+	group by dc.creator
+	order by ${orderBy}
+</select>
+
+	<!-- dc.star先写死为 1 -->
+	<select  id="getAppDetail" parameterType="yll.service.model.vo.InternetCelebrityVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		ifnull(c.id, '') id,
+		ifnull(appICquery(dc.creator), '') expertise,
+		ifnull(appCelebrityCooperation(dc.creator), '') cooperation,
+		ifnull(appPlatformQuery(dc.creator), '')  platform,
+		ifnull(appPlatformQueryCode(dc.creator), '')  platform_code,
+		ifnull(dc.personal_portraits, '') personal_portraits,
+		'1' as star,
+		ifnull(dc.other, '1') other,
+		ifnull(c.nickname, '') nickname ,
+		ifnull(c.head_img, '') head_img,
+		ifnull(c.age, '') age,
+		ifnull(c.collects, '') as follows,
+		ifnull(c.likes, '') as likes,
+		dc.state,
+		'internetCelebrity' as type,
+		'customer' as code,
+		<choose>
+			<when test="customerId !=null and customerId != ''">
+				ISNULL(cl.id) clickLikes,
+				ISNULL(cc.id) clickCollects
+			</when >
+			<otherwise>
+				ISNULL(null) clickLikes,
+				ISNULL(null) clickCollects
+			</otherwise>
+		</choose>
+		FROM dh_internet_celebrity dc
+		LEFT JOIN
+		customer c ON c.id = dc.creator
+		<choose>
+			<when test="customerId !=null and customerId != ''">
+				LEFT JOIN
+				customer_likes cl
+				ON cl.target_id = dc.creator AND cl.customer_id = #{customerId}
+				LEFT JOIN
+				customer_collects cc
+				ON cc.target_id = dc.creator AND cc.customer_id = #{customerId}
+			</when>
+		</choose>
+		WHERE dc.id != '0'
+		and dc.creator = #{creator}
+		group by dc.creator
+	</select>
+
+	<select  id="getAppAuth" parameterType="yll.service.model.vo.InternetCelebrityVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		ifnull(c.id, '') id,
+		ifnull(dc.real_name, '') real_name,
+		ifnull(dc.expertise, '') expertise,
+		ifnull(dc.cooperation, '') cooperation,
+		ifnull(dc.description, '') description,
+		ifnull(dc.personal_portraits, '') as personal_portraits,
+		ifnull(dc.height, '') as height,
+		ifnull(dc.microblog, '') as microblog,
+		ifnull(dc.disclosure, '') as disclosure,
+		ifnull(dc.mcn_id, '') as mcn_id,
+		ifnull(dc.other, '') as other,
+		ifnull(a.id, '') as location,
+		ifnull(a.name, '') as locationStr,
+		ifnull(c.head_img, '') as head_img,
+		ifnull(DATE_FORMAT(c.birthday , '%Y-%m-%d') , '') as birthday,
+		ifnull(dc.address, '') as address,
+		ifnull(CONCAT(a2.name,a3.name,a4.name,ca.detailed), '') addressStr
+		FROM dh_internet_celebrity dc
+		LEFT JOIN
+		customer c ON c.id = dc.creator
+		LEFT JOIN
+		area a ON a.id = c.location
+		LEFT JOIN
+		customer_addresses ca ON ca.id = dc.address
+		LEFT JOIN
+		area a2 ON a2.id = ca.province
+		LEFT JOIN
+		area a3 ON a3.id = ca.city
+		LEFT JOIN
+		area a4 ON a4.id = ca.district
+		WHERE dc.id != '0'
+		and dc.creator = #{creator}
+		group by dc.creator
+	</select>
+
+	<select  id="getAppInviteSearch" parameterType="yll.service.model.vo.InternetCelebrityVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		ifnull(c.id, '') id,
+		ifnull(c.fen_num, '') fen_num,
+		ifnull(c.email, '') email,
+		ifnull(c.age, '') as age,
+		ifnull(c.nickname, '') as nickname,
+		ifnull(tab.fans, '') fans,
+		ifnull(dc.star, '') star,
+		ifnull(dc.other, '') other,
+		ifnull(dm.mcn_name, '') as mcn_name,
+		ifnull(appIcTabquery(dc.creator), '') tab
+		FROM dh_internet_celebrity dc
+		LEFT JOIN
+		customer c ON c.id = dc.creator
+		LEFT JOIN
+		(
+		SELECT
+		sum(fans) fans,
+		creator
+		FROM
+		dh_platform dp1
+		GROUP BY
+		creator
+		) tab on dc.creator = tab.creator
+		LEFT JOIN
+		dh_celebrity_invite ci ON ci.celebrity_id = dc.creator
+		LEFT JOIN
+		dh_mcn dm ON dm.creator = ci.mcn_id
+		WHERE dc.id != '0' and c.enabled = 1 and c.role_type = 2
+		<if test=" fenNum != null and fenNum != '' ">
+			and c.fen_num = #{fenNum}
+		</if>
+		group by dc.creator
+	</select>
+
+	<delete id="deleteByCreator" parameterType="java.lang.String">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		creator =#{creator}
+	</delete>
+
+	<select id="findBySlide" parameterType="yll.service.model.vo.InternetCelebrityVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		dc.id, dc.ordinal, c.username, dc.creator
+		FROM
+		<include refid="TABLE" /> dc
+		LEFT JOIN
+		customer c ON c.id = dc.creator
+		WHERE dc.id != '0'
+		<if test=" username != null and username != '' ">
+			and c.username like CONCAT(CONCAT('%',#{username}),'%')
+		</if>
+		<if test=" slide != null  ">
+			and dc.slide = #{slide}
+		</if>
+		ORDER BY dc.id DESC
+	</select>
+
+	<select id="findByAdminList" parameterType="yll.service.model.vo.InternetCelebrityVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		dc.id, dc.real_name, ifnull( dm.mcn_name, '') mcn_name, dc.state, dc.creator,
+		DATE_FORMAT(dc.created_time , '%Y-%m-%d %H:%i:%s')  createdTimeStr
+		FROM
+		<include refid="TABLE" /> dc
+		LEFT JOIN
+		dh_mcn dm ON dm.id = dc.mcn_id
+		WHERE dc.id != '0'
+		<if test=" realName != null and realName != '' ">
+			and dc.real_name like CONCAT(CONCAT('%',#{realName}),'%')
+		</if>
+		<if test=" state != null  ">
+			and dc.state = #{state}
+		</if>
+		ORDER BY dc.id DESC
+	</select>
+
+	<select id="findByHot" parameterType="yll.service.model.vo.InternetCelebrityVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		dc.id, dc.hot_ordinal, c.username, dc.creator
+		FROM
+		<include refid="TABLE" /> dc
+		LEFT JOIN
+		customer c ON c.id = dc.creator
+		WHERE dc.id != '0'
+		<if test=" username != null and username != '' ">
+			and c.username like CONCAT(CONCAT('%',#{username}),'%')
+		</if>
+		<if test=" hot != null  ">
+			and dc.hot = #{hot}
+		</if>
+		ORDER BY dc.hot_ordinal
+	</select>
+
+
+</mapper>

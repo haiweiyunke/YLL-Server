@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>任务轮播图管理</title>
+</head>
+<body>
+	<div is="el-row" id="vm" v-cloak>
+		<div is="el-col" :span="24" class="warp">
+			<div is="el-row" class="element-row ">
+				<div is="el-col" :span="8" style="height: 55px;">
+					<div is="el-button" type="success" icon="el-icon-plus" @click="add()">添加</div>
+				</div>
+				<div is="el-col" :span="16">
+					 <div is="el-form" :model="form" :inline="true" lable-width="80px" class="demo-form-inline clearfix">
+						<div class="fr">
+							<div is="el-form-item" label="任务名称" label-width="85px">
+								<div is="el-input" v-model="form.keyword" placeholder="请输入关键字" clearable></div>
+							</div>
+							<div is="el-form-item">
+								<div is="el-button" type="warning" @click="search">查询</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="element-table">
+				<div is="el-table" ref="table" :data="page.records" border style="width: 100%"  v-loading="page.isLoading" element-loading-text="加载中" element-loading-spinner="el-icon-loading"
+					element-loading-background="rgba(0,0,0,0.4)">
+					<div is="el-table-column" align="center" prop="taskName" label="任务名称"  show-overflow-tooltip></div>
+					<div is="el-table-column" align="center" label="操作" width="220">
+						<div slot-scope="scope">
+							<button is="el-button" type="text" size="mini" @click="updateData(scope.row)">编辑</button>
+							<button is="el-button" type="text" size="mini" @click="deleteData(scope.row)">删除</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="pagination">
+				<div is="el-pagination" @current-change="pagedQuery" :current-page="page.currentPage" :page-size="page.limit" layout="total,prev,pager,next,jumper" :total="page.total"></div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					keyword : '',
+					slide : '1'
+				},
+				page : {
+					currentPage : 1,
+					limit : 15,
+					total : 0,
+					records : [],
+					isLoading : false,
+					params : {
+						slide : '1'
+					}
+				}
+			},
+			created : function() {
+				__.$vm = this;
+			},
+			mounted : function() {
+				__.mask();
+				this.pagedQuery(1);
+				//处理分页输入框 可以输入小数的问题
+				var oInput = document.getElementsByTagName('input')[0];
+				oInput.onblur = function() {
+					if(!!oInput.value){
+						return oInput.value = oInput.value.replace(/^,*|,*$/g,'');
+					}
+					return "";
+				};
+				__.unmask();
+			},
+			methods : {
+				// 分页ele
+				pagedQuery : function(currentPage) {
+					var vm = this, page = vm.page;
+					currentPage && (page.currentPage = currentPage);
+					var params = __.pagedParams(page.currentPage, page.limit);
+					__.extend(params, vm.page.params);
+					__.api('POST', '/rest/task/slide/list', params, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						vm.page.total = result.total | 0;
+						vm.page.records = result.data;
+					});
+				},
+                search : function() {
+                    this.page.params = {
+						taskName : __.trim(this.form.keyword),
+						slide : __.trim(this.form.slide)
+                    }
+                    this.pagedQuery(1);
+                },
+				add: function(){
+					var vm = this;
+					__.dialog.open({
+						title : '新增',
+						width : '90%',
+						height : '100%',
+						url : __.url('/yll/task/task-slide-edit.html', {
+
+						}),
+						close : function(result) {
+							vm.pagedQuery();
+						}
+					});
+				},
+				updateData: function(record){
+					var vm = this;
+					__.dialog.open({
+						title : '编辑',
+						width : '90%',
+						height : '100%',
+						url : __.url('/yll/task/task-slide-edit.html', {
+							id : record.id
+						}),
+						close : function(result) {
+							vm.pagedQuery();
+						}
+					});
+				},
+				deleteData: function(record){
+					var vm = this;
+					var id = record.id;
+					vm.$confirm("确定要删除？", "删除确认", {
+						confirmButtonText : "确定",
+						cancelButtonText : "取消",
+						type : "warning"
+					}).then(function() {
+						__.mask();
+						__.api('DELETE', '/rest/task/slide/' + id, {}, function(result) {
+							if (!__.err(result)) {
+								__.unmask();
+								vm.pagedQuery();
+								vm.$message({
+									message : '删除成功！',
+									type : 'success'
+								});
+							} else {
+								__.unmask();
+								vm.$message.warning(result.message);
+								return;
+							}
+						});
+					})
+				}
+
+			}
+		});
+	</script>
+</body>
+</html>

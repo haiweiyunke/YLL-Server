@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>产品新增和编辑</title>
+<style>
+.el-picker-panel {
+	height: 320px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.el-date-editor.el-input, .el-input-number--small {
+	width: 100%;
+}
+
+.unit {
+	text-align: right;
+	line-height: 40px;
+}
+
+/*@media screen and(-ms-high-contrast:active),(-ms-high-contrast:none){
+	.el-picker-panel {
+		height: 200px;
+	}
+}*/
+</style>
+</head>
+<body>
+	<div id="vm"  v-cloak  class="vm">
+		<form is="el-form" :model="form" ref="form" :rules="rules" style="width: 100%;">
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="商品名" label-width="110px" prop="name">
+						<input is="el-input" v-model="form.name" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="地区" label-width="110px" prop="type">
+						<div is="el-select" v-model="form.region" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in regionList"
+								 :key="item.code"
+								 :label="item.codename"
+								 :value="item.code">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="所属店铺" label-width="110px" prop="id">
+						<div is="el-select" v-model="form.sid" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in shopslist"
+								 :key="item.id"
+								 :label="item.name"
+								 :value="item.id">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!--<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="商品简介" label-width="110px">
+						<input is="el-input" v-model="form.profile" controls-position="right" autocomplete="off">
+					</div>
+				</div>
+			</div>-->
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="商品类型" label-width="110px" prop="type">
+						<div is="el-checkbox" :indeterminate="isIndeterminate01" v-model="checkAll01" @change="handleCheckAllChange01">全选</div>
+						<div style="margin: 15px 0;"></div>
+						<div is="el-checkbox-group" v-model="checkedPojo01" @change="handleCheckedDicChange01">
+							<div is="el-checkbox" v-for="item in pojoOptions01" :label="item.code" :key="item.codename" >{{item.codename}}</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="商品平台" label-width="110px" prop="type">
+						<div is="el-checkbox" :indeterminate="isIndeterminate02" v-model="checkAll02" @change="handleCheckAllChange02">全选</div>
+						<div style="margin: 15px 0;"></div>
+						<div is="el-checkbox-group" v-model="checkedPojo02" @change="handleCheckedDicChange02">
+							<div is="el-checkbox" v-for="item in pojoOptions02" :label="item.code" :key="item.codename" >{{item.codename}}</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		<!--
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="带货方式" label-width="110px" prop="type">
+						<div is="el-checkbox" :indeterminate="isIndeterminate03" v-model="checkAll03" @change="handleCheckAllChange03">全选</div>
+						<div style="margin: 15px 0;"></div>
+						<div is="el-checkbox-group" v-model="checkedPojo03" @change="handleCheckedDicChange03">
+							<div is="el-checkbox" v-for="item in pojoOptions03" :label="item.code" :key="item.codename" >{{item.codename}}</div>
+						</div>
+					</div>
+				</div>
+			</div>
+-->
+			<div is="el-row" v-if="isOther">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="其他类型" label-width="110px" prop="other">
+						<input is="el-input" v-model="form.other" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="原价" label-width="110px" prop="price">
+						<input is="el-input-number" v-model="form.price" controls-position="right" :min="1" :max="9999" />
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="优惠价格" label-width="110px" prop="price">
+						<input is="el-input-number" v-model="form.discountPrice" controls-position="right" :min="1" :max="9999" />
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="商品卖点" label-width="110px" prop="description">
+						<div is="el-input" type="textarea" autosize v-model="form.content" ></div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="排序" label-width="110px">
+						<input is="el-input" v-model="form.ordinal" controls-position="right" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="带货佣金" label-width="110px">
+						<input is="el-input" v-model="form.commission" controls-position="right" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="样品押金" label-width="110px">
+						<input is="el-input" v-model="form.deposit" controls-position="right" autocomplete="off">
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="佣金比" label-width="110px">
+						<input is="el-input" v-model="form.depositRatio" controls-position="right" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="链接/ID" label-width="110px">
+						<input is="el-input" v-model="form.link" controls-position="right" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="供货数量" label-width="110px">
+						<input is="el-input" v-model="form.quantity" controls-position="right" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row"  >
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="是否退样" label-width="110px" prop="giveBack">
+						<div is="el-radio" v-model="form.giveBack" :label="1">不需要</div>
+						<div is="el-radio" v-model="form.giveBack" :label="2">需要</div>
+					</div>
+				</div>
+			</div>
+
+
+			<!--<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="基本信息" label-width="110px" prop="content">
+						<div id="wangEditor" v-model="form.content">
+							<p>请输入基本信息...</p>
+						</div>
+					</div>
+				</div>
+			</div>-->
+
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					 <div is="el-form-item" label="列表小图" label-width="110px">
+						<div is="el-upload"
+							 class="upload-demo"
+							 :accept="imageAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="cover"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="coverFiles"
+							 list-type="picture">
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{imageAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="商品图片" label-width="110px">
+						<div is="el-upload"
+								class="upload-demo"
+								:accept="imageAccept"
+								:action="uploadUrl"
+							 	:http-request="uploadFile"
+								 data="image"
+								:on-preview="handlePreview"
+								:on-remove="handleRemove"
+								:on-success="handleSuccess"
+								:file-list="imageFiles"
+								list-type="picture">
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{imageAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="商品详情" label-width="110px">
+						<div is="el-upload"
+							 class="upload-demo"
+							 :accept="imageAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="picture"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="pictureFiles"
+							 list-type="picture">
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{imageAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="商品广告" label-width="110px">  &lt;!&ndash; 上传成功后的success、remove函数有问题，看看data从哪里获取 &ndash;&gt;
+						<div is="el-upload"
+							 class="avatar-uploader el-upload&#45;&#45;text"
+							 :accept="videoAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="advertisement"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="videoFiles"
+							 list-type="video">
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{videoAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="经营许可证" label-width="110px">
+						<div is="el-upload"
+							 class="upload-demo"
+							 :accept="imageAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="businessLicense"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="licenseFiles"
+							 list-type="picture">	 <!--  切换时，加上  :http-request="uploadFile" ，覆盖elui原"action"动作 -->
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{imageAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="产品许可证" label-width="110px">
+						<div is="el-upload"
+							 class="upload-demo"
+							 :accept="imageAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="productLicense"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="productLicenseFiles"
+							 list-type="picture">	 <!--  切换时，加上  :http-request="uploadFile" ，覆盖elui原"action"动作 -->
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{imageAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="合格证" label-width="110px">
+						<div is="el-upload"
+							 class="upload-demo"
+							 :accept="imageAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="certificate"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="certificateFiles"
+							 list-type="picture">	 <!--  切换时，加上  :http-request="uploadFile" ，覆盖elui原"action"动作 -->
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{imageAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="质检证书" label-width="110px">
+						<div is="el-upload"
+							 class="upload-demo"
+							 :accept="imageAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="qualityCertificate"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="qualityCertificateFiles"
+							 list-type="picture">	 <!--  切换时，加上  :http-request="uploadFile" ，覆盖elui原"action"动作 -->
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{imageAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-form-item" align="center" style="margin-top: 20px;">
+					<button is="el-button" type="success" @click="confirm('form')">确定</button>
+					<button is="el-button" @click="cancel()">取消</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					id : '',
+					name : '',
+					sid : '',
+					profile : '',
+					content : '',
+					price : 0,
+					cover : '',
+					image : '',
+					picture : '',
+					video : '',
+					type : '',
+					platform : '',
+					bringType : '',
+					commission : '',
+					giveBack : '',
+					deposit : '',
+					depositRatio : '',
+					discountPrice : '',
+					link : '',
+					quantity : '',
+					region : '',
+					businessLicense : '',
+					productLicense : '',
+					certificate : '',
+					qualityCertificate : '',
+					remark : '',
+					ordinal : 99,
+					enabled : '1',
+					state : '2'
+				},
+				rules:{
+					name:[{
+						required : true,
+						message : '请输入名称',
+						trigger : 'blur'
+					}],
+					content:[{
+						required : false,
+						message : '请输入基本信息',
+						trigger : 'blur'
+					}],
+					type:[{
+						required : true,
+						message : '请输入类别',
+						trigger : 'blur'
+					}],
+					price:[{
+						required : true,
+						message : '请输入价格',
+						trigger : 'blur'
+					}]
+				},
+				coverFiles: [],
+                imageFiles: [],
+                pictureFiles: [],
+				videoFiles: [],
+				licenseFiles: [],
+				productLicenseFiles: [],
+				certificateFiles: [],
+				qualityCertificateFiles: [],
+				types : [],
+				shopslist : [],
+				regionList : [],
+				uploadType : "",
+				uploadUrl : cc.uploadUrl,
+				imageAccept : cc.imageAccept,
+				videoAccept : cc.videoAccept,
+				isIndeterminate01 : false,
+				checkAll01 : false,
+				checkedPojo01 :  [],
+				checkedPojoStr01 :  [],
+				pojoOptions01 : [],
+				pojoOptionsStr01 : [],
+				isOther  : false,
+				isIndeterminate02 : false,
+				checkAll02 : false,
+				checkedPojo02 :  [],
+				checkedPojoStr02 :  [],
+				pojoOptions02 : [],
+				pojoOptionsStr02 : [],
+				isIndeterminate03 : false,
+				checkAll03 : false,
+				checkedPojo03 :  [],
+				checkedPojoStr03 :  [],
+				pojoOptions03 : [],
+				pojoOptionsStr03 : [],
+			},
+			created : function() {
+			},
+			mounted : function() {
+				var vm = this, search = __.decodeUrlParams();
+				var id = search.id;
+				if (!__.isEmpty(id)) {
+					__.api('GET', '/rest/products/' + id, {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						var form = result.data;
+						form.enabled = String(form.enabled);
+						vm.form = form;
+						//富文本回显
+						//cc.wangEditor('wangEditor', vm.form, vm.form.content);
+						//图片回显
+						vm.imageFiles = cc.display(vm.form.image, "image");
+						vm.videoFiles = cc.display(vm.form.advertisement, "advertisement");
+						vm.coverFiles = cc.display(vm.form.cover, "cover");
+						vm.pictureFiles = cc.display(vm.form.picture, "picture");
+						vm.licenseFiles = cc.display(vm.form.businessLicense, "businessLicense");
+						vm.productLicenseFiles = cc.display(vm.form.productLicense, "productLicense");
+						vm.certificateFiles = cc.display(vm.form.certificate, "certificate");
+						vm.qualityCertificateFiles = cc.display(vm.form.qualityCertificate, "qualityCertificate");
+						//多选框处理
+						//类型
+						var type = vm.form.type;
+						if(!!type){
+							vm.checkedPojo01 = type.split(',');
+							vm.checkedPojoStr01 = vm.form.type;
+							vm.otherPojo();
+						}
+						//带货平台
+						var platform = vm.form.platform;
+						if(!!platform){
+							vm.checkedPojo02 = platform.split(',');
+							vm.checkedPojoStr02 = vm.form.platform;
+							vm.otherPojo();
+						}
+						//带货方式
+						var bringType = vm.form.bringType;
+						if(!!bringType){
+							vm.checkedPojo03 = bringType.split(',');
+							vm.checkedPojoStr03 = vm.form.bringType;
+							vm.otherPojo();
+						}
+
+					});
+				} else{
+					//新增商品，需要列表页传递过来所属店铺的id
+					vm.form.sid = search.sid;
+				}
+				//cc.wangEditor('wangEditor', vm.form);
+				vm.getDic();
+			},
+			methods : {
+				confirm : function(formName) {
+					var vm = this;
+					var params = {}, form = this.form;
+					//去除尾部逗号
+					cc.trim(form);
+					//引入富文本公共html
+					//form.content = cc.editorImportHtml(form.content);
+					//拼接复选框值
+					//类型
+					vm.form.type = vm.checkedPojo01.toString();
+					if(!!!vm.form.type){
+						vm.$message.warning("最少勾选一项类型");
+						return;
+					}
+					//带货平台
+					vm.form.platform = vm.checkedPojo02.toString();
+					if(!!!vm.form.platform){
+						vm.$message.warning("最少勾选一项类型");
+						return;
+					}
+					//带货方式
+					vm.form.bringType = vm.checkedPojo03.toString();
+					if(!!!vm.form.bringType){
+						vm.$message.warning("最少勾选一项类型");
+						return;
+					}
+					this.$refs[formName].validate(function(valid) {
+						if(valid){
+							__.api('POST', '/rest/products/save', form, function(result) {
+								if (__.err(result)) {
+									vm.$message.warning(result.message);
+								} else {
+									vm.$message.info("保存成功");
+									__.dialog.close();
+								}
+							});
+						}else{
+							return false
+						}
+					})
+
+				},
+				cancel : function() {
+					__.dialog.close();
+				},
+				getDic : function() {
+					var vm = this;
+					//类型
+					__.api('POST', '/rest/dic/all', {'targetId' : 'expertise'}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							vm.pojoOptions01 = result.data;
+							for (let i = 0; i < vm.pojoOptions01.length; i++) {
+								vm.pojoOptionsStr01.push(vm.pojoOptions01[i].code);
+							}
+						}
+					});
+
+					//带货平台
+					__.api('POST', '/rest/dic/all', {'targetId' : 'platform'}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							vm.pojoOptions02 = result.data;
+							for (let i = 0; i < vm.pojoOptions02.length; i++) {
+								vm.pojoOptionsStr02.push(vm.pojoOptions02[i].code);
+							}
+						}
+					});
+
+					//带货方式
+					__.api('POST', '/rest/dic/all', {'targetId' : 'cooperation'}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							vm.pojoOptions03 = result.data;
+							for (let i = 0; i < vm.pojoOptions03.length; i++) {
+								vm.pojoOptionsStr03.push(vm.pojoOptions03[i].code);
+							}
+						}
+					});
+
+					//数据字典类别
+					__.api('POST', '/rest/dic/all', {'targetId' : 'region'}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							vm.regionList = result.data;
+						}
+					});
+
+					//带货方式  shopslist
+					__.api('POST', '/rest/shops/all', {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							vm.shopslist = result.data;
+						}
+					});
+
+				},
+				handleCheckAllChange01 : function(val) {		//TODO  继续参考”带货方式“添加”带货平台“、”带货方式“多选框
+					var vm = this;
+					vm.checkedPojo01 = val ? vm.pojoOptionsStr01 : [];
+					vm.isIndeterminate01 = false;
+					vm.checkedPojoStr01 = vm.checkedPojo01.toString();
+					console.log('11111');
+					console.log(vm.checkedPojoStr01);
+					vm.otherPojo();
+				},
+				handleCheckedDicChange01 : function(value) {
+					var vm = this;
+					let checkedCount = value.length;
+					vm.checkAll01 = checkedCount === vm.pojoOptions01.length;
+					vm.isIndeterminate01 = checkedCount > 0 && checkedCount < vm.pojoOptions01.length;
+					vm.checkedPojoStr01 = vm.checkedPojo01.toString();
+					console.log('22222');
+					console.log(vm.checkedPojoStr01);
+					vm.otherPojo();
+				},
+				handleCheckAllChange02 : function(val) {
+					var vm = this;
+					vm.checkedPojo02 = val ? vm.pojoOptionsStr02 : [];
+					vm.isIndeterminate02 = false;
+					vm.checkedPojoStr02 = vm.checkedPojo02.toString();
+					console.log('11111');
+					console.log(vm.checkedPojoStr02);
+					vm.otherPojo();
+				},
+				handleCheckedDicChange02 : function(value) {
+					var vm = this;
+					let checkedCount = value.length;
+					vm.checkAll02 = checkedCount === vm.pojoOptions02.length;
+					vm.isIndeterminate02 = checkedCount > 0 && checkedCount < vm.pojoOptions02.length;
+					vm.checkedPojoStr02 = vm.checkedPojo02.toString();
+					console.log('22222');
+					console.log(vm.checkedPojoStr02);
+					vm.otherPojo();
+				},
+				handleCheckAllChange03 : function(val) {
+					var vm = this;
+					vm.checkedPojo03 = val ? vm.pojoOptionsStr03 : [];
+					vm.isIndeterminate03 = false;
+					vm.checkedPojoStr03 = vm.checkedPojo03.toString();
+					console.log('11111');
+					console.log(vm.checkedPojoStr03);
+					vm.otherPojo();
+				},
+				handleCheckedDicChange03 : function(value) {
+					var vm = this;
+					let checkedCount = value.length;
+					vm.checkAll03 = checkedCount === vm.pojoOptions03.length;
+					vm.isIndeterminate03 = checkedCount > 0 && checkedCount < vm.pojoOptions03.length;
+					vm.checkedPojoStr03 = vm.checkedPojo03.toString();
+					console.log('22222');
+					console.log(vm.checkedPojoStr03);
+					vm.otherPojo();
+				},
+				/**
+				 * 是否展示其他擅长
+				 */
+				otherPojo : function() {
+					var vm = this;
+					var ret = vm.checkedPojoStr01.indexOf('e-other');
+					if(ret > -1){
+						vm.isOther = true;
+					} else{
+						vm.isOther = false;
+					}
+				},
+				/**
+				 * COS上传
+				 * @param file
+				 * @param fileList
+				 */
+				uploadFile : function(param){
+					var vm = this;
+					var file = param.file;
+					var data = param.data;
+					vm.uploadType = data;
+					cosUtils.upload(param, vm.form, data);
+				},
+				handleRemove : function(file, fileList) {
+					vm = this;
+					//删除文件时
+					cc.handleRemove(file, fileList, vm.form, file.type);
+				},
+
+				handlePreview : function(file) {
+					//点击已上传的文件链接时
+					cc.handlePreview(file, vm.form);
+				},
+				handleSuccess : function(response,file,fileList) {
+					vm = this;
+					file.path = response.data;
+					//文件上传成功时
+					cc.handleSuccess(response, file, fileList, vm.form, vm.uploadType);
+				},
+
+			}
+		})
+
+	</script>
+</body>
+</html>

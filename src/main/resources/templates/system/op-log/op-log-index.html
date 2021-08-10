@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>操作日志</title>
+</head>
+<body>
+	<div is="el-row" id="vm" v-cloak>
+		<div is="el-col" :span="24" class="warp">
+			<div is="el-row" class="element-row">
+				<div is="el-col">
+					<div is="el-form" :model="form" :inline="true" lable-width="80px" class="demo-form-inline clearfix" @submit.native.prevent>
+						<div class="fr">
+							<div is="el-form-item" label="查询时间" label-width="80px">
+								<input is="el-date-picker" v-model="form.rangeDate" type="date" value-format="yyyy-MM-dd" placeholder="请选择日期" :picker-options="pickerOptions"/>
+							</div>
+							<div is="el-form-item">
+								<div is="el-button" type="warning" @click="search">查询</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="element-table">
+				<div is="el-table" ref="table" :data="page.records" border style="width: 100%">
+					<div is="el-table-column" align="center" prop="createdAt" label="访问时间" width="180" :formatter="formatDate"></div>
+					<div is="el-table-column" align="center" prop="userName" label="访问用户" width="150" show-overflow-tooltip></div>
+					<div is="el-table-column" align="center" prop="comment" label="备注" width="250" show-overflow-tooltip></div>
+					<div is="el-table-column" align="center" prop="url" label="访问地址" show-overflow-tooltip></div>
+				</div>
+			</div>
+			<div class="pagination">
+				<div is="el-pagination" @current-change="pagedQuery" :current-page="page.currentPage" :page-size="page.limit" layout="total,prev,pager,next,jumper" :total="page.total"></div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					rangeDate : new Date() 
+				},
+				page : {
+					currentPage : 1,
+					limit : 15,
+					total : 0,
+					records : [],
+				},
+				pickerOptions : {
+					disabledDate : function(time) {
+						return time.getTime() > Date.now();
+					}
+				}
+			},
+			mounted : function() {
+				__.mask();
+				this.pagedQuery(1);
+				__.unmask();
+			},
+			methods : {
+				search : function() {
+					__.mask();
+					this.pagedQuery(1);
+					__.unmask();
+				},
+				pagedQuery : function(currentPage) {
+					var vm = this, page = vm.page;
+					currentPage && (page.currentPage = currentPage);
+					var params = __.pagedParams(page.currentPage, page.limit);
+					var rangeDate = vm.form.rangeDate;
+
+					if (rangeDate == null) {
+						vm.$message.warning('请选择时间');
+						return;
+					}
+					params.createdAtBegin = rangeDate;
+					params.createdAtEnd = rangeDate;
+					__.mask();
+					__.api('GET', '/rest/op-log/list', params, function(result) {
+						__.unmask();
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						vm.page.total = result.total | 0;
+						vm.page.records = result.data;
+					});
+				},
+				formatDate : function(row, column, value) {
+					return __.formatDate(value, 'yyyy-MM-dd HH:mm:ss');
+				}
+			}
+		});
+	</script>
+</body>
+</html>

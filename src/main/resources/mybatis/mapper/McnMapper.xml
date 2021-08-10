@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="yll.mapper.McnMapper">
+
+	<resultMap id="RESULT_MAP" type="yll.entity.Mcn">
+		<id property="id" column="id" jdbcType="VARCHAR" />
+		<result property="mcnName" column="mcn_name" jdbcType="VARCHAR" />
+		<result property="logo" column="logo" jdbcType="VARCHAR" />
+		<result property="superintendent" column="superintendent" jdbcType="VARCHAR" />
+		<result property="phone" column="phone" jdbcType="VARCHAR" />
+		<result property="celebrityNumber" column="celebrity_number" jdbcType="VARCHAR" />
+		<result property="description" column="description" jdbcType="VARCHAR" />
+		<result property="authenticateLink" column="authenticate_link" jdbcType="VARCHAR" />
+		<result property="queryLink" column="query_link" jdbcType="VARCHAR" />
+		<result property="corporateImage" column="corporate_image" jdbcType="VARCHAR" />
+		<result property="businessLicense" column="business_license" jdbcType="VARCHAR" />
+		<result property="establishTime" column="establish_time" jdbcType="TIMESTAMP" />
+		<result property="registeredCapital" column="registered_capital" jdbcType="VARCHAR" />
+		<result property="legalPerson" column="legal_person" jdbcType="VARCHAR" />
+		<result property="industry" column="industry" jdbcType="VARCHAR" />
+		<result property="location" column="location" jdbcType="VARCHAR" />
+		<result property="creditCode" column="credit_code" jdbcType="VARCHAR" />
+
+		<result property="remark" column="remark" jdbcType="VARCHAR" />
+		<result property="state" column="state" jdbcType="VARCHAR" />
+		<result property="enabled" column="enabled" jdbcType="INTEGER" />
+		<result property="deleted" column="deleted" jdbcType="INTEGER" />
+		<result property="creator" column="creator" jdbcType="VARCHAR" />
+		<result property="createdTime" column="created_time" jdbcType="TIMESTAMP" />
+		<result property="modifier" column="modifier" jdbcType="VARCHAR" />
+		<result property="modifiedTime" column="modified_time" jdbcType="TIMESTAMP" />
+		<result property="deleter" column="deleter" jdbcType="VARCHAR" />
+		<result property="deletedTime" column="deleted_time" jdbcType="TIMESTAMP" />
+</resultMap>
+
+	<resultMap id="RESULT_VO_MAP" type="yll.service.model.vo.McnVo" extends="RESULT_MAP">
+	</resultMap>
+
+	<sql id="TABLE">dh_mcn</sql>
+
+	<sql id="COLUMNS">
+		id, mcn_name, logo, superintendent, phone, celebrity_number,
+		description, authenticate_link, query_link,  corporate_image,  business_license,
+		establish_time, registered_capital, legal_person, industry, location, credit_code,
+		remark, state, enabled, deleted, creator, created_time,
+		modifier,modified_time, deleter, deleted_time
+	</sql>
+
+	<sql id="VALUES">
+		#{id}, #{mcnName}, #{logo},#{superintendent}, #{phone}, #{celebrityNumber},
+		#{description}, #{authenticateLink}, #{queryLink}, #{corporateImage},  #{businessLicense},
+		#{establishTime}, #{registeredCapital}, #{legalPerson}, #{industry}, #{location}, #{creditCode},
+		#{remark}, #{state}, #{enabled},#{deleted}, #{creator}, #{createdTime},
+		#{modifier},#{modifiedTime}, #{deleter}, #{deletedTime}
+	</sql>
+
+	<sql id="SET_VALUES">
+		<trim suffixOverrides=",">
+			<if test=" mcnName != null">
+				mcn_name = #{mcnName},
+			</if>
+			<if test=" logo != null">
+				logo = #{logo},
+			</if>
+			<if test=" superintendent != null">
+				superintendent = #{superintendent},
+			</if>
+			<if test=" phone != null">
+				phone = #{phone},
+			</if>
+			<if test=" celebrityNumber != null">
+				celebrity_number = #{celebrityNumber},
+			</if>
+			<if test=" description != null">
+				description = #{description},
+			</if>
+			<if test=" authenticateLink != null">
+				authenticate_link = #{authenticateLink},
+			</if>
+			<if test=" queryLink != null">
+				query_link = #{queryLink},
+			</if>
+			<if test=" corporateImage != null">
+				corporate_image = #{corporateImage},
+			</if>
+			<if test=" businessLicense != null">
+				business_license = #{businessLicense},
+			</if>
+			<if test=" establishTime != null">
+				establish_time = #{establishTime},
+			</if>
+			<if test=" registeredCapital != null">
+				registered_capital = #{registeredCapital},
+			</if>
+			<if test=" legalPerson != null">
+				legal_person = #{legalPerson},
+			</if>
+			<if test=" industry != null">
+				industry = #{industry},
+			</if>
+			<if test=" location != null">
+				location = #{location},
+			</if>
+			<if test=" creditCode != null">
+				credit_code = #{creditCode},
+			</if>
+			<if test=" remark != null">
+				remark = #{remark},
+			</if>
+			<if test=" state != null">
+				state = #{state},
+			</if>
+			<if test=" enabled != null">
+				enabled = #{enabled},
+			</if>
+			<if test=" deleted != null">
+				deleted = #{deleted},
+			</if>
+			<if test=" creator != null">
+				creator = #{creator},
+			</if>
+			<if test=" createdTime != null">
+				created_time = #{createdTime},
+			</if>
+			<if test=" modifier != null">
+				modifier = #{modifier},
+			</if>
+			<if test=" modifiedTime != null">
+				modified_time = #{modifiedTime},
+			</if>
+			<if test=" deleter != null">
+				deleter = #{deleter},
+			</if>
+			<if test=" deletedTime != null">
+				deleted_time = #{deletedTime},
+			</if>
+		</trim>
+	</sql>
+
+	<sql id="WHERES">
+		<if test=" id != null and id != ''">
+			and id = #{id}
+		</if>
+		<if test=" mcnName != null and mcnName != '' ">
+			and mcn_name like CONCAT(CONCAT('%',#{mcnName}),'%')
+		</if>
+		<if test=" superintendent != null and superintendent != ''">
+			and superintendent = #{superintendent}
+		</if>
+		<if test=" phone != null ">
+			and phone = #{phone}
+		</if>
+		<if test=" state != null ">
+			and state = #{state}
+		</if>
+		<if test=" creator != null and creator != ''">
+			and creator = #{creator}
+		</if>
+		<if test=" enabled != null ">
+			and enabled = #{enabled}
+		</if>
+		and deleted = 0
+	</sql>
+
+	<update id="save">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		) VALUES (
+		<include refid="VALUES" />
+		)
+		ON DUPLICATE KEY UPDATE
+		<include refid="SET_VALUES" />
+	</update>
+
+	<insert id="insert" parameterType="yll.entity.Mcn">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		)
+		VALUES
+		(
+		<include refid="VALUES" />
+		)
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.String">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		id =#{id}
+	</delete>
+
+	<delete id="deleteAll">
+		DELETE FROM
+		<include refid="TABLE" />
+	</delete>
+
+	<update id="update" parameterType="yll.entity.Mcn">
+		UPDATE
+		<include refid="TABLE" />
+		SET
+		<include refid="SET_VALUES" />
+		WHERE
+		id = #{id}
+	</update>
+
+	<select id="getById" parameterType="java.lang.String" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id =#{id}
+	</select>
+
+	<select id="findAll" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+	</select>
+
+	<select id="findBy" parameterType="yll.entity.Mcn" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
+	</select>
+
+	<select id="findByCondition" parameterType="yll.entity.Mcn" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
+		LIMIT 0, 1;
+	</select>
+
+	<delete id="deleteByCreator" parameterType="java.lang.String">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		creator =#{creator}
+	</delete>
+
+	<select id="findAll4App" parameterType="yll.entity.Mcn" resultMap="RESULT_MAP">
+		SELECT
+		id, mcn_name
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
+	</select>
+
+	<select id="getAppAuth" parameterType="yll.entity.Mcn" resultMap="RESULT_VO_MAP">
+		SELECT
+		c.id,
+		ifnull(m.mcn_name, '') mcn_name,
+		ifnull(m.mcn_name, '') enterpriseName,
+	   	ifnull(m.logo, '') logo,
+		ifnull(m.superintendent, '') superintendent,  ifnull(m.phone, '') phone,
+		 ifnull(m.description, '') description, ifnull(m.authenticate_link, '') authenticate_link, ifnull(m.query_link, '') query_link,
+		ifnull(m.corporate_image, '') corporate_image, ifnull(m.business_license, '') business_license,
+		ifnull(m.credit_code, '') credit_code,
+		ifnull(m.celebrity_number, '') celebrity_number,
+		ifnull(d2.codename, '') celebrityNumStr,
+		ifnull(d2.code, '') staffStr,
+		DATE_FORMAT(m.establish_time , '%Y-%m-%d') establishTimeStr,
+		ifnull(m.registered_capital, '') registered_capital, ifnull(m.legal_person, '') legal_person,
+		ifnull(m.industry, '') industry,
+	   	ifnull(d1.codename, '') industryStr,
+	   	ifnull(m.location, '') location
+		FROM
+		<include refid="TABLE" /> m
+		LEFT JOIN
+		customer c ON c.id = m.creator
+		LEFT JOIN
+		dic d1 ON d1.code = m.industry
+		LEFT JOIN
+		dic d2 ON d2.code = m.celebrity_number
+		WHERE m.id != '0'
+		and m.creator = #{creator}
+		ORDER BY  m.created_time DESC
+	</select>
+
+	<select id="getAppDetail" parameterType="yll.service.model.vo.McnVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		c.id,
+		ifnull(m.mcn_name, '') mcn_name,  ifnull(m.logo, '') logo, m.state,
+		(select count(dc.id) from dh_internet_celebrity dc where dc.mcn_id=m.creator) celebrityNum
+		FROM
+		<include refid="TABLE" /> m
+		LEFT JOIN
+		customer c ON c.id = m.creator
+		WHERE m.id != '0'
+		and m.creator = #{creator}
+		ORDER BY  m.created_time DESC
+	</select>
+
+	<select id="findByAdminList" parameterType="yll.service.model.vo.McnVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		m.id, ifnull( m.mcn_name, '') mcn_name, ifnull( m.superintendent, '') superintendent, ifnull( m.phone, '') phone,
+		m.state, m.creator
+		FROM
+		<include refid="TABLE" /> m
+		WHERE m.id != '0'
+		<if test=" mcnName != null and mcnName != '' ">
+			and m.mcn_name like CONCAT(CONCAT('%',#{mcnName}),'%')
+		</if>
+		<if test=" state != null  ">
+			and m.state = #{state}
+		</if>
+		ORDER BY m.id DESC
+	</select>
+
+	<select id="find4Shop" parameterType="yll.entity.Mcn" resultMap="RESULT_VO_MAP">
+		SELECT
+		id, mcn_name name, logo, superintendent, phone, celebrity_number,
+		description, authenticate_link, query_link,  corporate_image,  business_license,
+		establish_time, registered_capital, legal_person, industry, location, credit_code,
+		remark, state, enabled, deleted, creator, created_time,
+		modifier,modified_time, deleter, deleted_time
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
+	</select>
+
+</mapper>

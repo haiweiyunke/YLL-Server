@@ -1,0 +1,284 @@
+cos-js-sdk-v5.min.js.el-button {
+	padding: 8px 9px;
+}
+
+.el-button--primary {
+	background-color: #7399e6;
+	border-color: #7399e6;
+}
+
+.el-dialog__body {
+	padding: 20px 20px;
+}
+.el-message p{
+	display:inline-block\9;
+}
+
+.el-date-editor .el-range-input , .el-date-editor .el-range-separator{
+	height:86%\9\0;
+	margin-top:-2px\9\0;
+}
+/* IE9兼容性处理 */
+.el-range-editor .el-range-input{
+	position: absolute\9\0;
+	top:-4px\9\0;
+	font-size:12px\9\0;
+}
+.el-table__empty-block{
+	height:100%\9;
+}
+
+.el-table__empty-text{
+	display:inline-block\9;
+	margin-top:17%\9;
+}
+.element-row {
+	padding-top: 10px;
+	padding-left: 20px;
+	padding-right: 20px;
+}
+
+.el-button--success {
+	background-color: #7197e9;
+	border-color: #7197e9;
+}
+
+.el-button--danger {
+	background-color: #ff7f7f;
+	border-color: #ff7f7f;
+}
+
+.el-button--warning {
+	background-color: #52ccb8;
+	border-color: #52ccb8;
+}
+
+.el-button--info span {
+	color: #fff;
+}
+
+.el-input__inner {
+	height: 32px;
+	line-height: 32px;
+	text-overflow: ellipsis;
+}
+
+.el-table th {
+	padding: 8px 0;
+}
+
+.el-table td {
+	padding: 4px 0;
+}
+
+.el-table th {
+	background-color: #f5f5f5;
+}
+
+.el-table thead {
+	color: #000000;
+}
+
+.el-tree-node__content {
+	padding: 5px 0;
+}
+
+.el-form--inline .el-form-item__label {
+	line-height: 32px;
+}
+
+.el-form--inline .el-form-item__content {
+	line-height: 32px;
+}
+
+.el-table {
+	height: 100%;
+}
+
+.el-table__body-wrapper {
+	height: calc(100% - 39px);
+	overflow: hidden;
+	overflow-y: scroll;
+}
+
+.el-tree {
+	height: 100%;
+	padding-top: 5px;
+	overflow-y: scroll;
+	overflow-x: scroll;
+	box-sizing: border-box;
+}
+
+.el-dialog__header, .el-message-box__header {
+	text-align: left;
+	border-bottom: 1px solid #7da8ff;
+	background: -webkit-linear-gradient(#ffffff, #e6eeff);
+	background: -o-linear-gradient(#ffffff, #e6eeff);
+	background: -moz-linear-gradient(#ffffff, #e6eeff);
+	background: linear-gradient(#ffffff, #e6eeff);
+	background: #e6eeff\9\0;
+}
+
+.el-dialog__title, .el-message-box__title {
+	color: #2d73ff;
+}
+
+.el-dialog__headerbtn .el-dialog__close {
+	color: #999999;
+}
+
+.el-table__row .el-button.el-button--text {
+	padding: 8px 3px;
+}
+
+.el-button+.el-button {
+	margin-left: 0px;
+}
+
+.el-message-box__status.el-icon-warning {
+	 color: #ff461f;
+	 display:inline-block;
+}
+
+.el-message-box__status+.el-message-box__message {
+    display:inline-block;
+}
+.el-input__icon {
+	line-height: inherit;
+}
+
+.el-tree-node.is-current>.el-tree-node__content {
+	background-color: #f5f5f5;
+	color: #457ae6;
+}
+
+.demo-form-inline {
+	float: right;
+	width: 100%;
+}
+
+.el-collapse-item__header {
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.el-date-editor .el-range-separator {
+	line-height: 22px;
+	vertical-align: super\9;
+}
+
+.el-date-editor .el-range__icon {
+	line-height: 24px;
+}
+
+.el-date-editor .el-range__close-icon {
+	line-height: 24px;
+}
+
+.el-menu--horizontal>.el-menu-item {
+	height: 80px;
+	line-height: 120px;
+}
+
+.el-menu--horizontal>.el-menu-item.is-active {
+	border-bottom: 4px solid #2464cf;
+}
+.el-checkbox__input.is-checked .el-checkbox__inner::after {
+    -ms-transform: rotate(45deg) scaleY(1);
+}
+/** 滚动条 **/
+::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+
+::-webkit-scrollbar-track, ::-webkit-scrollbar-thumb {
+	border-radius: 999px;
+	border: none;
+}
+
+::-webkit-scrollbar-thumb {
+	min-height: 20px;
+	background-clip: content-box;
+	box-shadow: 0 0 0 5px rgba(229, 229, 229, .9) inset;
+}
+
+::-webkit-scrollbar-corner {
+	background: transparent;
+}
+
+::-o-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+
+::-o-scrollbar-track, ::-o-scrollbar-thumb {
+	border-radius: 999px;
+	border: 5px solid transparent;
+}
+
+::-o-scrollbar-track {
+	box-shadow: 1px 1px 5px rgba(0, 0, 0, .2) inset;
+}
+
+::-o-scrollbar-thumb {
+	min-height: 20px;
+	background-clip: content-box;
+	box-shadow: 0 0 0 5px rgba(0, 0, 0, .2) inset;
+}
+
+::-o-scrollbar-corner {
+	background: transparent;
+}
+
+::-ms-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+
+::-ms-scrollbar-track, ::-ms-scrollbar-thumb {
+	border-radius: 999px;
+	border: 5px solid transparent;
+}
+
+::-ms-scrollbar-track {
+	box-shadow: 1px 1px 5px rgba(0, 0, 0, .2) inset;
+}
+
+::-ms-scrollbar-thumb {
+	min-height: 20px;
+	background-clip: content-box;
+	box-shadow: 0 0 0 5px rgba(0, 0, 0, .2) inset;
+}
+
+::-ms-scrollbar-corner {
+	background: transparent;
+}
+
+::-moz-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+
+::-moz-scrollbar-track, ::-moz-scrollbar-thumb {
+	border-radius: 999px;
+	border: 5px solid transparent;
+}
+
+::-moz-scrollbar-track {
+	box-shadow: 1px 1px 5px rgba(0, 0, 0, .2) inset;
+}
+
+::-moz-scrollbar-thumb {
+	min-height: 20px;
+	background-clip: content-box;
+	box-shadow: 0 0 0 5px rgba(0, 0, 0, .2) inset;
+}
+
+::-moz-scrollbar-corner {
+	background: transparent;
+}
+
+.el-textarea__inner {
+	resize: none;
+}

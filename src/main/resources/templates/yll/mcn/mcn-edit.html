@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>MCN新增和编辑</title>
+<style>
+.el-picker-panel {
+	height: 320px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.el-date-editor.el-input, .el-input-number--small {
+	width: 100%;
+}
+
+.unit {
+	text-align: right;
+	line-height: 40px;
+}
+
+/*@media screen and(-ms-high-contrast:active),(-ms-high-contrast:none){
+	.el-picker-panel {
+		height: 200px;
+	}
+}*/
+</style>
+</head>
+<body>
+	<div id="vm"  v-cloak  class="vm">
+		<form is="el-form" :model="form" ref="form" :rules="rules" style="width: 100%;">
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="mcn名称" label-width="110px" prop="mcnName">
+						<input is="el-input" v-model="form.mcnName" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="负责人" label-width="110px" prop="superintendent">
+						<input is="el-input" v-model="form.superintendent" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="联系方式" label-width="110px" prop="phone">
+						<input is="el-input" v-model="form.phone" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="社会统一信用代码" label-width="110px" prop="creditCode">
+						<input is="el-input" v-model="form.creditCode" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+<!--
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="达人人数" label-width="110px" prop="celebrityNumber">
+						<input is="el-input" v-model="form.celebrityNumber" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+-->
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="认证证书链接" label-width="110px" prop="authenticateLink">
+						<input is="el-input" v-model="form.authenticateLink" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="机构查询链接" label-width="110px" prop="queryLink">
+						<input is="el-input" v-model="form.queryLink" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="注册资本" label-width="110px" prop="name">
+						<input is="el-input" v-model="form.registeredCapital" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="法人" label-width="110px" prop="name">
+						<input is="el-input" v-model="form.legalPerson" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="成立时间" label-width="110px">
+						<el-date-picker
+								v-model="form.establishTime"
+								type="date"
+								value-format=" yyyy-MM-dd"
+								format="yyyy-MM-dd"
+								placeholder="选择日期">
+						</el-date-picker>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="达人人数" label-width="110px" prop="type">
+						<div is="el-select" v-model="form.celebrityNumber" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in staffList"
+								 :key="item.code"
+								 :label="item.codename"
+								 :value="item.code">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="所属地" label-width="110px" prop="type">
+						<div is="el-select" v-model="form.location" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in locationList"
+								 :key="item.code"
+								 :label="item.codename"
+								 :value="item.code">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="所属行业" label-width="110px" prop="type">
+						<div is="el-select" v-model="form.industry" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in industryList"
+								 :key="item.id"
+								 :label="item.name"
+								 :value="item.id">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="公司简介" label-width="110px" prop="description">
+						<div is="el-input" type="textarea" autosize v-model="form.description" ></div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="logo" label-width="110px">
+						<div is="el-upload"
+							 class="upload-demo"
+							 :accept="imageAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="logo"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="imageFiles"
+							 list-type="picture">	 <!--  切换时，加上  :http-request="uploadFile" ，覆盖elui原"action"动作 -->
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{imageAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="公司形象" label-width="110px">
+						<div is="el-upload"
+							 class="upload-demo"
+							 :accept="imageAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="corporateImage"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="coverFiles"
+							 list-type="picture">	 <!--  切换时，加上  :http-request="uploadFile" ，覆盖elui原"action"动作 -->
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{imageAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="营业执照" label-width="110px">
+						<div is="el-upload"
+							 class="upload-demo"
+							 :accept="imageAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="businessLicense"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="videoFiles"
+							 list-type="picture">	 <!--  切换时，加上  :http-request="uploadFile" ，覆盖elui原"action"动作 -->
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{imageAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row" v-if="isExamine =='2'" >
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="审核状态" label-width="110px" prop="state">
+						<div is="el-radio" v-model="form.state" :label="1">待审核</div>
+						<div is="el-radio" v-model="form.state" :label="2">通过</div>
+						<div is="el-radio" v-model="form.state" :label="3">未通过</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row" v-if="isExamine =='2'">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="审核意见" label-width="110px" prop="description">
+						<div is="el-input" type="textarea" autosize v-model="form.remark" ></div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-form-item" align="center" style="margin-top: 20px;">
+					<button is="el-button" type="success" @click="confirm('form')">确定</button>
+					<button is="el-button" @click="cancel()">取消</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					id : '',
+					mcnName : '',
+					logo : '',
+					superintendent : '',
+					phone : '',
+					celebrityNumber : '',
+					description : '',
+					authenticateLink : '',
+					queryLink : '',
+					corporateImage : '',
+					businessLicense : '',
+					remark : '',
+					enabled : '0',
+					state : 2
+				},
+				rules:{
+					mcnName:[
+							{
+								required : true,
+								message : '请输入mcn名称名',
+								trigger : 'blur'
+							},
+							{ type: 'string', min: 1, max: 50, message: '不允许大于50个字符', trigger: 'blur' }
+					],
+					description:[{
+						required : false,
+						message : '请输入个人描述',
+						trigger : 'blur'
+					}]
+				},
+				coverFiles: [],
+                imageFiles: [],
+                videoFiles: [],
+				types : [],
+				industryList : [],
+				locationList : [],
+				staffList : [],
+				uploadType : "",
+				uploadUrl : cc.uploadUrl,
+				imageAccept : cc.imageAccept,
+				videoAccept : cc.videoAccept,
+				isExamine: 1
+			},
+			created : function() {
+			},
+			mounted : function() {
+				var vm = this, search = __.decodeUrlParams();
+				var id = search.id;
+				vm.isExamine = search.isExamine;	//审核标识。1-非审核，2-审核页
+				if (!__.isEmpty(id)) {
+					__.api('GET', '/rest/mcn/creator/' + id, {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						var form = result.data;
+						form.enabled = String(form.enabled);
+						vm.form = form;
+						//图片回显
+						vm.imageFiles = cc.display(vm.form.logo, "logo");
+						vm.coverFiles = cc.display(vm.form.corporateImage, "corporateImage");
+						vm.vFiles = cc.display(vm.form.businessLicense, "businessLicense");
+					});
+				}
+			},
+			methods : {
+				confirm : function(formName) {
+					var vm = this;
+					var params = {}, form = this.form;
+					//去除尾部逗号
+					cc.trim(form);
+					this.$refs[formName].validate(function(valid) {
+						if(valid){
+							__.api('POST', '/rest/mcn/save', form, function(result) {
+								if (__.err(result)) {
+									vm.$message.warning(result.message);
+								} else {
+									vm.$message.info("保存成功");
+									__.dialog.close();
+								}
+							});
+						}else{
+							return false
+						}
+					})
+
+				},
+				getDics : function() {
+					var vm = this;
+					//数据字典类别
+					__.api('GET', '/rest/mcn/dic/all', {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							vm.industryList = result.data.industryList;
+							vm.staffList = result.data.staffList;
+						}
+					});
+				},
+				getAreas : function() {
+					var vm = this;
+					//数据字典类别
+					__.api('GET', '/rest/area/all' , {pid : '', level : 1}, function(result) {
+						if (!__.err(result)) {
+							__.unmask();
+							vm.locationList = result.data;
+						} else {
+							__.unmask();
+							vm.$message.warning(result.message);
+							return;
+						}
+					});
+				},
+				cancel : function() {
+					__.dialog.close();
+				},
+				/**
+				 * COS上传
+				 * @param file
+				 * @param fileList
+				 */
+				uploadFile : function(param){
+					var vm = this;
+					//上传视频大小限制（示例中为10MB）
+					// const isLt10M = file.size / 1024 / 1024  < 10;
+
+					var file = param.file;
+					var data = param.data;
+					vm.uploadType = data;
+					cosUtils.upload(param, vm.form, data);
+					vm.form.image = '';
+				},
+				handleRemove : function(file, fileList) {
+					vm = this;
+					//删除文件时
+					cc.handleRemove(file, fileList, vm.form, file.type);
+				},
+				handlePreview : function(file) {
+					vm = this;
+					//点击已上传的文件链接时
+					cc.handlePreview(file, vm.form);
+				},
+				handleSuccess : function(response,file,fileList) {
+					vm = this;
+					file.path = response.data;
+					//文件上传成功时
+					cc.handleSuccess(response, file, fileList, vm.form, vm.uploadType);
+				}
+			}
+		})
+
+	</script>
+</body>
+</html>

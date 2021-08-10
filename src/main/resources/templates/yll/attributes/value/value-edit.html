@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>属性值新增和编辑</title>
+<style>
+.el-picker-panel {
+	height: 320px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.el-date-editor.el-input, .el-input-number--small {
+	width: 100%;/app/nickname
+}
+
+.unit {
+	text-align: right;
+	line-height: 40px;
+}
+
+/*@media screen and(-ms-high-contrast:active),(-ms-high-contrast:none){
+	.el-picker-panel {
+		height: 200px;
+	}
+}*/
+</style>
+</head>
+<body>
+	<div id="vm"  v-cloak  class="vm">
+		<form is="el-form" :model="form" ref="form" :rules="rules" style="width: 100%;">
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="上传图片" label-width="110px" prop="ordinal" >
+						<a href="javascript:void(0)" @click="getImage()">
+							<img :src="imageUrl" style="width: 100px; height: 100px"/>
+						</a>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div v-for="(item, index) in addList" :key="index" >
+
+					<div is="el-col" :span="5">
+						<div is="el-form-item"  label="键ID：" label-width="110px" readonly
+
+							 :rules="{
+									required: true, message: '键ID不能为空', trigger: 'blur'
+								}">
+							<div is="el-input" style="width: 95%" v-model="item.kid"></div>
+						</div>
+					</div>
+
+					<div is="el-col" :span="7">
+						<div is="el-form-item" label="属性：" label-width="110px" readonly
+
+							 :rules="{
+									required: true, message: '属性不能为空', trigger: 'blur'
+								}">
+							<div is="el-input" style="width: 95%" v-model="item.kname"></div>
+						</div>
+					</div>
+
+					<div is="el-col" :span="8">
+						<div is="el-form-item" label="值：" label-width="110px"
+
+							 :rules="{
+									required: true, message: '值不能为空', trigger: 'blur'
+								}">
+							<div is="el-input" style="width: 95%" v-model="item.name"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-form-item" align="center" style="margin-top: 20px;">
+					<button is="el-button" type="success" @click="confirm('form')">确定</button>
+					<button is="el-button" @click="cancel()">取消</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					attributesStr : '',
+					platformType : '',
+					creator : '',
+					image : ''
+				},
+				rules:{
+					kid:[{
+						required : true,
+						message : '请输入键ID',
+						trigger : 'blur'
+					}],
+					kname:[{
+						required : true,
+						message : '请输入键名',
+						trigger : 'blur'
+					}],
+					name:[{
+						required : true,
+						message : '请输入值',
+						trigger : 'blur'
+					}]
+				},
+				gid: '',
+				pid: '',
+				type: '',
+				creator: '',
+				addList : [],
+				coverFiles: [],
+                imageFiles: [],
+                videoFiles: [],
+				types : [],
+				uploadType : "",
+				uploadUrl : cc.uploadUrl,
+				imageAccept : cc.imageAccept,
+				videoAccept : cc.videoAccept,
+				imageUrl: '',
+				fill : 'fill'
+			},
+			created : function() {
+			},
+			mounted : function() {
+				var vm = this, search = __.decodeUrlParams();
+				var id = search.id;
+				vm.gid = search.gid;
+				vm.pid = search.pid;
+				vm.type = search.type;
+				vm.creator = search.creator;
+				if (!__.isEmpty(vm.gid)) {
+					//获取已存值数据
+					__.api('GET', '/rest/platform-value/gid/' + vm.gid, {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						vm.addList =  result.data;
+					});
+					//上传图片回显
+					__.api('GET', '/rest/platform-group/' + vm.gid, {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						vm.imageUrl = result.data.image;
+					});
+				} else{
+					//获取键模板
+					__.api('POST', '/rest/platform-value/keys', {
+						type:vm.type,
+						cid:vm.cid,
+						pid:vm.pid,
+					}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						vm.addList =  result.data;
+					});
+				}
+			},
+			methods : {
+				confirm : function(formName) {
+					var vm = this;
+					var params = {}, form = this.form;
+					//外键
+					// form.pid = vm.pid;
+					// form.gid = vm.gid;
+					form.platformType = vm.type;
+					form.creator = vm.creator;
+					//去除尾部逗号
+					cc.trim(form);
+					//平台自定义属性转json串
+					if(!!vm.addList && vm.addList.length>0){
+						form.attributesStr = JSON.stringify(vm.addList);
+					}
+					this.$refs[formName].validate(function(valid) {
+						if(valid){
+							if(!!vm.gid){
+								//修改
+								__.api('POST', '/rest/platform-value/update', form, function(result) {
+									if (__.err(result)) {
+										vm.$message.warning(result.message);
+									} else {
+										vm.$message.info("保存成功");
+										__.dialog.close();
+									}
+								});
+							} else{
+								//新增
+								__.api('POST', '/rest/platform-value/insert', form, function(result) {
+									if (__.err(result)) {
+										vm.$message.warning(result.message);
+									} else {
+										vm.$message.info("保存成功");
+										__.dialog.close();
+									}
+								});
+							}
+						}else{
+							return false
+						}
+					})
+
+				},
+				cancel : function() {
+					__.dialog.close();
+				},
+				getDic : function() {
+					vm = this;
+					//数据字典类别
+					__.api('POST', '/rest/dic/all', {'targetId' : 'platform'}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							vm.types = result.data;
+						}
+					});
+				},
+				getImage : function() {
+					var vm = this;
+					window.open(vm.imageUrl, '_blank');
+				},
+				/**
+				 * COS上传
+				 * @param file
+				 * @param fileList
+				 */
+				uploadFile : function(param){
+					var vm = this;
+					var file = param.file;
+					var data = param.data;
+					vm.uploadType = data;
+					cosUtils.upload(param, vm.form, data);
+				},
+				handleRemove : function(file, fileList) {
+					vm = this;
+					//删除文件时
+					cc.handleRemove(file, fileList, vm.form, file.type);
+				},
+
+				handlePreview : function(file) {
+					vm = this;
+					//点击已上传的文件链接时
+					cc.handlePreview(file, vm.form);
+				},
+				handleSuccess : function(response,file,fileList) {
+					vm = this;
+					file.path = response.data;
+					//文件上传成功时
+					cc.handleSuccess(response, file, fileList, vm.form, vm.uploadType);
+				},
+
+			}
+		})
+
+	</script>
+</body>
+</html>

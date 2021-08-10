@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>任务新增和编辑</title>
+<style>
+.el-picker-panel {
+	height: 320px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.el-date-editor.el-input, .el-input-number--small {
+	width: 100%;
+}
+
+.unit {
+	text-align: right;
+	line-height: 40px;
+}
+
+/*@media screen and(-ms-high-contrast:active),(-ms-high-contrast:none){
+	.el-picker-panel {
+		height: 200px;
+	}
+}*/
+</style>
+</head>
+<body>
+	<div id="vm"  v-cloak  class="vm">
+		<form is="el-form" :model="form" ref="form" :rules="rules" style="width: 100%;">
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="企业主" label-width="110px" prop="type">
+						<div is="el-select" v-model="form.creator" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in enterprise"
+								 :key="item.creator"
+								 :label="item.enterpriseName"
+								 :value="item.creator">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="名称" label-width="110px" prop="taskName">
+						<input is="el-input" v-model="form.taskName" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="有效开始日期" label-width="110px" prop="startTime">
+						<div class="block">
+							<div is="el-date-picker"
+								 v-model="form.validStartTime"
+								 type="date"
+								 placeholder="选择日期时间">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="有效结束日期" label-width="110px" prop="validEndTime">
+						<div class="block">
+							<div is="el-date-picker"
+								 v-model="form.validEndTime"
+								 type="date"
+								 placeholder="选择日期时间">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+<!--
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="推广开始日期" label-width="110px" prop="marketingStartTime">
+						<div class="block">
+							<div is="el-date-picker"
+								 v-model="form.marketingStartTime"
+								 type="date"
+								 placeholder="选择日期时间">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="推广结束日期" label-width="110px" prop="marketingEndTime">
+						<div class="block">
+							<div is="el-date-picker"
+								 v-model="form.marketingEndTime"
+								 type="date"
+								 placeholder="选择日期时间">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="所属类目" label-width="110px" prop="type">
+						<div is="el-select" v-model="form.category" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in categoryList"
+								 :key="item.code"
+								 :label="item.codename"
+								 :value="item.code">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+	-->
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="带货方式" label-width="110px" prop="type">
+						<div is="el-select" v-model="form.type" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in typeList"
+								 :key="item.code"
+								 :label="item.codename"
+								 :value="item.code">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row"  v-if="form.type =='cooperation-live'">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="带货地点" label-width="110px" prop="type">
+						<div is="el-select" v-model="form.taskPlace" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in taskPlaceList"
+								 :key="item.code"
+								 :label="item.codename"
+								 :value="item.code">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<!--<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="宝贝链接" label-width="110px" prop="productLink">
+						<input is="el-input" v-model="form.productLink" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="供货数量" label-width="110px" prop="quantity">
+						<input is="el-input" v-model="form.quantity" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="达人佣金比例" label-width="110px" prop="commissionRatio">
+						<input is="el-input" v-model="form.commissionRatio" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="保底出场费" label-width="110px" prop="appearanceFees">
+						<input is="el-input" v-model="form.appearanceFees" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="优惠方式" label-width="110px" prop="type">
+						<div is="el-select" v-model="form.discount" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in discountList"
+								 :key="item.code"
+								 :label="item.codename"
+								 :value="item.code">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="优惠值" label-width="110px" prop="discountNum">
+						<input is="el-input" v-model="form.discountNum" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row"  >
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="是否退样" label-width="110px" prop="giveBack">
+						<div is="el-radio" v-model="form.giveBack" :label="1">不需要</div>
+						<div is="el-radio" v-model="form.giveBack" :label="2">需要</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row"  >
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="产品发布会" label-width="110px" prop="giveBack">
+						<div is="el-radio" v-model="form.conferences" :label="1">不需要</div>
+						<div is="el-radio" v-model="form.conferences" :label="2">需要</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="达人领域" label-width="110px" prop="expertise">
+						<div is="el-checkbox" :indeterminate="isIndeterminateExp" v-model="checkAllExp" @change="handleCheckAllChangeExp">全选</div>
+						<div style="margin: 15px 0;"></div>
+						<div is="el-checkbox-group" v-model="checkedExpertise" @change="handleCheckedChangeExp">
+							<div is="el-checkbox" v-for="item in expertiseOptions" :label="item.code" :key="item.codename" >{{item.codename}}</div>
+						</div>
+					</div>
+				</div>
+			</div>
+-->
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="销售平台" label-width="110px" prop="platform">
+						<div is="el-checkbox" :indeterminate="isIndeterminatePla" v-model="checkAllPla" @change="handleCheckAllChangePla">全选</div>
+						<div style="margin: 15px 0;"></div>
+						<div is="el-checkbox-group" v-model="checkedPlatform" @change="handleCheckedChangePla">
+							<div is="el-checkbox" v-for="item in platformOptions" :label="item.code" :key="item.codename" >{{item.codename}}</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="直播渠道" label-width="110px" prop="livePlatform">
+						<div is="el-checkbox" :indeterminate="isIndeterminatePla02" v-model="checkAllPla02" @change="handleCheckAllChangePla02">全选</div>
+						<div style="margin: 15px 0;"></div>
+						<div is="el-checkbox-group" v-model="checkedPlatform02" @change="handleCheckedChangePla02">
+							<div is="el-checkbox" v-for="item in platformOptions02" :label="item.code" :key="item.codename" >{{item.codename}}</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="样品押金" label-width="110px">
+						<input is="el-input" v-model="form.deposit" controls-position="right" autocomplete="off">
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="联系方式" label-width="110px">
+						<input is="el-input" v-model="form.phone" controls-position="right" autocomplete="off">
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="服务价格" label-width="110px">
+						<input is="el-input" v-model="form.servicePrice" controls-position="right" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+
+			<div is="el-row" >
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="任务要求" label-width="110px" prop="description">
+						<div is="el-input" type="textarea" autosize v-model="form.description" ></div>
+					</div>
+				</div>
+			</div>
+<!--
+
+			<div is="el-row" >
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="商品卖点" label-width="110px" prop="sellingPoint">
+						<div is="el-input" type="textarea" autosize v-model="form.sellingPoint" ></div>
+					</div>
+				</div>
+			</div>
+-->
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					 <div is="el-form-item" label="任务封面" label-width="110px">
+						<div is="el-upload"
+							 class="upload-demo"
+							 :accept="imageAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="cover"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="coverFiles"
+							 list-type="picture">
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{imageAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="任务列表" label-width="110px">
+						<div is="el-upload"
+								class="upload-demo"
+								:accept="imageAccept"
+								:action="uploadUrl"
+							 	:http-request="uploadFile"
+								 data="productImages"
+								:on-preview="handlePreview"
+								:on-remove="handleRemove"
+								:on-success="handleSuccess"
+								:file-list="imageFiles"
+								list-type="picture">	 <!--  切换时，加上  :http-request="uploadFile" ，覆盖elui原"action"动作 -->
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{imageAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+<!--
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="经营许可证" label-width="110px">
+						<div is="el-upload"
+							 class="upload-demo"
+							 :accept="imageAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="businessLicense"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="licenseFiles"
+							 list-type="picture">	 &lt;!&ndash;  切换时，加上  :http-request="uploadFile" ，覆盖elui原"action"动作 &ndash;&gt;
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{imageAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="产品许可证" label-width="110px">
+						<div is="el-upload"
+							 class="upload-demo"
+							 :accept="imageAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="productLicense"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="productLicenseFiles"
+							 list-type="picture">	 &lt;!&ndash;  切换时，加上  :http-request="uploadFile" ，覆盖elui原"action"动作 &ndash;&gt;
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{imageAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="合格证" label-width="110px">
+						<div is="el-upload"
+							 class="upload-demo"
+							 :accept="imageAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="certificate"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="certificateFiles"
+							 list-type="picture">	 &lt;!&ndash;  切换时，加上  :http-request="uploadFile" ，覆盖elui原"action"动作 &ndash;&gt;
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{imageAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="质检证书" label-width="110px">
+						<div is="el-upload"
+							 class="upload-demo"
+							 :accept="imageAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="qualityCertificate"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="qualityCertificateFiles"
+							 list-type="picture">	 &lt;!&ndash;  切换时，加上  :http-request="uploadFile" ，覆盖elui原"action"动作 &ndash;&gt;
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{imageAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="商品广告" label-width="110px">  &lt;!&ndash; 上传成功后的success、remove函数有问题，看看data从哪里获取 &ndash;&gt;
+						<div is="el-upload"
+							 class="avatar-uploader el-upload&#45;&#45;text"
+							 :accept="videoAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="advertisement"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="videoFiles"
+							 list-type="video">
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{videoAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+-->
+
+			<!--<div is="el-row" v-if="isExamine =='2'" >
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="任务场地" label-width="110px" prop="state">
+						<div is="el-radio" v-model="form.taskPlace" :label="mallPlace">店铺主播</div>
+						<div is="el-radio" v-model="form.taskPlace" :label="gunPlace">达人主播</div>
+					</div>
+				</div>
+			</div>-->
+
+			<div is="el-row" v-if="isExamine =='2'" >
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="审核状态" label-width="110px" prop="state">
+						<div is="el-radio" v-model="form.state" :label="1">待审核</div>
+						<div is="el-radio" v-model="form.state" :label="2">通过</div>
+						<div is="el-radio" v-model="form.state" :label="3">未通过</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row" v-if="isExamine =='2'">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="审核意见" label-width="110px" prop="description">
+						<div is="el-input" type="textarea" autosize v-model="form.remark" ></div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-form-item" align="center" style="margin-top: 20px;">
+					<button is="el-button" type="success" @click="confirm('form')">确定</button>
+					<button is="el-button" @click="cancel()">取消</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					id : '',
+					taskName : '',
+					validStartTime : '',
+					validEndTime : '',
+					marketingStartTime : '',
+					marketingEndTime : '',
+					type : '',
+					sponsor : '',
+					expertise : '',
+					platform : '',
+					livePlatform : '',
+					description : '',
+					productImages : '',
+					advertisement : '',
+					sellingPoint : '',
+					deposit : '',
+					cover : '',
+					businessLicense : '',
+					category : '',
+					productLink : '',
+					retailPrice : '',
+					discount : '',
+					discountNum : '',
+					quantity : '',
+					commissionRatio : '',
+					giveBack : '',
+					conferences : '',
+					appearanceFees : '',
+					productLicense : '',
+					certificate : '',
+					qualityCertificate : '',
+					remark : '',
+					state : 1,
+					enabled : '0'
+				},
+				rules:{
+					taskName:[
+							{
+								required : true,
+								message : '请输入名称',
+								trigger : 'blur'
+							},
+							{ type: 'string', min: 1, max: 100, message: '不允许大于100个字符', trigger: 'blur' }
+					]
+				},
+				coverFiles: [],
+                imageFiles: [],
+                videoFiles: [],
+				licenseFiles: [],
+				productLicenseFiles: [],
+				certificateFiles: [],
+				qualityCertificateFiles: [],
+				types : [],
+				enterprise : [],
+				typeList : [],
+				taskPlaceList : [],
+				categoryList : [],
+				discountList : [],
+				uploadType : "",
+				uploadUrl : cc.uploadUrl,
+				imageAccept : cc.imageAccept,
+				videoAccept : cc.videoAccept,
+				checkAllExp: false,
+				expertiseOptions: [],
+				expertiseOptionsStr: [],
+				checkedExpertise : [],
+				isIndeterminateExp: false,
+				checkAllPla: false,
+				platformOptions: [],
+				platformOptionsStr: [],
+				checkedPlatform : [],
+				isIndeterminatePla: false,
+				checkAllPla02: false,
+				platformOptions02: [],
+				platformOptionsStr02: [],
+				checkedPlatform02 : [],
+				isIndeterminatePla02: false,
+				isExamine: 1
+			},
+			created : function() {
+			},
+			mounted : function() {
+				var vm = this, search = __.decodeUrlParams();
+				var id = search.id;
+				vm.isExamine = search.isExamine;	//审核标识。1-非审核，2-审核页
+				console.log(vm.isExamine);
+				if (!__.isEmpty(id)) {
+					__.api('GET', '/rest/task/' + id, {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						var form = result.data;
+						form.enabled = String(form.enabled);
+						vm.form = form;
+						//多选框处理
+						var exp = vm.form.expertise;
+						if(!!exp){
+							vm.checkedExpertise = exp.split(',');
+						}
+						var pla = vm.form.platform;
+						if(!!pla){
+							vm.checkedPlatform = pla.split(',');
+						}
+						var pla02 = vm.form.livePlatform;
+						if(!!pla02){
+							vm.checkedPlatform02 = pla02.split(',');
+						}
+						//图片回显
+						vm.imageFiles = cc.display(vm.form.productImages, "productImages");
+						vm.coverFiles = cc.display(vm.form.cover, "cover");
+						vm.licenseFiles = cc.display(vm.form.businessLicense, "businessLicense");
+						vm.productLicenseFiles = cc.display(vm.form.productLicense, "productLicense");
+						vm.certificateFiles = cc.display(vm.form.certificate, "certificate");
+						vm.qualityCertificateFiles = cc.display(vm.form.qualityCertificate, "qualityCertificate");
+						//视频回显
+						vm.videoFiles = cc.display(vm.form.advertisement, "advertisement");
+					});
+				}
+				vm.getDics();
+				vm.getEnterprise();
+			},
+			methods : {
+				confirm : function(formName) {
+					var vm = this;
+					var params = {}, form = this.form;
+					//去除尾部逗号
+					cc.trim(form);
+					//拼接复选框值
+					vm.form.expertise = vm.checkedExpertise.toString();
+					vm.form.platform = vm.checkedPlatform.toString();
+					vm.form.livePlatform = vm.checkedPlatform02.toString();
+					this.$refs[formName].validate(function(valid) {
+						if(valid){
+							__.api('POST', '/rest/task/save', form, function(result) {
+								if (__.err(result)) {
+									vm.$message.warning(result.message);
+								} else {
+									vm.$message.info("保存成功");
+									__.dialog.close();
+								}
+							});
+						}else{
+							return false
+						}
+					})
+
+				},
+				cancel : function() {
+					__.dialog.close();
+				},
+				getEnterprise : function() {
+					vm = this;
+					//企业主集合
+					__.api('POST', '/rest/enterprise/all', {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							vm.enterprise = result.data;
+						}
+					});
+				},
+				getDics : function() {
+					vm = this;
+					//数据字典类别
+					__.api('GET', '/rest/task/dic/all', {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							vm.typeList = result.data.typeList;
+							vm.taskPlaceList = result.data.taskPlaceList;
+							vm.categoryList = result.data.categoryList;
+							vm.discountList = result.data.discountList;
+							//达人领域多选框
+							vm.expertiseOptions = result.data.expertiseList;
+							for (let i = 0; i < vm.expertiseOptions.length; i++) {
+								vm.expertiseOptionsStr.push(vm.expertiseOptions[i].code);
+							}
+							//带货渠道多选框
+							vm.platformOptions = result.data.platformList;
+							for (let i = 0; i < vm.platformOptions.length; i++) {
+								vm.platformOptionsStr.push(vm.platformOptions[i].code);
+							}
+							//直播渠道多选框
+							vm.platformOptions02 = result.data.platformList;
+							for (let i = 0; i < vm.platformOptions02.length; i++) {
+								vm.platformOptionsStr02.push(vm.platformOptions02[i].code);
+							}
+						}
+					});
+				},
+				handleCheckAllChangeExp : function(val) {
+					var vm = this;
+					vm.checkedExpertise = val ? vm.expertiseOptionsStr : [];
+					vm.isIndeterminateExp = false;
+				},
+				handleCheckedChangeExp : function(value) {
+					var vm = this;
+					let checkedCount = value.length;
+					vm.checkAll = checkedCount === vm.expertiseOptions.length;
+					vm.isIndeterminateExp = checkedCount > 0 && checkedCount < vm.expertiseOptions.length;
+				},
+				handleCheckAllChangePla : function(val) {
+					var vm = this;
+					vm.checkedPlatform = val ? vm.platformOptionsStr : [];
+					vm.isIndeterminatePla = false;
+				},
+				handleCheckedChangePla : function(value) {
+					var vm = this;
+					let checkedCount = value.length;
+					vm.checkAll = checkedCount === vm.platformOptions.length;
+					vm.isIndeterminatePla = checkedCount > 0 && checkedCount < vm.platformOptions.length;
+				},
+				handleCheckAllChangePla02 : function(val) {
+					var vm = this;
+					vm.checkedPlatform02 = val ? vm.platformOptionsStr02 : [];
+					vm.isIndeterminatePla02 = false;
+				},
+				handleCheckedChangePla02 : function(value) {
+					var vm = this;
+					let checkedCount02 = value.length;
+					vm.checkAll02 = checkedCount02 === vm.platformOptions02.length;
+					vm.isIndeterminatePla02 = checkedCount02 > 0 && checkedCount02 < vm.platformOptions02.length;
+				},
+
+				/**
+				 * COS上传
+				 * @param file
+				 * @param fileList
+				 */
+				uploadFile : function(param){
+					var vm = this;
+					//上传视频大小限制（示例中为10MB）
+					// const isLt10M = file.size / 1024 / 1024  < 10;
+
+					var file = param.file;
+					var data = param.data;
+					vm.uploadType = data;
+					cosUtils.upload(param, vm.form, data);
+				},
+				handleRemove : function(file, fileList) {
+					vm = this;
+					//删除文件时
+					cc.handleRemove(file, fileList, vm.form, file.type);
+				},
+				handlePreview : function(file) {
+					vm = this;
+					//点击已上传的文件链接时
+					cc.handlePreview(file, vm.form);
+				},
+				handleSuccess : function(response,file,fileList) {
+					vm = this;
+					file.path = response.data;
+					//文件上传成功时
+					cc.handleSuccess(response, file, fileList, vm.form, vm.uploadType);
+				}
+			}
+		})
+
+	</script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>APP版本管理</title>
+</head>
+<body>
+	<div is="el-row" id="vm" v-cloak>
+		<div is="el-col" :span="24" class="warp">
+			<div is="el-row" class="element-row ">
+				<div is="el-col" :span="8" style="height: 55px;">
+					<div is="el-button" type="success" icon="el-icon-plus" @click="add()">新增</div>
+				</div>
+				<div is="el-col" :span="16">
+					 <div is="el-form" :model="form" :inline="true" lable-width="80px" class="demo-form-inline clearfix">
+						<div class="fr">
+							<div is="el-form-item">
+								<div class="fr">
+									<div is="el-form-item" label="版本号" label-width="85px">
+										<div is="el-input" v-model="form.keyword" placeholder="请输入版本号" clearable></div>
+									</div>
+									<div is="el-button" type="warning" @click="search">查询</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="element-table">
+				<div is="el-table" ref="table" :data="page.records" border style="width: 100%"  v-loading="page.isLoading" element-loading-text="加载中" element-loading-spinner="el-icon-loading"
+					element-loading-background="rgba(0,0,0,0.4)">
+					<div is="el-table-column" align="center" prop="id" label="编码" ></div>
+					<div is="el-table-column" align="center" prop="versionName" label="版本号" width="220" show-overflow-tooltip></div>
+					<div is="el-table-column" align="center" prop="state" label="有效状态"  width="130"></div>
+					<div is="el-table-column" align="center" prop="versionCode" label="版本更新次数"  width="130"></div>
+					<div is="el-table-column" align="center" label="操作" width="220">
+						<div slot-scope="scope">
+							<button is="el-button" type="text" size="mini" @click="updateData(scope.row)">编辑</button>
+							<button is="el-button" type="text" size="mini" @click="deleteData(scope.row)">删除</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="pagination">
+				<div is="el-pagination" @current-change="pagedQuery" :current-page="page.currentPage" :page-size="page.limit" layout="total,prev,pager,next,jumper" :total="page.total"></div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					keyword : ''
+				},
+				page : {
+					currentPage : 1,
+					limit : 15,
+					total : 0,
+					records : [],
+					isLoading : false,
+					params : {
+						versionName : ''
+					}
+				},
+				provinces : [],
+				cities : [],
+				districts : []
+			},
+			created : function() {
+				__.$vm = this;
+			},
+			mounted : function() {
+				__.mask();
+				this.pagedQuery(1);
+				__.unmask();
+			},
+			methods : {
+				// 分页ele
+				pagedQuery : function(currentPage) {
+					var vm = this, page = vm.page;
+					currentPage && (page.currentPage = currentPage);
+					var params = __.pagedParams(page.currentPage, page.limit);
+					__.extend(params, vm.page.params);
+					__.api('GET', '/rest/app-version/list', params, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						vm.page.total = result.total | 0;
+						vm.page.records = result.data;
+					});
+				},
+                search : function() {
+					//处理查询数据
+					var versionName = __.trim(this.form.keyword);
+                    this.page.params = {
+						versionName : versionName
+                    }
+                    this.pagedQuery(1);
+                },
+				add: function(){
+					var vm = this;
+					__.dialog.open({
+						title : '新增',
+						width : '90%',
+						height : '100%',
+						url : __.url('/system/version/version-edit.html', {
+
+						}),
+						close : function(result) {
+							vm.pagedQuery();
+						}
+					});
+				},
+				updateData: function(record){
+					var vm = this;
+					__.dialog.open({
+						title : '编辑',
+						width : '90%',
+						height : '100%',
+						url : __.url('/system/version/version-edit.html', {
+							id : record.id
+						}),
+						close : function(result) {
+							vm.pagedQuery();
+						}
+					});
+				},
+				deleteData: function(record){
+					var vm = this;
+					var id = record.id;
+					vm.$confirm("确定要删除？", "删除确认", {
+						confirmButtonText : "确定",
+						cancelButtonText : "取消",
+						type : "warning"
+					}).then(function() {
+						__.mask();
+						__.api('DELETE', '/rest/app-version/' + id, {}, function(result) {
+							if (!__.err(result)) {
+								__.unmask();
+								vm.pagedQuery();
+								vm.$message({
+									message : '删除成功！',
+									type : 'success'
+								});
+							} else {
+								__.unmask();
+								vm.$message.warning(result.message);
+								return;
+							}
+						});
+					})
+				}
+
+			}
+		});
+	</script>
+</body>
+</html>

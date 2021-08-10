@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="yll.mapper.TaskCelebrityLiveMapper">
+
+	<resultMap id="RESULT_MAP" type="yll.entity.TaskCelebrityLive">
+		<id property="id" column="id" jdbcType="VARCHAR" />
+		<result property="tid" column="tid" jdbcType="VARCHAR" />
+		<result property="tcId" column="tc_id" jdbcType="VARCHAR" />
+		<result property="pids" column="pids" jdbcType="LONGVARCHAR" />
+		<result property="productList" column="product_list" jdbcType="LONGVARCHAR" />
+		<result property="image" column="image" jdbcType="LONGVARCHAR" />
+		<result property="completeTime" column="complete_time" jdbcType="TIMESTAMP" />
+		<result property="sessions" column="sessions" jdbcType="VARCHAR" />
+
+		<result property="remark" column="remark" jdbcType="VARCHAR" />
+		<result property="state" column="state" jdbcType="VARCHAR" />
+		<result property="enabled" column="enabled" jdbcType="INTEGER" />
+		<result property="deleted" column="deleted" jdbcType="INTEGER" />
+		<result property="creator" column="creator" jdbcType="VARCHAR" />
+		<result property="createdTime" column="created_time" jdbcType="TIMESTAMP" />
+		<result property="modifier" column="modifier" jdbcType="VARCHAR" />
+		<result property="modifiedTime" column="modified_time" jdbcType="TIMESTAMP" />
+		<result property="deleter" column="deleter" jdbcType="VARCHAR" />
+		<result property="deletedTime" column="deleted_time" jdbcType="TIMESTAMP" />
+
+	</resultMap>
+
+	<resultMap id="RESULT_VO_MAP" type="yll.service.model.vo.TaskCelebrityLiveVo" extends="RESULT_MAP">
+	</resultMap>
+
+	<sql id="TABLE">dh_task_celebrity_live</sql>
+
+	<sql id="COLUMNS">
+		id, tid,  tc_id, pids,  product_list,  image, complete_time, sessions,
+		remark, state, enabled, deleted, creator, created_time,
+		modifier,modified_time, deleter, deleted_time
+	</sql>
+
+	<sql id="VALUES">
+		#{id}, #{tid}, #{tcId}, #{pids}, #{productList}, #{image}, #{completeTime}, #{sessions},
+		#{remark}, #{state}, #{enabled},#{deleted}, #{creator}, #{createdTime},
+		#{modifier},#{modifiedTime}, #{deleter}, #{deletedTime}
+	</sql>
+
+	<sql id="SET_VALUES">
+		<trim suffixOverrides=",">
+			<if test=" tid != null">
+				tid = #{tid},
+			</if>
+			<if test=" tcId != null">
+				tc_id = #{tcId},
+			</if>
+			<if test=" pids != null">
+				pids = #{pids},
+			</if>
+			<if test=" productList != null">
+				product_list = #{productList},
+			</if>
+			<if test=" image != null">
+				image = #{image},
+			</if>
+			<if test=" completeTime != null">
+				complete_time = #{completeTime},
+			</if>
+			<if test=" sessions != null">
+				sessions = #{sessions},
+			</if>
+			<if test=" remark != null">
+				remark = #{remark},
+			</if>
+			<if test=" state != null">
+				state = #{state},
+			</if>
+			<if test=" deleted != null">
+				deleted = #{deleted},
+			</if>
+			<if test=" creator != null">
+				creator = #{creator},
+			</if>
+			<if test=" createdTime != null">
+				created_time = #{createdTime},
+			</if>
+			<if test=" modifier != null">
+				modifier = #{modifier},
+			</if>
+			<if test=" modifiedTime != null">
+				modified_time = #{modifiedTime},
+			</if>
+			<if test=" deleter != null">
+				deleter = #{deleter},
+			</if>
+			<if test=" deletedTime != null">
+				deleted_time = #{deletedTime},
+			</if>
+		</trim>
+	</sql>
+
+	<sql id="WHERES">
+		<if test=" id != null and id != ''">
+			and id = #{id}
+		</if>
+		<if test=" tid != null and tid != ''">
+			and tid = #{tid}
+		</if>
+		<if test=" tcId != null and tcId != ''">
+			and tc_id = #{tcId}
+		</if>
+		<if test=" state != null and state != ''">
+			and state = #{state}
+		</if>
+		<if test=" creator != null and creator != '' ">
+			and creator = #{creator}
+		</if>
+		<if test=" enabled != null ">
+			and enabled = #{enabled}
+		</if>
+		and deleted = 0
+	</sql>
+
+	<update id="save">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		) VALUES (
+		<include refid="VALUES" />
+		)
+		ON DUPLICATE KEY UPDATE
+		<include refid="SET_VALUES" />
+	</update>
+
+	<insert id="insert" parameterType="yll.entity.TaskCelebrityLive">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		)
+		VALUES
+		(
+		<include refid="VALUES" />
+		)
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.String">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		id =#{id}
+	</delete>
+
+	<delete id="deleteAll">
+		DELETE FROM
+		<include refid="TABLE" />
+	</delete>
+
+	<update id="update" parameterType="yll.entity.TaskCelebrityLive">
+		UPDATE
+		<include refid="TABLE" />
+		SET
+		<include refid="SET_VALUES" />
+		WHERE
+		id = #{id}
+	</update>
+
+	<select id="getById" parameterType="java.lang.String" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id =#{id}
+	</select>
+
+	<select id="findAll" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+	</select>
+
+	<select id="findBy" parameterType="yll.entity.TaskCelebrityLive" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
+	</select>
+
+	<select id="findByCondition" parameterType="yll.entity.TaskCelebrityLive" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
+		LIMIT 0, 1;
+	</select>
+
+	<select id="getAppList" parameterType="yll.service.model.vo.TaskCelebrityLiveVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		id, tid,  tc_id, ifnull(pids, '') pids, ifnull(product_list, '') product_list, ifnull(image, '') image, ifnull(sessions, '') sessions,
+		DATE_FORMAT(complete_time , '%Y-%m-%d') completeTimeStr
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+	</select>
+
+	<delete id="deleteByTcId" parameterType="java.lang.String">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		tc_id =#{tcId}
+	</delete>
+
+</mapper>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>资讯新增和编辑</title>
+<style>
+.el-picker-panel {
+	height: 320px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.el-date-editor.el-input, .el-input-number--small {
+	width: 100%;
+}
+
+.unit {
+	text-align: right;
+	line-height: 40px;
+}
+
+/*@media screen and(-ms-high-contrast:active),(-ms-high-contrast:none){
+	.el-picker-panel {
+		height: 200px;
+	}
+}*/
+</style>
+</head>
+<body>
+	<div id="vm"  v-cloak  class="vm">
+		<form is="el-form" :model="form" ref="form" :rules="rules" style="width: 100%;">
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="标题" label-width="110px" prop="name">
+						<input is="el-input" v-model="form.name" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+			<!--<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="类别" label-width="110px" prop="type">
+						<div is="el-select" v-model="form.type" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in types"
+								 :key="item.code"
+								 :label="item.codename"
+								 :value="item.code">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>-->
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="活动日期" label-width="110px" prop="startTime">
+						<div class="block">
+							<div is="el-date-picker"
+									v-model="form.startTime"
+									type="date"
+									placeholder="选择日期时间">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="内容" label-width="110px" prop="content">
+						<div id="wangEditor" v-model="form.content">
+							<p>请输入内容...</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					 <div is="el-form-item" label="轮播图上传" label-width="110px">
+						<div is="el-upload"
+							 class="upload-demo"
+							 :accept="imageAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="cover"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="coverFiles"
+							 list-type="picture">
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{imageAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="列表图上传" label-width="110px">
+						<div is="el-upload"
+								class="upload-demo"
+								:accept="imageAccept"
+								:action="uploadUrl"
+							 	:http-request="uploadFile"
+								 data="image"
+								:on-preview="handlePreview"
+								:on-remove="handleRemove"
+								:on-success="handleSuccess"
+								:file-list="imageFiles"
+								list-type="picture">	 <!--  切换时，加上  :http-request="uploadFile" ，覆盖elui原"action"动作 -->
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{imageAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="视频上传" label-width="110px">  <!-- 上传成功后的success、remove函数有问题，看看data从哪里获取 -->
+						<div is="el-upload"
+							 class="avatar-uploader el-upload--text"
+							 :accept="videoAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="video"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="videoFiles"
+							 list-type="video">
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{videoAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-form-item" align="center" style="margin-top: 20px;">
+					<button is="el-button" type="success" @click="confirm('form')">确定</button>
+					<button is="el-button" @click="cancel()">取消</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					id : '',
+					name : '',
+					content : '',
+					startTime : '',
+					cover : '',
+					image : '',
+					video : '',
+					type : 'activityNews',	//固定为活动资讯
+					remark : '',
+					enabled : '0'
+				},
+				rules:{
+					name:[
+							{
+								required : true,
+								message : '请输入标题',
+								trigger : 'blur'
+							},
+							{ type: 'string', min: 1, max: 50, message: '不允许大于50个字符', trigger: 'blur' }
+					],
+					content:[{
+						required : false,
+						message : '请输入内容',
+						trigger : 'blur'
+					}],
+					type:[{
+						required : true,
+						message : '请输入类别',
+						trigger : 'blur'
+					}]
+				},
+				coverFiles: [],
+                imageFiles: [],
+                videoFiles: [],
+				types : [],
+				uploadType : "",
+				uploadUrl : cc.uploadUrl,
+				imageAccept : cc.imageAccept,
+				videoAccept : cc.videoAccept,
+			},
+			created : function() {
+			},
+			mounted : function() {
+				var vm = this, search = __.decodeUrlParams();
+				var id = search.id;
+				if (!__.isEmpty(id)) {
+					__.api('GET', '/rest/information/' + id, {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						var form = result.data;
+						form.enabled = String(form.enabled);
+						vm.form = form;
+						//富文本回显
+						cc.wangEditor('wangEditor', vm.form, vm.form.content);
+						//图片回显
+						vm.imageFiles = cc.display(vm.form.image, "image");
+						vm.coverFiles = cc.display(vm.form.cover, "cover");
+						//视频回显
+						vm.videoFiles = cc.display(vm.form.video, "video");
+					});
+				}
+				cc.wangEditor('wangEditor', vm.form);
+				vm.getDic();
+			},
+			methods : {
+				confirm : function(formName) {
+					var vm = this;
+					var params = {}, form = this.form;
+					//去除尾部逗号
+					cc.trim(form);
+					//引入富文本公共html
+					form.content = cc.editorImportHtml(form.content);
+					this.$refs[formName].validate(function(valid) {
+						if(valid){
+							__.api('POST', '/rest/information/save', form, function(result) {
+								if (__.err(result)) {
+									vm.$message.warning(result.message);
+								} else {
+									vm.$message.info("保存成功");
+									__.dialog.close();
+								}
+							});
+						}else{
+							return false
+						}
+					})
+
+				},
+				cancel : function() {
+					__.dialog.close();
+				},
+				getDic : function() {
+					vm = this;
+					//数据字典类别
+					__.api('POST', '/rest/dic/all', {'targetId' : 'information'}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							vm.types = result.data;
+						}
+					});
+				},
+				/**
+				 * COS上传
+				 * @param file
+				 * @param fileList
+				 */
+				uploadFile : function(param){
+					var vm = this;
+					//上传视频大小限制（示例中为10MB）
+					// const isLt10M = file.size / 1024 / 1024  < 10;
+
+					var file = param.file;
+					var data = param.data;
+					vm.uploadType = data;
+					cosUtils.upload(param, vm.form, data);
+				},
+				handleRemove : function(file, fileList) {
+					vm = this;
+					//删除文件时
+					cc.handleRemove(file, fileList, vm.form, file.type);
+				},
+				handlePreview : function(file) {
+					vm = this;
+					//点击已上传的文件链接时
+					cc.handlePreview(file, vm.form);
+				},
+				handleSuccess : function(response,file,fileList) {
+					vm = this;
+					file.path = response.data;
+					//文件上传成功时
+					cc.handleSuccess(response, file, fileList, vm.form, vm.uploadType);
+				}
+			}
+		})
+
+	</script>
+</body>
+</html>

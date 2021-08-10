@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="renderer" content="webkit" />
+<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="description" content="">
+<meta http-equiv="pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+
+<link rel="icon" href="/s/assets/images/logo-head.ico" type="image/x-icon"/>
+<link rel="stylesheet" th:href="@{/s/iconfont/iconfont.css}" type="text/css" />
+<link rel="stylesheet" th:href="@{/s/element-ui/2.4.6/theme-chalk/index.css}" type="text/css" />
+<link rel="stylesheet" th:href="@{/s/assets/__.css}" type="text/css" />
+<link rel="stylesheet" th:href="@{/s/assets/elementReset.css}" type="text/css" />
+<link rel="stylesheet" th:href="@{/s/assets/all.css}" type="text/css" />
+
+<script th:src="@{/s/vue/2.5.15/vue.min.js}"></script>
+<script th:src="@{/s/assets/vue-upload-component.js}"></script>
+<script th:src="@{/s/vue-router/router.js}"></script>
+<script th:src="@{/s/element-ui/2.4.6/index.js}"></script>
+<script th:src="@{/s/assets/bluebird.min.js}"></script>
+<script th:src="@{/s/axios/0.18.0/axios.min.js}"></script>
+<script th:src="@{/s/assets/__.js}"></script>
+<script th:src="@{/s/assets/stopEntre.js}"></script>
+<script th:src="@{/s/assets/cos-js-sdk-v5.min.js}"></script>
+<script th:src="@{/s/assets/cos-auth.min.js}"></script>
+<script th:src="@{/s/assets/wangEditor.min.js}"></script>
+<script th:src="@{/s/assets/md5.min.js}"></script>
+<script th:src="@{/s/assets/cc.js}"></script>
+<script th:src="@{/s/assets/cos-utils.js}"></script>
+<script th:src="@{/s/assets/Base64.js}"></script>
+<script type="text/javascript" th:inline="text">
+	__.ctx = '[[@{/}]]'.replace(/\/$/, '');
+</script>
+<object th:with="userAgent=${#strings.toLowerCase(#httpServletRequest.getHeader('User-Agent')?:'')}" th:remove="tag">
+	<!--/* IE10 */-->
+	<object th:if="${#strings.contains(userAgent,'msie 10.0')}" th:remove="tag">
+		<script>
+			document.documentElement.className += ' ie10';
+		</script>
+	</object>
+	<!--/* IE9 */-->
+	<object th:if="${ #strings.contains(userAgent,'msie 9.0') or #strings.contains(userAgent,'msie 7.0') }" th:remove="tag">
+		<script th:src="@{/s/assets/jquery-2.1.0.js}"></script>
+		<script th:src="@{/s/assets/placeholder.js}"></script>
+		<link rel="stylesheet" th:href="@{/s/assets/ie9fix.css}" type="text/css" />
+		<script th:src="@{/s/assets/ie9fix.js}"></script>
+		<script>
+			//
+		</script>
+	</object>
+	<!--/* !IE */-->
+	<object th:if="${!#strings.contains(userAgent,'msie') and !#strings.contains(userAgent,'trident')}" th:remove="tag">
+		<!-- !IE -->
+	</object>
+</object>
+</head>
+</html>

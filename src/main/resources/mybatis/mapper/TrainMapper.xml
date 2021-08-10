@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="yll.mapper.TrainMapper">
+
+	<resultMap id="RESULT_MAP" type="yll.entity.Train">
+		<id property="id" column="id" jdbcType="VARCHAR" />
+		<result property="name" column="name" jdbcType="VARCHAR" />
+		<result property="cover" column="cover" jdbcType="LONGVARCHAR" />
+		<result property="image" column="image" jdbcType="LONGVARCHAR" />
+		<result property="video" column="video" jdbcType="LONGVARCHAR" />
+		<result property="files" column="files" jdbcType="LONGVARCHAR" />
+		<result property="content" column="content" jdbcType="LONGVARCHAR" />
+		<result property="remark" column="remark" jdbcType="VARCHAR" />
+		<result property="type" column="type" jdbcType="VARCHAR" />
+		<result property="state" column="state" jdbcType="VARCHAR" />
+		<result property="share" column="share" jdbcType="INTEGER" />
+		<result property="collects" column="collects" jdbcType="INTEGER" />
+		<result property="likes" column="likes" jdbcType="INTEGER" />
+		<result property="slide" column="slide" jdbcType="INTEGER" />
+		<result property="ordinal" column="ordinal" jdbcType="INTEGER" />
+		<result property="enabled" column="enabled" jdbcType="INTEGER" />
+		<result property="deleted" column="deleted" jdbcType="INTEGER" />
+		<result property="creator" column="creator" jdbcType="VARCHAR" />
+		<result property="createdTime" column="created_time" jdbcType="TIMESTAMP" />
+		<result property="modifier" column="modifier" jdbcType="VARCHAR" />
+		<result property="modifiedTime" column="modified_time" jdbcType="TIMESTAMP" />
+		<result property="deleter" column="deleter" jdbcType="VARCHAR" />
+		<result property="deletedTime" column="deleted_time" jdbcType="TIMESTAMP" />
+		<result property="appCreatedTime" column="appCreatedTime" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap id="RESULT_VO_MAP" type="yll.service.model.vo.TrainVo" extends="RESULT_MAP">
+		<result property="codename" column="codename" jdbcType="VARCHAR" />
+		<result property="code" column="code" jdbcType="VARCHAR" />
+		<result property="likes" column="likes" jdbcType="INTEGER" />
+		<result property="collects" column="collects" jdbcType="INTEGER" />
+	</resultMap>
+
+	<sql id="TABLE">train</sql>
+
+	<sql id="COLUMNS">
+		id, name,   cover,  image, video, content, files,
+		remark, type, state,share,collects, likes, slide,
+		ordinal, enabled,deleted, creator, created_time,
+		modifier,modified_time, deleter, deleted_time
+	</sql>
+
+	<sql id="VALUES">
+		#{id}, #{name}, #{cover},#{image},#{video}, #{content}, #{files},
+		#{remark}, #{type}, #{state}, #{share},#{collects}, #{likes},#{slide},
+		#{ordinal}, #{enabled},#{deleted}, #{creator}, #{createdTime},
+		#{modifier},#{modifiedTime}, #{deleter}, #{deletedTime}
+	</sql>
+
+	<sql id="SET_VALUES">
+		<trim suffixOverrides=",">
+			<if test=" name != null">
+				name = #{name},
+			</if>
+			<if test=" cover != null">
+				cover = #{cover},
+			</if>
+			<if test=" image != null">
+				image = #{image},
+			</if>
+			<if test=" video != null">
+				video = #{video},
+			</if>
+			<if test=" files != null">
+				files = #{files},
+			</if>
+			<if test=" content != null">
+				content = #{content},
+			</if>
+			<if test=" remark != null">
+				remark = #{remark},
+			</if>
+			<if test=" type != null">
+				type = #{type},
+			</if>
+			<if test=" state != null">
+				state = #{state},
+			</if>
+			<if test=" share != null">
+				share = #{share},
+			</if>
+			<if test=" collects != null">
+				collects = #{collects},
+			</if>
+			<if test=" likes != null">
+				likes = #{likes},
+			</if>
+			<if test=" slide != null">
+				slide = #{slide},
+			</if>
+			<if test=" ordinal != null">
+				ordinal = #{ordinal},
+			</if>
+			<if test=" enabled != null">
+				enabled = #{enabled},
+			</if>
+			<if test=" deleted != null">
+				deleted = #{deleted},
+			</if>
+			<if test=" creator != null">
+				creator = #{creator},
+			</if>
+			<if test=" createdTime != null">
+				created_time = #{createdTime},
+			</if>
+			<if test=" modifier != null">
+				modifier = #{modifier},
+			</if>
+			<if test=" modifiedTime != null">
+				modified_time = #{modifiedTime},
+			</if>
+			<if test=" deleter != null">
+				deleter = #{deleter},
+			</if>
+			<if test=" deletedTime != null">
+				deleted_time = #{deletedTime},
+			</if>
+		</trim>
+	</sql>
+
+	<sql id="WHERES">
+		<if test=" id != null and id != ''">
+			and id = #{id}
+		</if>
+		<if test=" name != null and name != '' ">
+			and name like CONCAT(CONCAT('%',#{name}),'%')
+		</if>
+		<if test=" content != null and content != '' ">
+			and content like CONCAT(CONCAT('%',#{content}),'%')
+		</if>
+		<if test=" slide != null ">
+			and slide = #{slide}
+		</if>
+		<if test=" type != null and type != ''">
+			and type = #{type}
+		</if>
+		<if test=" enabled != null ">
+			and enabled = #{enabled}
+		</if>
+		and deleted = 0
+	</sql>
+
+	<update id="save">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		) VALUES (
+		<include refid="VALUES" />
+		)
+		ON DUPLICATE KEY UPDATE
+		<include refid="SET_VALUES" />
+	</update>
+
+	<insert id="insert" parameterType="yll.entity.Train">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		)
+		VALUES
+		(
+		<include refid="VALUES" />
+		)
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.String">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		id =#{id}
+	</delete>
+
+	<delete id="deleteAll">
+		DELETE FROM
+		<include refid="TABLE" />
+	</delete>
+
+	<update id="update" parameterType="yll.entity.Train">
+		UPDATE
+		<include refid="TABLE" />
+		SET
+		<include refid="SET_VALUES" />
+		WHERE
+		id = #{id}
+	</update>
+
+	<select id="getById" parameterType="java.lang.String" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id =#{id}
+	</select>
+
+	<select id="findAll" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+	</select>
+
+	<select id="findBy" parameterType="yll.entity.Train" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY ordinal ASC,  created_time DESC
+	</select>
+
+	<select id="findByWithType" parameterType="yll.service.model.vo.TrainVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		m.id, m.name, m.cover, m.image, m.video, m.content, m.files,
+		m.remark, m.type, m.state, m.share, m.collects, m.likes,m.slide,
+		m.ordinal, m.enabled, m.deleted, m.creator, m.created_time,
+		m.modifier, m.modified_time, m.deleter, m.deleted_time,
+		sec.codename
+		FROM
+		<include refid="TABLE" /> m
+		LEFT JOIN
+		dic sec
+		ON sec.code = m.type
+		WHERE m.id != '0'
+		<include refid="WHERES" />
+		ORDER BY m.created_time DESC
+	</select>
+
+	<select id="getAppList" parameterType="yll.service.model.vo.TrainVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		m.id, m.name, ifnull(m.cover,'') cover, ifnull(m.image,'') image, ifnull(m.video,'') video, ifnull(m.content,'') content, ifnull(m.files,'') files,
+		m.type, ifnull(m.share,0) share, ifnull(m.collects,0) collects, ifnull(m.likes,0) likes,
+		DATE_FORMAT(m.created_time , '%Y-%m-%d') appCreatedTime,
+		sec.target_id code, sec.codename
+		FROM
+		<include refid="TABLE" /> m
+		LEFT JOIN
+		dic sec
+		ON sec.code = m.type
+		WHERE m.id != '0' AND m.enabled = 1
+		<include refid="WHERES" />
+		ORDER BY
+        <if test=" slide != null and slide != '' ">
+		    m.ordinal is null, m.ordinal ASC,
+        </if>
+        m.created_time DESC
+	</select>
+
+	<select id="getAppDetail" parameterType="yll.service.model.vo.TrainVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		m.id, m.name, ifnull(m.image,'') image, ifnull(m.video,'') video, ifnull(m.content,'') content,ifnull(m.files,'') files,
+		m.type, ifnull(m.share,0) share, ifnull(m.collects,0) collects, ifnull(m.likes,0) likes,
+		DATE_FORMAT(m.created_time , '%Y-%m-%d') appCreatedTime,
+		dt.code,
+		<choose>
+			<when test="customerId !=null and customerId != ''">
+				ISNULL(cl.id) clickLikes,
+				ISNULL(cc.id) clickCollects
+			</when >
+			<otherwise>
+				ISNULL(null) clickLikes,
+				ISNULL(null) clickCollects
+			</otherwise>
+		</choose>
+		FROM
+		<include refid="TABLE" /> m
+		LEFT JOIN
+		dic sec
+		ON sec.code = m.type
+		LEFT JOIN
+		dic_type dt
+		ON dt.code = sec.target_id
+		<choose>
+			<when test="customerId !=null and customerId != ''">
+				LEFT JOIN
+				customer_likes cl
+				ON cl.target_id = m.id AND cl.customer_id = #{customerId}
+				LEFT JOIN
+				customer_collects cc
+				ON cc.target_id = m.id AND cc.customer_id = #{customerId}
+			</when>
+		</choose>
+		WHERE m.id != '0'
+		AND m.id = #{id}
+		limit 0, 1
+	</select>
+
+	<select id="findBySlide" parameterType="yll.entity.Train" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY created_time DESC
+	</select>
+
+</mapper>

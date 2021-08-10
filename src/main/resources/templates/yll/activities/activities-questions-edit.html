@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>活动竞赛题目新增和编辑</title>
+<style>
+.el-picker-panel {
+	height: 320px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.el-date-editor.el-input, .el-input-number--small {
+	width: 100%;
+}
+
+.unit {
+	text-align: right;
+	line-height: 40px;
+}
+
+/*@media screen and(-ms-high-contrast:active),(-ms-high-contrast:none){
+	.el-picker-panel {
+		height: 200px;
+	}
+}*/
+
+.el-time-panel{
+	width : 100%;
+}
+</style>
+</head>
+<body>
+	<div id="vm"  v-cloak  class="vm">
+		<form is="el-form" :model="form" ref="form" :rules="rules" style="width: 100%;">
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="题目" label-width="110px" prop="content">
+						<input is="el-input" v-model="form.content" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="类别" label-width="110px" prop="type">
+						<div is="el-select" v-model="form.type" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in types"
+								 :key="item.code"
+								 :label="item.codename"
+								 :value="item.code">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" style="margin-left: 3%;padding-bottom: 4px">
+					<div is="el-button" @click="addItem" type="success" icon="el-icon-plus" circle></div>
+				</div>
+				<div v-for="(item, index) in answerList" :key="index" >
+					<div is="el-col" :span="18">
+						<div is="el-form-item" label="选择项" label-width="110px"
+							 :prop="'answerList.' + index + '.content'"
+								 :rules="{
+									required: true, message: '选择项不能为空', trigger: 'blur'
+								}">
+							<div is="el-input" style="width: 95%" v-model="item.content"></div>
+						</div>
+					</div>
+					<div is="el-col" :span="2">
+						<div is="el-form-item"
+							 :prop="'answerList.' + index + '.answer'">
+							<div is="el-checkbox" v-model="item.answerFlag">正确答案</div>
+						</div>
+					</div>
+					<div is="el-col" :span="2">
+						<div is="el-form-item">
+							<i class="el-icon-delete" @click="deleteItem(item, index)"></i>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<div is="el-row">
+				<div is="el-form-item" align="center" style="margin-top: 20px;">
+					<button is="el-button" type="success" @click="confirm('form')">确定</button>
+					<button is="el-button" @click="cancel()">取消</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					id : '',
+					content : '',
+					type : '',
+					startTime : '',
+					endTime : '',
+					remark : '',
+					enabled : '0',
+					activityId : '',
+					answerList : []
+				},
+				rules:{
+					content:[{
+						required : true,
+						message : '请输入标题',
+						trigger : 'blur'
+					}],
+					type:[{
+						required : true,
+						message : '请输入类别',
+						trigger : 'blur'
+					}]
+				},
+				types : [],
+				answerList : []
+			},
+			created : function() {
+			},
+			mounted : function() {
+				var vm = this, search = __.decodeUrlParams();
+				var id = search.id;
+				var activityId = search.activityId;
+				if(__.isEmpty(id) && !__.isEmpty(activityId)){
+					vm.form.activityId = activityId;
+				}
+				if (!__.isEmpty(id)) {
+					__.api('GET', '/rest/activities-questions/' + id, {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						var form = result.data;
+						form.enabled = String(form.enabled);
+						vm.form = form;
+						vm.getAnswer();
+					});
+				}
+				vm.getDic();
+			},
+			methods : {
+				confirm : function(formName) {
+					var vm = this;
+					var params = {}, form = this.form;
+					if(__.isEmpty(form.id) && __.isEmpty(form.activityId)){
+						vm.$message.warning('缺少所属活动');
+						return ;
+					}
+					vm.form.answerList = vm.answerList;
+					this.$refs[formName].validate(function(valid) {
+						if(valid){
+							__.api('POST', '/rest/activities-questions/save', form, function(result) {
+								if (__.err(result)) {
+									vm.$message.warning(result.message);
+								} else {
+									vm.$message.info("保存成功");
+									__.dialog.close();
+								}
+							});
+						}else{
+							return false
+						}
+					})
+				},
+				cancel : function() {
+					__.dialog.close();
+				},
+				getDic : function() {
+					vm = this;
+					//数据字典类别
+					__.api('POST', '/rest/dic/all', {'targetId' : 'questionType'}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							vm.types = result.data;
+						}
+					});
+				},
+				getAnswer : function() {
+					var vm = this;
+					//获取题目答案项
+					__.api('GET', '/rest/activities-answer/all', {'targetId' : vm.form.id}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							for(var vo of result.data) {
+								vm.answerList.push({
+									content: vo.content,
+									answerFlag: parseInt(vo.answer) == 1 ? true : false
+								});
+							};
+							vm.form.answerList = vm.answerList;
+						}
+					});
+				},
+				/**
+				 * 动态添加选择项
+				 */
+				addItem () {
+					var vm = this;
+					this.answerList.push({
+						content: '',
+						answerFlag: false
+					})
+					vm.form.answerList = vm.answerList;
+				},
+				/**
+				 * 动态删除选择项
+				 */
+				deleteItem (item, index) {
+					this.answerList.splice(index, 1);
+				}
+			}
+		})
+
+	</script>
+</body>
+</html>

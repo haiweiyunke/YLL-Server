@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="yll.mapper.CommentMapper">
+
+	<resultMap id="RESULT_MAP" type="yll.entity.Comment">
+		<id property="id" column="id" jdbcType="VARCHAR" />
+		<result property="dynamicId" column="dynamic_id" jdbcType="VARCHAR" />
+		<result property="commentId" column="comment_id" jdbcType="VARCHAR" />
+
+		<result property="remark" column="remark" jdbcType="VARCHAR" />
+		<result property="state" column="state" jdbcType="VARCHAR" />
+		<result property="enabled" column="enabled" jdbcType="INTEGER" />
+		<result property="deleted" column="deleted" jdbcType="INTEGER" />
+		<result property="creator" column="creator" jdbcType="VARCHAR" />
+		<result property="createdTime" column="created_time" jdbcType="TIMESTAMP" />
+		<result property="modifier" column="modifier" jdbcType="VARCHAR" />
+		<result property="modifiedTime" column="modified_time" jdbcType="TIMESTAMP" />
+		<result property="deleter" column="deleter" jdbcType="VARCHAR" />
+		<result property="deletedTime" column="deleted_time" jdbcType="TIMESTAMP" />
+</resultMap>
+
+	<resultMap id="RESULT_VO_MAP" type="yll.service.model.vo.CommentVo" extends="RESULT_MAP">
+		<result property="headImg" column="head_img" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="TABLE">dh_comment</sql>
+
+	<sql id="COLUMNS">
+		id, dynamic_id, comment_id,
+		remark, state, enabled, deleted, creator, created_time,
+		modifier,modified_time, deleter, deleted_time
+	</sql>
+
+	<sql id="VALUES">
+		#{id}, #{dynamicId}, #{commentId},
+		#{remark}, #{state}, #{enabled},#{deleted}, #{creator}, #{createdTime},
+		#{modifier},#{modifiedTime}, #{deleter}, #{deletedTime}
+	</sql>
+
+	<sql id="SET_VALUES">
+		<trim suffixOverrides=",">
+			<if test=" dynamicId != null">
+				dynamic_id = #{dynamicId},
+			</if>
+			<if test=" commentId != null">
+				comment_id = #{commentId},
+			</if>
+			<if test=" remark != null">
+				remark = #{remark},
+			</if>
+			<if test=" state != null">
+				state = #{state},
+			</if>
+			<if test=" enabled != null">
+				enabled = #{enabled},
+			</if>
+			<if test=" deleted != null">
+				deleted = #{deleted},
+			</if>
+			<if test=" creator != null">
+				creator = #{creator},
+			</if>
+			<if test=" createdTime != null">
+				created_time = #{createdTime},
+			</if>
+			<if test=" modifier != null">
+				modifier = #{modifier},
+			</if>
+			<if test=" modifiedTime != null">
+				modified_time = #{modifiedTime},
+			</if>
+			<if test=" deleter != null">
+				deleter = #{deleter},
+			</if>
+			<if test=" deletedTime != null">
+				deleted_time = #{deletedTime},
+			</if>
+		</trim>
+	</sql>
+
+	<sql id="WHERES">
+		<if test=" id != null and id != ''">
+			and id = #{id}
+		</if>
+		<if test=" commentId != null and commentId != ''">
+			and comment_id = #{commentId}
+		</if>
+		<if test=" dynamicId != null and dynamicId != '' ">
+			and dynamic_id = #{dynamicId}
+		</if>
+		<if test=" creator != null and creator != ''">
+			and creator = #{creator}
+		</if>
+		<if test=" enabled != null ">
+			and enabled = #{enabled}
+		</if>
+		and deleted = 0
+	</sql>
+
+	<update id="save">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		) VALUES (
+		<include refid="VALUES" />
+		)
+		ON DUPLICATE KEY UPDATE
+		<include refid="SET_VALUES" />
+	</update>
+
+	<insert id="insert" parameterType="yll.entity.Comment">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		)
+		VALUES
+		(
+		<include refid="VALUES" />
+		)
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.String">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		id =#{id}
+	</delete>
+
+	<delete id="deleteAll">
+		DELETE FROM
+		<include refid="TABLE" />
+	</delete>
+
+	<update id="update" parameterType="yll.entity.Comment">
+		UPDATE
+		<include refid="TABLE" />
+		SET
+		<include refid="SET_VALUES" />
+		WHERE
+		id = #{id}
+	</update>
+
+	<select id="getById" parameterType="java.lang.String" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id =#{id}
+	</select>
+
+	<select id="findAll" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+	</select>
+
+	<select id="findBy" parameterType="yll.entity.Comment" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
+	</select>
+
+	<select id="findByCondition" parameterType="yll.entity.Comment" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
+		LIMIT 0, 1;
+	</select>
+
+	<delete id="deleteByCreator" parameterType="java.lang.String">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		creator =#{creator}
+	</delete>
+
+	<delete id="deleteByDynamicId" parameterType="java.lang.String">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		dynamic_id =#{dynamicIid}
+	</delete>
+
+	<select id="getAppList" parameterType="yll.service.model.vo.CommentVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		m.id, c.nickname,
+		ifnull(m.remark,  '') remark,
+		ifnull(c.head_img,  '') head_img,
+		DATE_FORMAT(m.created_time , '%Y-%m-%d %H:%i:%s') appCreatedTime
+		FROM
+		<include refid="TABLE" /> m
+		LEFT JOIN
+		dh_dynamic d ON d.id = m.dynamic_id
+		 LEFT JOIN
+		customer c ON c.id = m.creator
+		WHERE m.id != '0'
+		<if test=" commentId != null and commentId != ''">
+			and m.comment_id = #{commentId}
+		</if>
+		<if test=" dynamicId != null and dynamicId != '' ">
+			and m.dynamic_id = #{dynamicId}
+		</if>
+		<if test=" creator != null and creator != ''">
+			and m.creator = #{creator}
+		</if>
+		ORDER BY  m.created_time DESC
+	</select>
+
+</mapper>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>意见反馈编辑</title>
+<style>
+.el-picker-panel {
+	height: 320px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.el-date-editor.el-input, .el-input-number--small {
+	width: 100%;
+}
+
+.unit {
+	text-align: right;
+	line-height: 40px;
+}
+
+/*@media screen and(-ms-high-contrast:active),(-ms-high-contrast:none){
+	.el-picker-panel {
+		height: 200px;
+	}
+}*/
+</style>
+</head>
+<body>
+	<div id="vm"  v-cloak  class="vm">
+		<form is="el-form" :model="form" ref="form" :rules="rules" style="width: 100%;">
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="用户名：" label-width="110px" >
+						{{form.username}}
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="联系方式：" label-width="110px" >
+						{{form.phone}}
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="反馈：" label-width="110px" >
+						<!--<div is="el-input" type="textarea" autosize v-model="form.content" :disabled="true"></div>-->
+						{{form.content}}
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-form-item" align="center" style="margin-top: 20px;">
+					<button is="el-button" @click="cancel()">取消</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					id : '',
+					content : '',
+					username : '',
+					phone : '',
+					state : 1,
+					remark : '',
+					enabled : '0'
+				},
+				rules:{
+					content:[{
+						required : false,
+						message : '请输入内容',
+						trigger : 'blur'
+					}],
+
+				},
+				types : []
+			},
+			created : function() {
+			},
+			mounted : function() {
+				var vm = this, search = __.decodeUrlParams();
+				var id = search.id;
+				if (!__.isEmpty(id)) {
+					__.api('GET', '/rest/feedback/' + id, {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						var form = result.data;
+						form.enabled = String(form.enabled);
+						vm.form = form;
+					});
+				}
+			},
+			methods : {
+				cancel : function() {
+					__.dialog.close();
+				},
+			}
+		})
+
+	</script>
+</body>
+</html>

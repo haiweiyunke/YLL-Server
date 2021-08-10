@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<object th:replace="_include/_meta"></object>
+	<meta name="renderer" content="webkit" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+	<title>远翔天地</title>
+	<style>
+		.share-img {
+			width: 98%;
+			padding-left: 2%;
+		}
+		.share-name {
+			padding-left: 4%;
+		}
+		.share-author-name {
+			text-align: center;
+		}
+		.share-time {
+			padding-left: 4%;
+			color: #999999
+		}
+		.share-author {
+			text-align: center;
+			color: #999999
+		}
+		.share-content {
+			padding-left: 2%;
+		}
+		.share-video {
+			padding-left: 2%;
+			width: 98%;
+		}
+
+	</style>
+</head>
+<body>
+  <div id="vm" v-cloak class="vm" style="width: 98%;">
+	  <h2 :class="{'share-author-name':isNull(author),'share-name':!isNull(author)}" v-text="name"></h2>
+    <h4 class="share-author" v-text="author"></h4>
+	  <template v-if="!isNull(author)">
+     	 <p class="share-time" v-html="appCreatedTime"></p>
+	  </template>
+      <p class="share-content" v-html="content"></p>
+	  <template v-if="isNull(images)">
+	  	<img class="share-img" v-for="(o, i) in images" :src="o.path" />
+	  </template>
+	  <template v-if="isNull(video)">
+		  <video :src="video" controls="controls" class="share-video" />
+	  </template>
+
+  </div>
+
+<!--<script type="text/javascript" src="s/assets/share/share-information.js"></script>-->
+<script>
+    new Vue({
+        el : '#vm',
+        data : {
+            name : "",
+			author : "",
+			appCreatedTime : "",
+            content : "",
+            video : "",
+            images : []
+        },
+        created : function() {
+            __.$vm = this;
+        },
+        mounted : function() {
+            var vm = this;
+            vm.search();
+        },
+        methods : {
+            search : function() {
+                __.mask();
+                var vm = this, search = __.decodeUrlParams();
+                if(!!search.sign){
+					var sign =decodeURIComponent(escape(window.atob(search.sign)));
+					var params = sign.trim().split('&');
+					if(params.length > 1){
+						var id = params[0];
+						var type = params[1];
+						console.log(id);
+						console.log(type);
+						if (!__.isEmpty(id) && !__.isEmpty(type)) {
+							__.api('GET', '/app/' + type + '/' + id, {}, function(result) {
+								if (__.err(result)) {
+									vm.$message.warning(result.message);
+									return;
+								} else{
+									var data = result.data;
+									//document.title = data.name;
+									if(!!data.name){
+										vm.name = data.name;
+									}
+									if(!!data.author){
+										vm.author = data.author;
+										if(!!data.area){
+											vm.author += "/" + data.area;
+										}
+									}
+									if(!!data.appCreatedTime){
+										vm.appCreatedTime = data.appCreatedTime;
+									}
+									if(!!data.content){
+										vm.content = data.content.replace(/\width: unset/g,"width: 100%;");	//正则替换 图片宽度自适应
+									}
+									if(!!data.image && 'microvideo' != type){       //微视不用展示图片
+										vm.images = cc.display(data.image, "image");
+									}
+									if(!!data.video){
+										vm.video = data.video;
+									}
+								}
+								__.unmask();
+							});
+						}
+					} else{
+						vm.$message.warning("签名校验未通过");
+					}
+				}
+            },
+			isNull : function(obj) {
+				return !!obj;
+			}
+        }
+    });
+</script>
+</body>
+</html>

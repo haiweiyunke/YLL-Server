@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="yll.mapper.TaskProductsMapper">
+
+	<resultMap id="RESULT_MAP" type="yll.entity.TaskProducts">
+		<id property="id" column="id" jdbcType="VARCHAR" />
+		<result property="taskId" column="task_id" jdbcType="VARCHAR" />
+		<result property="pid" column="pid" jdbcType="VARCHAR" />
+		<result property="type" column="type" jdbcType="VARCHAR" />
+
+		<result property="remark" column="remark" jdbcType="VARCHAR" />
+		<result property="state" column="state" jdbcType="VARCHAR" />
+		<result property="enabled" column="enabled" jdbcType="INTEGER" />
+		<result property="deleted" column="deleted" jdbcType="INTEGER" />
+		<result property="creator" column="creator" jdbcType="VARCHAR" />
+		<result property="createdTime" column="created_time" jdbcType="TIMESTAMP" />
+		<result property="modifier" column="modifier" jdbcType="VARCHAR" />
+		<result property="modifiedTime" column="modified_time" jdbcType="TIMESTAMP" />
+		<result property="deleter" column="deleter" jdbcType="VARCHAR" />
+		<result property="deletedTime" column="deleted_time" jdbcType="TIMESTAMP" />
+
+	</resultMap>
+
+	<resultMap id="RESULT_VO_MAP" type="yll.service.model.vo.TaskProductsVo" extends="RESULT_MAP">
+		<result property="discountPrice" column="discount_price" jdbcType="VARCHAR" />
+		<result property="depositRatio" column="deposit_ratio" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="TABLE">dh_task_products</sql>
+
+	<sql id="COLUMNS">
+		id, task_id, pid,  type,
+		remark, state, enabled, deleted, creator, created_time,
+		modifier,modified_time, deleter, deleted_time
+	</sql>
+
+	<sql id="VALUES">
+		#{id}, #{taskId}, #{pid}, #{type},
+		#{remark}, #{state}, #{enabled},#{deleted}, #{creator}, #{createdTime},
+		#{modifier},#{modifiedTime}, #{deleter}, #{deletedTime}
+	</sql>
+
+	<sql id="SET_VALUES">
+		<trim suffixOverrides=",">
+			<if test=" taskId != null">
+				task_id = #{taskId},
+			</if>
+			<if test=" pid != null">
+				pid = #{pid},
+			</if>
+			<if test=" type != null">
+				type = #{type},
+			</if>
+			<if test=" remark != null">
+				remark = #{remark},
+			</if>
+			<if test=" state != null">
+				state = #{state},
+			</if>
+			<if test=" deleted != null">
+				deleted = #{deleted},
+			</if>
+			<if test=" creator != null">
+				creator = #{creator},
+			</if>
+			<if test=" createdTime != null">
+				created_time = #{createdTime},
+			</if>
+			<if test=" modifier != null">
+				modifier = #{modifier},
+			</if>
+			<if test=" modifiedTime != null">
+				modified_time = #{modifiedTime},
+			</if>
+			<if test=" deleter != null">
+				deleter = #{deleter},
+			</if>
+			<if test=" deletedTime != null">
+				deleted_time = #{deletedTime},
+			</if>
+		</trim>
+	</sql>
+
+	<sql id="WHERES">
+		<if test=" id != null and id != ''">
+			and id = #{id}
+		</if>
+		<if test=" taskId != null and taskId != ''">
+			and task_id = #{taskId}
+		</if>
+		<if test=" pid != null and pid != '' ">
+			and pid = #{pid}
+		</if>
+		<if test=" type != null and type != ''">
+			and type = #{type}
+		</if>
+		<if test=" state != null and state != ''">
+			and state = #{state}
+		</if>
+		<if test=" enabled != null ">
+			and enabled = #{enabled}
+		</if>
+		and deleted = 0
+	</sql>
+
+	<update id="save">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		) VALUES (
+		<include refid="VALUES" />
+		)
+		ON DUPLICATE KEY UPDATE
+		<include refid="SET_VALUES" />
+	</update>
+
+	<insert id="insert" parameterType="yll.entity.TaskProducts">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		)
+		VALUES
+		(
+		<include refid="VALUES" />
+		)
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.String">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		id =#{id}
+	</delete>
+
+	<delete id="deleteAll">
+		DELETE FROM
+		<include refid="TABLE" />
+	</delete>
+
+	<update id="update" parameterType="yll.entity.TaskProducts">
+		UPDATE
+		<include refid="TABLE" />
+		SET
+		<include refid="SET_VALUES" />
+		WHERE
+		id = #{id}
+	</update>
+
+	<select id="getById" parameterType="java.lang.String" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id =#{id}
+	</select>
+
+	<select id="findAll" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+	</select>
+
+	<select id="findBy" parameterType="yll.entity.TaskProducts" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
+	</select>
+
+	<select id="findByCondition" parameterType="yll.entity.TaskProducts" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
+		LIMIT 0, 1;
+	</select>
+
+	<delete id="deleteByPid" parameterType="java.lang.String">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		pid =#{pid}
+	</delete>
+
+	<select id="getList" parameterType="yll.service.model.vo.TaskProductsVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		m.id, m.task_id, m.pid, m.type, m.remark,
+		dp.cover, dp.name, dp.discount_price, dp.commission, dp.deposit, dp.deposit_ratio
+		FROM
+		<include refid="TABLE" /> m
+		 LEFT JOIN
+		dh_products dp
+		ON m.pid = dp.id
+		WHERE m.id != '0'
+		<if test=" id != null and id != ''">
+			and m.id = #{id}
+		</if>
+		<if test=" taskId != null and taskId != ''">
+			and m.task_id = #{taskId}
+		</if>
+		<if test=" pid != null and pid != '' ">
+			and m.pid = #{pid}
+		</if>
+		<if test=" type != null and type != ''">
+			and m.type = #{type}
+		</if>
+		<if test=" state != null and state != ''">
+			and m.state = #{state}
+		</if>
+		<if test=" enabled != null ">
+			and m.enabled = #{enabled}
+		</if>
+		and m.deleted = 0
+	</select>
+
+	<select id="getAppList" parameterType="yll.service.model.vo.TaskProductsVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		id, task_id, pid, type, remark
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+	</select>
+
+
+	<select id="getAdminProductsList" parameterType="yll.service.model.vo.TaskCelebrityProductsVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		p.id id, p.name, d.codename
+		FROM
+		<include refid="TABLE" /> m
+		LEFT JOIN
+		dh_products p
+		ON p.id = m.pid
+		LEFT JOIN
+		dic d
+		ON d.id = p.type
+		WHERE m.id != '0'
+		<if test=" taskId != null and taskId != ''">
+			and m.task_id = #{taskId}
+		</if>
+	</select>
+
+
+</mapper>

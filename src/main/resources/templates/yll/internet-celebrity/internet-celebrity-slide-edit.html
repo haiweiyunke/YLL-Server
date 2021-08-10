@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>达人轮播图添加和编辑</title>
+<style>
+.el-picker-panel {
+	height: 320px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.el-date-editor.el-input, .el-input-number--small {
+	width: 100%;
+}
+
+.unit {
+	text-align: right;
+	line-height: 40px;
+}
+
+/*@media screen and(-ms-high-contrast:active),(-ms-high-contrast:none){
+	.el-picker-panel {
+		height: 200px;
+	}
+}*/
+</style>
+</head>
+<body>
+	<div id="vm"  v-cloak  class="vm">
+		<form is="el-form" :model="form" ref="form" :rules="rules" style="width: 100%;">
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="登录名" label-width="110px" prop="id">
+						<div is="el-select" v-model="form.id" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in slideList"
+								 :key="item.id"
+								 :label="item.username"
+								 :value="item.id">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="序号" label-width="110px" prop="ordinal">
+						<input is="el-input" v-model="form.ordinal" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<label class="el-form-item__label" style="width: 100%;color: red;padding-left: 4%;text-align: left;">*请从已添加的达人列表中选取要轮播的达人。</label>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-form-item" align="center" style="margin-top: 20px;">
+					<button is="el-button" type="success" @click="confirm('form')">确定</button>
+					<button is="el-button" @click="cancel()">取消</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					id : '',
+					ordinal : '',
+					oldSlideId : ''
+				},
+				rules:{
+					id:[{
+						required : true,
+						message : '请选择达人',
+						trigger : 'blur'
+					}]
+				},
+				slideList : []
+			},
+			created : function() {
+			},
+			mounted : function() {
+				var vm = this, search = __.decodeUrlParams();
+				var id = search.id;
+				if (!__.isEmpty(id)) {
+					vm.form.oldSlideId = id;
+					__.api('GET', '/rest/internet-celebrity/' + id, {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						var form = result.data;
+						vm.form.id = form.id;
+						vm.form.ordinal = form.ordinal;
+					});
+				}
+				vm.getSlideList();
+			},
+			methods : {
+				confirm : function(formName) {
+					var vm = this;
+					var params = {}, form = this.form;
+					this.$refs[formName].validate(function(valid) {
+						if(valid){
+							__.api('POST', '/rest/internet-celebrity/slide/save', form, function(result) {
+								if (__.err(result)) {
+									vm.$message.warning(result.message);
+								} else {
+									vm.$message.info("保存成功");
+									__.dialog.close();
+								}
+							});
+						}else{
+							return false
+						}
+					})
+
+				},
+				cancel : function() {
+					__.dialog.close();
+				},
+				getSlideList : function() {
+					vm = this;
+					__.api('POST', '/rest/internet-celebrity/slide/list', {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							vm.slideList = result.data;
+						}
+					});
+				}
+			}
+		})
+
+	</script>
+</body>
+</html>

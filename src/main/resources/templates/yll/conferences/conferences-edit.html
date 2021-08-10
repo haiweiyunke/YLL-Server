@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>发布会新增和编辑</title>
+<style>
+.el-picker-panel {
+	height: 320px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.el-date-editor.el-input, .el-input-number--small {
+	width: 100%;
+}
+
+.unit {
+	text-align: right;
+	line-height: 40px;
+}
+
+/*@media screen and(-ms-high-contrast:active),(-ms-high-contrast:none){
+	.el-picker-panel {
+		height: 200px;
+	}
+}*/
+</style>
+</head>
+<body>
+	<div id="vm"  v-cloak  class="vm">
+		<form is="el-form" :model="form" ref="form" :rules="rules" style="width: 100%;">
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="企业主" label-width="110px" prop="type">
+						<div is="el-select" v-model="form.creator" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in enterprise"
+								 :key="item.creator"
+								 :label="item.enterpriseName"
+								 :value="item.creator">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="发布会类型" label-width="110px" prop="type">
+						<div is="el-select" v-model="form.type" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in types"
+								 :key="item.code"
+								 :label="item.codename"
+								 :value="item.code">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="发布日期" label-width="110px" prop="issuedTime">
+						<el-date-picker
+								v-model="form.issuedTime"
+								type="date"
+								placeholder="选择日期">
+						</el-date-picker>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="发布会主题" label-width="110px" prop="theme">
+						<div is="el-input" type="textarea" autosize v-model="form.theme" ></div>
+					</div>
+				</div>
+			</div>
+
+			<!--<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="内容详情" label-width="110px" prop="material">
+						<div is="el-input" type="textarea" autosize v-model="form.material" ></div>
+					</div>
+				</div>
+			</div>-->
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="内容详情" label-width="110px" prop="material">
+						<div id="wangEditor" v-model="form.material">
+							<p>请输入内容...</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row" v-if="isExamine =='2'">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="申请理由" label-width="110px" prop="reason">
+						<div is="el-input" type="textarea" autosize v-model="form.reason" ></div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="封面" label-width="110px">
+						<div is="el-upload"
+							 class="upload-demo"
+							 :accept="imageAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="cover"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="coverFiles"
+							 list-type="picture">	 <!--  切换时，加上  :http-request="uploadFile" ，覆盖elui原"action"动作 -->
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{imageAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="广告小图" label-width="110px">
+						<div is="el-upload"
+							 class="upload-demo"
+							 :accept="imageAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="image"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="imageFiles"
+							 list-type="picture">	 <!--  切换时，加上  :http-request="uploadFile" ，覆盖elui原"action"动作 -->
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{imageAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="图片" label-width="110px">
+						<div is="el-upload"
+							 class="upload-demo"
+							 :accept="imageAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="photos"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="photosFiles"
+							 list-type="picture">	 <!--  切换时，加上  :http-request="uploadFile" ，覆盖elui原"action"动作 -->
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{imageAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="视频" label-width="110px">  <!-- 上传成功后的success、remove函数有问题，看看data从哪里获取 -->
+						<div is="el-upload"
+							 class="avatar-uploader el-upload--text"
+							 :accept="videoAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="video"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="videoFiles"
+							 list-type="video">
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{videoAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="是否可见" label-width="110px" prop="theme">
+						<div is="el-radio" v-model="form.visible" :label="1">可见</div>
+						<div is="el-radio" v-model="form.visible" :label="2">隐藏</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row" v-if="isExamine =='2'" >
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="审核状态" label-width="110px" prop="state">
+						<div is="el-radio" v-model="form.state" :label="1">待审核</div>
+						<div is="el-radio" v-model="form.state" :label="2">通过</div>
+						<div is="el-radio" v-model="form.state" :label="3">未通过</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row" v-if="isExamine =='2'">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="审核意见" label-width="110px" prop="description">
+						<div is="el-input" type="textarea" autosize v-model="form.remark" ></div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-form-item" align="center" style="margin-top: 20px;">
+					<button is="el-button" type="success" @click="confirm('form')">确定</button>
+					<button is="el-button" @click="cancel()">取消</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					id : '',
+					issuedTime : '',
+					theme : '',
+					material : '',
+					cover : '',
+					image : '',
+					photos : '',
+					video : '',
+					reason : '',
+					type : '',
+					visible : '2',
+					remark : '',
+					enabled : '0',
+					creator : '',
+					state : 2
+				},
+				rules:{
+					theme:[
+							{
+								required : true,
+								message : '请输入发布会名称',
+								trigger : 'blur'
+							},
+							{ type: 'string', min: 1, max: 100, message: '不允许大于100个字符', trigger: 'blur' }
+					],
+					theme:[{
+						required : false,
+						message : '请输入发布会主题',
+						trigger : 'blur'
+					}]
+				},
+				coverFiles: [],
+                imageFiles: [],
+                photosFiles: [],
+                videoFiles: [],
+				types : [],
+				enterprise : [],
+				uploadType : "",
+				uploadUrl : cc.uploadUrl,
+				imageAccept : cc.imageAccept,
+				videoAccept : cc.videoAccept,
+				isExamine: 1
+			},
+			created : function() {
+			},
+			mounted : function() {
+				var vm = this, search = __.decodeUrlParams();
+				var id = search.id;
+				vm.isExamine = search.isExamine;	//审核标识。1-非审核，2-审核页
+				if (!__.isEmpty(id)) {
+					__.api('GET', '/rest/conferences/' + id, {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						var form = result.data;
+						form.enabled = String(form.enabled);
+						vm.form = form;
+						//富文本回显
+						cc.wangEditor('wangEditor', vm.form, vm.form.material,'material');
+						//图片回显
+						vm.imageFiles = cc.display(vm.form.image, "image");
+						vm.photosFiles = cc.display(vm.form.photos, "photos");
+						vm.coverFiles = cc.display(vm.form.cover, "cover");
+						vm.videoFiles = cc.display(vm.form.video, "video");
+					});
+				}
+				cc.wangEditor('wangEditor', vm.form, 'material');
+				vm.getDic();
+				vm.getEnterprise();
+			},
+			methods : {
+				confirm : function(formName) {
+					var vm = this;
+					var params = {}, form = this.form;
+					//去除尾部逗号
+					cc.trim(form);
+					//引入富文本公共html
+					form.material = cc.editorImportHtml(form.material);
+					this.$refs[formName].validate(function(valid) {
+						if(valid){
+							__.api('POST', '/rest/conferences/save', form, function(result) {
+								if (__.err(result)) {
+									vm.$message.warning(result.message);
+								} else {
+									vm.$message.info("保存成功");
+									__.dialog.close();
+								}
+							});
+						}else{
+							return false
+						}
+					})
+
+				},
+				cancel : function() {
+					__.dialog.close();
+				},
+				getEnterprise : function() {
+					vm = this;
+					//企业主集合
+					__.api('POST', '/rest/enterprise/all', {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							vm.enterprise = result.data;
+						}
+					});
+				},
+				getDic : function() {
+					vm = this;
+					//企业主
+					__.api('POST', '/rest/dic/all', {'targetId' : 'conferencesType'}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							vm.types = result.data;
+						}
+					});
+				},
+				/**
+				 * COS上传
+				 * @param file
+				 * @param fileList
+				 */
+				uploadFile : function(param){
+					var vm = this;
+					//上传视频大小限制（示例中为10MB）
+					// const isLt10M = file.size / 1024 / 1024  < 10;
+
+					var file = param.file;
+					var data = param.data;
+					vm.uploadType = data;
+					cosUtils.upload(param, vm.form, data);
+				},
+				handleRemove : function(file, fileList) {
+					vm = this;
+					//删除文件时
+					cc.handleRemove(file, fileList, vm.form, file.type);
+				},
+				handlePreview : function(file) {
+					vm = this;
+					//点击已上传的文件链接时
+					cc.handlePreview(file, vm.form);
+				},
+				handleSuccess : function(response,file,fileList) {
+					vm = this;
+					file.path = response.data;
+					//文件上传成功时
+					cc.handleSuccess(response, file, fileList, vm.form, vm.uploadType);
+				}
+			}
+		})
+
+	</script>
+</body>
+</html>

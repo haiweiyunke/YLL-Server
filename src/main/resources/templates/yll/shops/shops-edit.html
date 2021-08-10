@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>产品新增和编辑</title>
+<style>
+.el-picker-panel {
+	height: 320px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.el-date-editor.el-input, .el-input-number--small {
+	width: 100%;
+}
+
+.unit {
+	text-align: right;
+	line-height: 40px;
+}
+
+/*@media screen and(-ms-high-contrast:active),(-ms-high-contrast:none){
+	.el-picker-panel {
+		height: 200px;
+	}
+}*/
+</style>
+</head>
+<body>
+	<div id="vm"  v-cloak  class="vm">
+		<form is="el-form" :model="form" ref="form" :rules="rules" style="width: 100%;">
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="名称" label-width="110px" prop="name">
+						<input is="el-input" v-model="form.name" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="所属人" label-width="110px" prop="id">
+						<div is="el-select" v-model="form.eid" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in list"
+								 :key="item.creator"
+								 :label="item.enterpriseName"
+								 :value="item.creator">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		<!--
+			-->
+			<div is="el-row">
+				<div is="el-form-item" align="center" style="margin-top: 20px;">
+					<button is="el-button" type="success" @click="confirm('form')">确定</button>
+					<button is="el-button" @click="cancel()">取消</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					id : '',
+					eid : '',
+					name : '',
+					remark : '',
+					ordinal : 99,
+					enabled : '1',
+					state : '2'
+				},
+				rules:{
+					name:[{
+						required : true,
+						message : '请输入名称',
+						trigger : 'blur'
+					}],
+					content:[{
+						required : false,
+						message : '请输入基本信息',
+						trigger : 'blur'
+					}],
+					type:[{
+						required : true,
+						message : '请输入类别',
+						trigger : 'blur'
+					}]
+				},
+				coverFiles: [],
+                imageFiles: [],
+                pictureFiles: [],
+				list : [],
+				uploadType : "",
+				uploadUrl : cc.uploadUrl,
+				imageAccept : cc.imageAccept
+			},
+			created : function() {
+			},
+			mounted : function() {
+				var vm = this, search = __.decodeUrlParams();
+				var id = search.id;
+				if (!__.isEmpty(id)) {
+					__.api('GET', '/rest/shops/' + id, {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						var form = result.data;
+						form.enabled = String(form.enabled);
+						vm.form = form;
+						//富文本回显
+						//cc.wangEditor('wangEditor', vm.form, vm.form.content);
+						//图片回显
+						// vm.imageFiles = cc.display(vm.form.image, "image");
+						// vm.coverFiles = cc.display(vm.form.cover, "cover");
+						// vm.pictureFiles = cc.display(vm.form.picture, "picture");
+					});
+				}
+				//cc.wangEditor('wangEditor', vm.form);
+				vm.getEnterprise();
+			},
+			methods : {
+				confirm : function(formName) {
+					var vm = this;
+					var params = {}, form = this.form;
+					//去除尾部逗号
+					cc.trim(form);
+					//引入富文本公共html
+					//form.content = cc.editorImportHtml(form.content);
+					this.$refs[formName].validate(function(valid) {
+						if(valid){
+							__.api('POST', '/rest/shops/save', form, function(result) {
+								if (__.err(result)) {
+									vm.$message.warning(result.message);
+								} else {
+									vm.$message.info("保存成功");
+									__.dialog.close();
+								}
+							});
+						}else{
+							return false
+						}
+					})
+
+				},
+				cancel : function() {
+					__.dialog.close();
+				},
+				getEnterprise : function() {
+					var vm = this;
+					//企业户
+					__.api('POST', '/rest/enterprise/all', {}, function (result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							vm.list = result.data;
+						}
+					});
+				},
+				handleCheckAllChange01 : function(val) {
+					var vm = this;
+					vm.checkedPojo01 = val ? vm.pojoOptionsStr01 : [];
+					vm.isIndeterminate01 = false;
+					vm.checkedPojoStr01 = vm.checkedPojo01.toString();
+					console.log('11111');
+					console.log(vm.checkedPojoStr01);
+					vm.otherPojo();
+				},
+				handleCheckedDicChange01 : function(value) {
+					var vm = this;
+					let checkedCount = value.length;
+					vm.checkAll01 = checkedCount === vm.pojoOptions01.length;
+					vm.isIndeterminate01 = checkedCount > 0 && checkedCount < vm.pojoOptions01.length;
+					vm.checkedPojoStr01 = vm.checkedPojo01.toString();
+					console.log('22222');
+					console.log(vm.checkedPojoStr01);
+					vm.otherPojo();
+				},
+				handleCheckAllChange02 : function(val) {
+					var vm = this;
+					vm.checkedPojo02 = val ? vm.pojoOptionsStr02 : [];
+					vm.isIndeterminate02 = false;
+					vm.checkedPojoStr02 = vm.checkedPojo02.toString();
+					console.log('11111');
+					console.log(vm.checkedPojoStr02);
+					vm.otherPojo();
+				},
+				handleCheckedDicChange02 : function(value) {
+					var vm = this;
+					let checkedCount = value.length;
+					vm.checkAll02 = checkedCount === vm.pojoOptions02.length;
+					vm.isIndeterminate02 = checkedCount > 0 && checkedCount < vm.pojoOptions02.length;
+					vm.checkedPojoStr02 = vm.checkedPojo02.toString();
+					console.log('22222');
+					console.log(vm.checkedPojoStr02);
+					vm.otherPojo();
+				},
+				handleCheckAllChange03 : function(val) {
+					var vm = this;
+					vm.checkedPojo03 = val ? vm.pojoOptionsStr03 : [];
+					vm.isIndeterminate03 = false;
+					vm.checkedPojoStr03 = vm.checkedPojo03.toString();
+					console.log('11111');
+					console.log(vm.checkedPojoStr03);
+					vm.otherPojo();
+				},
+				handleCheckedDicChange03 : function(value) {
+					var vm = this;
+					let checkedCount = value.length;
+					vm.checkAll03 = checkedCount === vm.pojoOptions03.length;
+					vm.isIndeterminate03 = checkedCount > 0 && checkedCount < vm.pojoOptions03.length;
+					vm.checkedPojoStr03 = vm.checkedPojo03.toString();
+					console.log('22222');
+					console.log(vm.checkedPojoStr03);
+					vm.otherPojo();
+				},
+				/**
+				 * 是否展示其他擅长
+				 */
+				otherPojo : function() {
+					var vm = this;
+					var ret = vm.checkedPojoStr01.indexOf('e-other');
+					if(ret > -1){
+						vm.isOther = true;
+					} else{
+						vm.isOther = false;
+					}
+				},
+				/**
+				 * COS上传
+				 * @param file
+				 * @param fileList
+				 */
+				uploadFile : function(param){
+					var vm = this;
+					var file = param.file;
+					var data = param.data;
+					vm.uploadType = data;
+					cosUtils.upload(param, vm.form, data);
+				},
+				handleRemove : function(file, fileList) {
+					vm = this;
+					//删除文件时
+					cc.handleRemove(file, fileList, vm.form, file.type);
+				},
+
+				handlePreview : function(file) {
+					//点击已上传的文件链接时
+					cc.handlePreview(file, vm.form);
+				},
+				handleSuccess : function(response,file,fileList) {
+					vm = this;
+					file.path = response.data;
+					//文件上传成功时
+					cc.handleSuccess(response, file, fileList, vm.form, vm.uploadType);
+				},
+
+			}
+		})
+
+	</script>
+</body>
+</html>

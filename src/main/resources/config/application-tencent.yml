@@ -1,0 +1,32 @@
+# 腾讯cos - product
+store:
+  credential:
+    app-id: 1256225403
+    secrect-id: AKID1pNekbK4yub2CFHIxQdARRBFUTDsY5JI
+    secrect-key: uXw696mBLFNKAnIzQaTBj13HFwSjbE3d
+  region: ap-beijing
+  cdn: false
+  platform: cos
+  default-bucket: yshd-1256225403
+  path: /yshd/prod/
+  temp-path: yshd/prod/*
+  management-system-path: /prod/
+  #url: http://replace-bucket-${store.credential.app-id}.${store.platform}-website.${store.region}.myqcloud.com/
+  #开启静态网站
+  url: http://replace-bucket.${store.platform}-website.${store.region}.myqcloud.com/
+  cdn-url: http://replace-bucket-${store.credential.app-id}.file.myqcloud.com/
+
+#短信
+sms:
+  appid: 1400358401
+  appkey: f3602f8220ae5993dd370d11291a2080
+  templateId: 588917
+  sign: 云尚互动
+  effectiveTime: 2
+
+# 微信(未用,目前使用友盟)
+wechat:
+  #移动应用配置
+  appid: wx5087d28cdae9e623
+  appSecret: 1ea9a271148387a90e859450c23f8215
+  tokenUrl: https://api.weixin.qq.com/sns/oauth2/access_token?appid=APPID&secret=SECRET&code=CODE&grant_type=authorization_code

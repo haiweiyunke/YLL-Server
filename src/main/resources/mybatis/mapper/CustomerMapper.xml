@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="yll.mapper.CustomerMapper">
+
+	<resultMap id="RESULT_MAP" type="yll.entity.Customer">
+	<id property="id" column="id" jdbcType="VARCHAR" />
+	<result property="username" column="username" jdbcType="VARCHAR" />
+	<result property="password" column="password" jdbcType="VARCHAR" />
+	<result property="aliId" column="ali_id" jdbcType="VARCHAR" />
+	<result property="wechatId" column="wechat_id" jdbcType="VARCHAR" />
+	<result property="phone" column="phone" jdbcType="VARCHAR" />
+	<result property="nickname" column="nickname" jdbcType="VARCHAR" />
+	<result property="headImg" column="head_img" jdbcType="LONGVARCHAR" />
+	<result property="remark" column="remark" jdbcType="VARCHAR" />
+	<result property="birthday" column="birthday" jdbcType="TIMESTAMP" />
+	<result property="location" column="location" jdbcType="VARCHAR" />
+	<result property="roleType" column="role_type" jdbcType="VARCHAR" />
+	<result property="age" column="age" jdbcType="VARCHAR" />
+	<result property="gender" column="gender" jdbcType="INTEGER" />
+	<result property="share" column="share" jdbcType="INTEGER" />
+	<result property="collects" column="collects" jdbcType="INTEGER" />
+	<result property="likes" column="likes" jdbcType="INTEGER" />
+	<result property="slide" column="slide" jdbcType="INTEGER" />
+	<result property="state" column="state" jdbcType="VARCHAR" />
+	<result property="payPassword" column="pay_password" jdbcType="VARCHAR" />
+	<result property="enabled" column="enabled" jdbcType="INTEGER" />
+	<result property="deleted" column="deleted" jdbcType="INTEGER" />
+	<result property="creator" column="creator" jdbcType="VARCHAR" />
+	<result property="createdTime" column="created_time" jdbcType="TIMESTAMP" />
+	<result property="modifier" column="modifier" jdbcType="VARCHAR" />
+	<result property="modifiedTime" column="modified_time" jdbcType="TIMESTAMP" />
+	<result property="deleter" column="deleter" jdbcType="VARCHAR" />
+	<result property="deletedTime" column="deleted_time" jdbcType="TIMESTAMP" />
+</resultMap>
+
+	<resultMap id="RESULT_VO_MAP" type="yll.service.model.vo.CustomerVo" extends="RESULT_MAP">
+		<result property="point" column="point" jdbcType="INTEGER" />
+		<result property="custBirthday" column="cust_birthday" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="TABLE">customer</sql>
+
+	<sql id="COLUMNS">
+		id, username, password,ali_id, wechat_id, phone,
+		nickname, head_img, remark,state,pay_password,
+		birthday, location, role_type, gender, age, fen_num, email,
+		share,collects, likes, slide,
+		enabled,deleted, creator, created_time,
+		modifier,modified_time, deleter, deleted_time
+	</sql>
+
+	<sql id="VALUES">
+		#{id}, #{username}, #{password},#{aliId}, #{wechatId}, #{phone},
+		#{nickname}, #{headImg}, #{remark}, #{state},#{payPassword},
+		#{birthday}, #{location}, #{roleType}, #{gender}, #{age}, #{fenNum}, #{email},
+		#{share},#{collects}, #{likes},#{slide},
+		#{enabled},#{deleted}, #{creator}, #{createdTime},
+		#{modifier},#{modifiedTime}, #{deleter}, #{deletedTime}
+	</sql>
+
+	<sql id="SET_VALUES">
+		<trim suffixOverrides=",">
+			<if test=" username != null">
+				username = #{username},
+			</if>
+			<if test=" password != null">
+				password = #{password},
+			</if>
+			<if test=" aliId != null">
+				ali_id = #{aliId},
+			</if>
+			<if test=" wechatId != null">
+				wechat_id = #{wechatId},
+			</if>
+			<if test=" phone != null">
+				phone = #{phone},
+			</if>
+			<if test=" nickname != null">
+				nickname = #{nickname},
+			</if>
+			<if test=" headImg != null">
+				head_img = #{headImg},
+			</if>
+			<if test=" remark != null">
+				remark = #{remark},
+			</if>
+			<if test=" state != null">
+				state = #{state},
+			</if>
+			<if test=" birthday != null">
+				birthday = #{birthday},
+			</if>
+			<if test=" location != null">
+				location = #{location},
+			</if>
+			<if test=" roleType != null">
+				role_type = #{roleType},
+			</if>
+			<if test=" age != null">
+				age = #{age},
+			</if>
+			<if test=" gender != null">
+				gender = #{gender},
+			</if>
+			<if test=" fenNum != null">
+				fen_num = #{fenNum},
+			</if>
+			<if test=" email != null">
+				email = #{email},
+			</if>
+			<if test=" share != null">
+				share = #{share},
+			</if>
+			<if test=" collects != null">
+				collects = #{collects},
+			</if>
+			<if test=" likes != null">
+				likes = #{likes},
+			</if>
+			<if test=" slide != null">
+				slide = #{slide},
+			</if>
+			<if test=" payPassword != null">
+				pay_password = #{payPassword},
+			</if>
+			<if test=" enabled != null">
+				enabled = #{enabled},
+			</if>
+			<if test=" deleted != null">
+				deleted = #{deleted},
+			</if>
+			<if test=" creator != null">
+				creator = #{creator},
+			</if>
+			<if test=" createdTime != null">
+				created_time = #{createdTime},
+			</if>
+			<if test=" modifier != null">
+				modifier = #{modifier},
+			</if>
+			<if test=" modifiedTime != null">
+				modified_time = #{modifiedTime},
+			</if>
+			<if test=" deleter != null">
+				deleter = #{deleter},
+			</if>
+			<if test=" deletedTime != null">
+				deleted_time = #{deletedTime},
+			</if>
+		</trim>
+	</sql>
+
+	<sql id="WHERES">
+		<if test=" id != null and id != ''">
+			and id = #{id}
+		</if>
+		<if test=" username != null and username != '' ">
+			and username like CONCAT(CONCAT('%',#{username}),'%')
+		</if>
+		<if test=" nickname != null and nickname != '' ">
+			and nickname like CONCAT(CONCAT('%',#{nickname}),'%')
+		</if>
+		<if test=" phone != null and phone != ''">
+			and phone = #{phone}
+		</if>
+		<if test=" wechatId != null and wechatId != ''">
+			and wechat_id = #{wechatId}
+		</if>
+		<if test=" aliId != null and aliId != ''">
+			and ali_id = #{aliId}
+		</if>
+		<if test=" roleType != null and roleType != ''">
+			and role_type = #{roleType}
+		</if>
+		<if test=" fenNum != null and fenNum != ''">
+			and fen_num = #{fenNum}
+		</if>
+		<if test=" gender != null ">
+			and gender = #{gender}
+		</if>
+
+		<if test=" enabled != null ">
+			and enabled = #{enabled}
+		</if>
+		and deleted = 0
+	</sql>
+
+	<update id="save">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		) VALUES (
+		<include refid="VALUES" />
+		)
+		ON DUPLICATE KEY UPDATE
+		<include refid="SET_VALUES" />
+	</update>
+
+	<insert id="insert" parameterType="yll.entity.Customer">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		)
+		VALUES
+		(
+		<include refid="VALUES" />
+		)
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.String">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		id =#{id}
+	</delete>
+
+	<delete id="deleteAll">
+		DELETE FROM
+		<include refid="TABLE" />
+	</delete>
+
+	<update id="update" parameterType="yll.entity.Customer">
+		UPDATE
+		<include refid="TABLE" />
+		SET
+		<include refid="SET_VALUES" />
+		WHERE
+		id = #{id}
+	</update>
+
+	<select id="getById" parameterType="java.lang.String" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id =#{id}
+	</select>
+
+	<select id="findAll" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+	</select>
+
+	<select id="findBy" parameterType="yll.entity.Customer" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
+	</select>
+
+	<select id="findByCondition" parameterType="yll.entity.Customer" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
+		LIMIT 0, 1;
+	</select>
+
+	<select id="getAppDetail" parameterType="yll.service.model.vo.CustomerVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		m.id,
+		ifnull(m.head_img, '') head_img ,	ifnull(m.nickname, '') nickname ,
+		ifnull(m.role_type, '') role_type ,	ifnull(m.phone, '') phone ,
+		ifnull(m.location, '') location ,	ifnull(m.age, '0') age,	ifnull(m.gender, 2) gender,
+		ifnull(DATE_FORMAT(m.birthday , '%Y-%m-%d'), '') cust_birthday
+		FROM
+		<include refid="TABLE" /> m
+		WHERE m.id != '0'
+		<if test=" id != null and id != ''">
+			and m.id = #{id}
+		</if>
+		<if test=" username != null and username != '' ">
+			and m.username like CONCAT(CONCAT('%',#{username}),'%')
+		</if>
+		<if test=" phone != null and phone != ''">
+			and m.phone = #{phone}
+		</if>
+		<if test=" wechatId != null and wechatId != ''">
+			and m.wechat_id = #{wechatId}
+		</if>
+		<if test=" aliId != null and aliId != ''">
+			and m.ali_id = #{aliId}
+		</if>
+		<if test=" roleType != null and roleType != ''">
+			and m.role_type = #{roleType}
+		</if>
+		<if test=" fenNum != null and fenNum != ''">
+			and m.fen_num = #{fenNum}
+		</if>
+		<if test=" gender != null ">
+			and m.gender = #{gender}
+		</if>
+
+		<if test=" enabled != null ">
+			and m.enabled = #{enabled}
+		</if>
+		and m.deleted = 0
+		ORDER BY  m.created_time DESC
+		LIMIT 0, 1;
+	</select>
+
+	<select id="pagedQueryWithPoints" parameterType="yll.service.model.vo.CustomerVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		m.id, m.username, m.password,ali_id, m.wechat_id, m.phone,
+		m.nickname, m.head_img, m.remark, m.state, m.pay_password,
+		m.birthday, m.location, m.role_type,
+		m.enabled, m.deleted, m.creator, m.created_time,
+		m.modifier, m.modified_time, m.deleter, m.deleted_time,
+		DATE_FORMAT(m.created_time , '%Y-%m-%d %H:%i:%s') createdTimeStr,
+		sec.point
+		FROM
+		<include refid="TABLE" /> m
+		LEFT JOIN
+		customer_points sec ON sec.target_id = m.id
+		WHERE m.id != '0'
+		<if test=" id != null and id != ''">
+			and m.id = #{id}
+		</if>
+		<if test=" username != null and username != '' and nickname != null and nickname != ''">
+			and (m.username like CONCAT(CONCAT('%',#{username}),'%')
+			or m.nickname like  CONCAT(CONCAT('%',#{nickname}),'%'))
+		</if>
+		<if test=" username != null and username != '' and ( nickname == null or nickname == '') ">
+			and m.username like CONCAT(CONCAT('%',#{username}),'%')
+		</if>
+		<if test=" phone != null and phone != ''">
+			and m.phone = #{phone}
+		</if>
+		<if test=" roleType != null and roleType != ''">
+			and m.role_type = #{roleType}
+		</if>
+		<if test=" enabled != null ">
+			and m.enabled = #{enabled}
+		</if>
+		<if test=" startTime != null  and endTime != null  ">
+			and (m.created_time &gt;= #{startTime} and m.created_time &lt;= #{endTime} )
+		</if>
+		and m.deleted = 0
+		ORDER BY  m.created_time DESC
+	</select>
+
+	<select id="findAllForTask" parameterType="yll.entity.Customer" resultMap="RESULT_MAP">
+		SELECT
+		id, nickname, head_img
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
+	</select>
+
+</mapper>

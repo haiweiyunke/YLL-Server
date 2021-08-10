@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>行政区划管理</title>
+</head>
+<body>
+	<div is="el-row" id="vm" v-cloak>
+		<div is="el-col" :span="24" class="warp">
+			<div is="el-row" class="element-row ">
+				<div is="el-col" :span="0" style="height: 55px;">
+					<!--<div is="el-button" type="success" icon="el-icon-plus" @click="add()">新增</div>-->
+				</div>
+				<div is="el-col" :span="24">
+					 <div is="el-form" :model="form" :inline="true" lable-width="80px" class="demo-form-inline clearfix">
+						<div class="fr">
+							<div is="el-form-item" label="省" label-width="110px" >
+								<div is="el-select" v-model="form.province" @change="area(2)" filterable placeholder="请选择">
+									<div is="el-option"
+										 v-for="item in provinces"
+										 :key="item.id"
+										 :label="item.name"
+										 :value="item.id">
+									</div>
+								</div>
+							</div>
+							<div is="el-form-item" label="市" label-width="110px" >
+								<div is="el-select" v-model="form.city" @change="area(3)" filterable placeholder="请选择">
+									<div is="el-option"
+										 v-for="item in cities"
+										 :key="item.id"
+										 :label="item.name"
+										 :value="item.id">
+									</div>
+								</div>
+							</div>
+							<div is="el-form-item" label="区/县" label-width="110px" >
+								<div is="el-select" v-model="form.district" @change="area(4)" filterable placeholder="请选择">
+									<div is="el-option"
+										 v-for="item in districts"
+										 :key="item.id"
+										 :label="item.name"
+										 :value="item.id">
+									</div>
+								</div>
+							</div>
+							<div is="el-form-item">
+								<div is="el-button" type="warning" @click="search">查询</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="element-table">
+				<div is="el-table" ref="table" :data="page.records" border style="width: 100%"  v-loading="page.isLoading" element-loading-text="加载中" element-loading-spinner="el-icon-loading"
+					element-loading-background="rgba(0,0,0,0.4)">
+					<div is="el-table-column" align="center" prop="id" label="编码" ></div>
+					<div is="el-table-column" align="center" prop="name" label="名称" width="220" show-overflow-tooltip></div>
+					<div is="el-table-column" align="center" prop="level" label="级别"  width="130"></div>
+					<div is="el-table-column" align="center" prop="lat" label="经度"  width="130"></div>
+					<div is="el-table-column" align="center" prop="lng" label="维度"  width="130"></div>
+					<div is="el-table-column" align="center" label="操作" width="220">
+						<div slot-scope="scope">
+							<button is="el-button" type="text" size="mini" @click="updateData(scope.row)">编辑</button>
+							<button is="el-button" type="text" size="mini" @click="deleteData(scope.row)">删除</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="pagination">
+				<div is="el-pagination" @current-change="pagedQuery" :current-page="page.currentPage" :page-size="page.limit" layout="total,prev,pager,next,jumper" :total="page.total"></div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					keyword : '',
+					province : '',
+					city : '',
+					district : ''
+				},
+				page : {
+					currentPage : 1,
+					limit : 15,
+					total : 0,
+					records : [],
+					isLoading : false,
+					params : {
+						node : ''
+					}
+				},
+				provinces : [],
+				cities : [],
+				districts : []
+			},
+			created : function() {
+				__.$vm = this;
+			},
+			mounted : function() {
+				__.mask();
+				this.pagedQuery(1);
+				this.area(1);
+				__.unmask();
+			},
+			methods : {
+				// 分页ele
+				pagedQuery : function(currentPage) {
+					var vm = this, page = vm.page;
+					currentPage && (page.currentPage = currentPage);
+					var params = __.pagedParams(page.currentPage, page.limit);
+					__.extend(params, vm.page.params);
+					__.api('GET', '/rest/area/list', params, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						vm.page.total = result.total | 0;
+						vm.page.records = result.data;
+					});
+				},
+                search : function() {
+					//处理查询数据
+					var province = __.trim(this.form.province);
+					var city = __.trim(this.form.city);
+					var district = __.trim(this.form.district);
+					var node = '';
+					if(!!province){
+						node += province;
+						if(!!city){
+							node = node + ',' + city;
+							if(!!district){
+								node = node + ',' + district;
+							}
+						}
+					}
+                    this.page.params = {
+						node : node
+                    }
+                    this.pagedQuery(1);
+                },
+				add: function(){
+					var vm = this;
+					__.dialog.open({
+						title : '新增',
+						width : '70%',
+						height : '100%',
+						url : __.url('/system/dic/dic-edit.html', {
+							
+						}),
+						close : function(result) {
+							vm.pagedQuery();
+						}
+					});
+				},
+				updateData: function(record){
+					var vm = this;
+					__.dialog.open({
+						title : '编辑',
+						width : '90%',
+						height : '100%',
+						url : __.url('/system/area/area-edit.html', {
+							id : record.id
+						}),
+						close : function(result) {
+							vm.pagedQuery();
+						}
+					});
+				},
+				deleteData: function(record){
+					var vm = this;
+					var id = record.id;
+					vm.$confirm("确定要删除？", "删除确认", {
+						confirmButtonText : "确定",
+						cancelButtonText : "取消",
+						type : "warning"
+					}).then(function() {
+						__.mask();
+						__.api('DELETE', '/rest/area/' + id, {}, function(result) {
+							if (!__.err(result)) {
+								__.unmask();
+								vm.pagedQuery();
+								vm.$message({
+									message : '删除成功！',
+									type : 'success'
+								});
+							} else {
+								__.unmask();
+								vm.$message.warning(result.message);
+								return;
+							}
+						});
+					})
+				},
+				area: function(level){
+					var vm = this, form = vm.form;
+					var pid = '';
+					if(1 == level){
+
+					} else if(2 == level){
+						vm.cities = []
+						form.city = '';
+						form.district = '';
+						pid = form.province;
+					} else if(3 == level){
+						vm.districts = []
+						form.district = '';
+						pid = form.city;
+					} else if(4 == level){
+						pid = form.district;
+					} else{
+						vm.$message.warning('请选择正确的行政区划');
+						return;
+					}
+					__.mask();
+					__.api('GET', '/rest/area/all' , {pid : pid, level : level}, function(result) {
+						if (!__.err(result)) {
+							__.unmask();
+							if(1 == level){
+								vm.provinces = result.data;
+							} else if(2 == level){
+								vm.cities = result.data;
+							} else if(3 == level){
+								vm.districts = result.data;
+							}
+						} else {
+							__.unmask();
+							vm.$message.warning(result.message);
+							return;
+						}
+					});
+				}
+			}
+		});
+	</script>
+</body>
+</html>

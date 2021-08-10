@@ -1,0 +1,524 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="yll.mapper.RecruitEnterpriseDetailsMapper">
+
+	<resultMap id="RESULT_MAP" type="yll.entity.RecruitEnterpriseDetails">
+		<id property="id" column="id" jdbcType="VARCHAR" />
+		<result property="cid" column="cid" jdbcType="VARCHAR" />
+		<result property="name" column="name" jdbcType="VARCHAR" />
+		<result property="province" column="province" jdbcType="VARCHAR" />
+		<result property="city" column="city" jdbcType="VARCHAR" />
+		<result property="education" column="education" jdbcType="LONGVARCHAR" />
+		<result property="salary" column="salary" jdbcType="VARCHAR" />
+		<result property="jobDescription" column="job_description" jdbcType="VARCHAR" />
+		<result property="recruitDescription" column="recruit_description" jdbcType="VARCHAR" />
+		<result property="quantity" column="quantity" jdbcType="VARCHAR" />
+		<result property="endTime" column="end_time" jdbcType="TIMESTAMP" />
+		<result property="workExperience" column="work_experience" jdbcType="VARCHAR" />
+		<result property="workNature" column="work_nature" jdbcType="VARCHAR" />
+		<result property="industry" column="industry" jdbcType="VARCHAR" />
+
+		<result property="type" column="type" jdbcType="VARCHAR" />
+		<result property="remark" column="remark" jdbcType="VARCHAR" />
+		<result property="state" column="state" jdbcType="VARCHAR" />
+		<result property="enabled" column="enabled" jdbcType="INTEGER" />
+		<result property="deleted" column="deleted" jdbcType="INTEGER" />
+		<result property="creator" column="creator" jdbcType="VARCHAR" />
+		<result property="createdTime" column="created_time" jdbcType="TIMESTAMP" />
+		<result property="modifier" column="modifier" jdbcType="VARCHAR" />
+		<result property="modifiedTime" column="modified_time" jdbcType="TIMESTAMP" />
+		<result property="deleter" column="deleter" jdbcType="VARCHAR" />
+		<result property="deletedTime" column="deleted_time" jdbcType="TIMESTAMP" />
+
+	</resultMap>
+
+	<resultMap id="RESULT_VO_MAP" type="yll.service.model.vo.RecruitEnterpriseDetailsVo" extends="RESULT_MAP">
+		<result property="enterpriseName" column="enterprise_name" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="TABLE">dh_recruit_enterprise_details</sql>
+
+	<sql id="COLUMNS">
+		id, cid,  name, province,  city, education, salary, job_description, recruit_description, quantity, end_time, work_experience, work_nature, industry,
+		type, remark, state, enabled, deleted, creator, created_time,
+		modifier,modified_time, deleter, deleted_time
+	</sql>
+
+	<sql id="VALUES">
+		#{id}, #{cid}, #{name}, #{province}, #{city}, #{education}, #{salary}, #{jobDescription}, #{recruitDescription}, #{quantity}, #{endTime}, #{workExperience}, #{workNature}, #{industry},
+		#{type}, #{remark}, #{state}, #{enabled},#{deleted}, #{creator}, #{createdTime},
+		#{modifier},#{modifiedTime}, #{deleter}, #{deletedTime}
+	</sql>
+
+	<sql id="SET_VALUES">
+		<trim suffixOverrides=",">
+			<if test=" cid != null">
+				cid = #{cid},
+			</if>
+			<if test=" name != null">
+				name = #{name},
+			</if>
+			<if test=" province != null">
+				province = #{province},
+			</if>
+			<if test=" city != null">
+				city = #{city},
+			</if>
+			<if test=" education != null">
+				education = #{education},
+			</if>
+			<if test=" salary != null">
+				salary = #{salary},
+			</if>
+			<if test=" jobDescription != null">
+				job_description = #{jobDescription},
+			</if>
+			<if test=" recruitDescription != null">
+				recruit_description = #{recruitDescription},
+			</if>
+			<if test=" quantity != null">
+				quantity = #{quantity},
+			</if>
+			<if test=" endTime != null">
+				end_time = #{endTime},
+			</if>
+			<if test=" workExperience != null">
+				work_experience = #{workExperience},
+			</if>
+			<if test=" workNature != null">
+				work_nature = #{workNature},
+			</if>
+			<if test=" industry != null">
+				industry = #{industry},
+			</if>
+			<if test=" type != null">
+				type = #{type},
+			</if>
+			<if test=" remark != null">
+				remark = #{remark},
+			</if>
+			<if test=" state != null">
+				state = #{state},
+			</if>
+			<if test=" deleted != null">
+				deleted = #{deleted},
+			</if>
+			<if test=" creator != null">
+				creator = #{creator},
+			</if>
+			<if test=" createdTime != null">
+				created_time = #{createdTime},
+			</if>
+			<if test=" modifier != null">
+				modifier = #{modifier},
+			</if>
+			<if test=" modifiedTime != null">
+				modified_time = #{modifiedTime},
+			</if>
+			<if test=" deleter != null">
+				deleter = #{deleter},
+			</if>
+			<if test=" deletedTime != null">
+				deleted_time = #{deletedTime},
+			</if>
+		</trim>
+	</sql>
+
+	<sql id="WHERES">
+		<if test=" id != null and id != ''">
+			and id = #{id}
+		</if>
+		<if test=" cid != null and cid != ''">
+			and cid = #{cid}
+		</if>
+		<if test=" name != null and name != ''">
+			and name like CONCAT(CONCAT('%',#{name}),'%')
+		</if>
+		<if test=" state != null and state != ''">
+			and state = #{state}
+		</if>
+		<if test=" creator != null and creator != '' ">
+			and creator = #{creator}
+		</if>
+		<if test=" enabled != null ">
+			and enabled = #{enabled}
+		</if>
+		and deleted = 0
+	</sql>
+
+	<update id="save">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		) VALUES (
+		<include refid="VALUES" />
+		)
+		ON DUPLICATE KEY UPDATE
+		<include refid="SET_VALUES" />
+	</update>
+
+	<insert id="insert" parameterType="yll.entity.RecruitEnterpriseDetails">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		)
+		VALUES
+		(
+		<include refid="VALUES" />
+		)
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.String">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		id =#{id}
+	</delete>
+
+	<delete id="deleteAll">
+		DELETE FROM
+		<include refid="TABLE" />
+	</delete>
+
+	<update id="update" parameterType="yll.entity.RecruitEnterpriseDetails">
+		UPDATE
+		<include refid="TABLE" />
+		SET
+		<include refid="SET_VALUES" />
+		WHERE
+		id = #{id}
+	</update>
+
+	<select id="getById" parameterType="java.lang.String" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id =#{id}
+	</select>
+
+	<select id="findAll" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+	</select>
+
+	<select id="findBy" parameterType="yll.entity.RecruitEnterpriseDetails" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
+	</select>
+
+	<select id="findByCondition" parameterType="yll.entity.RecruitEnterpriseDetails" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
+		LIMIT 0, 1;
+	</select>
+
+	<select id="getAppList" parameterType="yll.service.model.vo.RecruitEnterpriseDetailsVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		m.id, ifnull(m.name, '') name,
+		ifnull(d8.codename, '') nameStr,
+		ifnull(m.province, '') province,
+		ifnull(d2.name, '') provinceStr,
+		ifnull(m.city, '') city,
+		ifnull(d3.name, '') cityStr,
+		ifnull(m.education, '') education,
+		ifnull(d4.codename, '') educationStr,
+		ifnull(m.work_nature, '') work_nature,
+		ifnull(m.work_experience, '') work_experience,
+		ifnull(d5.codename, '') workExperienceStr,
+		ifnull(m.industry, '') industry,
+		ifnull(d6.codename, '') industryStr,
+		ifnull(m.salary, '') salary,
+		ifnull(d7.codename, '') salaryStr,
+		ifnull(m.state, 1) state,
+		ifnull(e.enterprise_name, '') enterprise_name,
+		ifnull(mc.mcn_name, '') mcnName,
+		ifnull(d1.codename, '') staffStr,
+		ifnull(d9.codename, '') experienceStr
+		FROM
+		<include refid="TABLE" /> m
+		LEFT JOIN
+		dh_enterprise e
+		ON e.creator = m.cid
+		LEFT JOIN
+		dh_mcn mc
+		ON mc.creator = m.cid
+		LEFT JOIN
+		dic d1
+		ON d1.code = e.staff
+		LEFT JOIN area d2
+		ON d2.id = m.province
+		LEFT JOIN area d3
+		ON d3.id = m.city
+		LEFT JOIN dic d4
+		ON d4.code = m.education
+		LEFT JOIN dic d5
+		ON d5.code = m.work_experience
+		LEFT JOIN dic d6
+		ON d6.code = m.industry
+		LEFT JOIN dic d7
+		ON d7.code = m.salary
+		LEFT JOIN dic d8
+		ON d8.code = m.name
+		LEFT JOIN dic d9
+		ON d9.code = m.work_experience
+		WHERE m.id != '0'
+		<if test=" name != null and name != ''">
+			and m.name like CONCAT(CONCAT('%',#{name}),'%')
+		</if>
+		<if test=" cid != null and cid != ''">
+			and m.cid = #{cid}
+		</if>
+		<if test=" stateFlag == 1 ">
+			and m.state = 1
+		</if>
+		<if test=" stateFlag == 2 ">
+			and m.state != 0
+		</if>
+	</select>
+
+	<select id="getIndexAppList" parameterType="yll.service.model.vo.RecruitEnterpriseDetailsVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		m.id, ifnull(m.name, '') name,
+		ifnull(d8.codename, '') nameStr,
+		ifnull(m.province, '') province,
+		ifnull(d2.name, '') provinceStr,
+		ifnull(m.city, '') city,
+		ifnull(d3.name, '') cityStr,
+		ifnull(m.education, '') education,
+		ifnull(d4.codename, '') educationStr,
+		ifnull(m.work_nature, '') work_nature,
+		ifnull(m.work_experience, '') work_experience,
+		ifnull(d5.codename, '') workExperienceStr,
+		ifnull(m.industry, '') industry,
+		ifnull(d6.codename, '') industryStr,
+		ifnull(m.salary, '') salary,
+		ifnull(d7.codename, '') salaryStr,
+		ifnull(m.state, 1) state,
+		ifnull(e.enterprise_name, '') enterprise_name,
+		ifnull(mc.mcn_name, '') mcnName,
+		ifnull(d1.codename, '') staffStr,
+		ifnull(d9.codename, '') experienceStr
+		FROM
+		<include refid="TABLE" /> m
+		LEFT JOIN
+		dh_enterprise e
+		ON e.creator = m.cid
+		LEFT JOIN
+		dh_mcn mc
+		ON mc.creator = m.cid
+		LEFT JOIN
+		dic d1
+		ON d1.code = e.staff
+		LEFT JOIN area d2
+		ON d2.id = m.province
+		LEFT JOIN area d3
+		ON d3.id = m.city
+		LEFT JOIN dic d4
+		ON d4.code = m.education
+		LEFT JOIN dic d5
+		ON d5.code = m.work_experience
+		LEFT JOIN dic d6
+		ON d6.code = m.industry
+		LEFT JOIN dic d7
+		ON d7.code = m.salary
+		LEFT JOIN dic d8
+		ON d8.code = m.name
+		LEFT JOIN dic d9
+		ON d9.code = m.work_experience
+		WHERE m.id != '0'
+		<if test=" name != null and name != ''">
+			and m.name like CONCAT(CONCAT('%',#{name}),'%')
+		</if>
+		<if test=" cid != null and cid != ''">
+			and m.cid = #{cid}
+		</if>
+		<if test=" province != null  and province != '' ">
+			and m.province = #{province}
+		</if>
+		<if test=" city != null  and city != '' ">
+			and m.city = #{city}
+		</if>
+		<if test=" industry != null  and industry != '' ">
+			and m.industry = #{industry}
+		</if>
+		<if test=" salary != null  and salary != '' ">
+			and m.salary = #{salary}
+		</if>
+		<if test=" education != null  and education != '' ">
+			and m.education = #{education}
+		</if>
+		<if test=" jobDescription != null  and jobDescription != '' ">
+			and m.job_description = #{jobDescription}
+		</if>
+		<if test=" workExperience != null  and workExperience != '' ">
+			and m.work_experience = #{workExperience}
+		</if>
+		<if test=" workNature != null  and workNature != '' ">
+			and m.work_nature = #{workNature}
+		</if>
+		<if test=" stateFlag == 1 ">
+			and m.state = 1
+		</if>
+		<if test=" stateFlag == 2 ">
+			and m.state != 0
+		</if>
+		order by ${orderBy}
+	</select>
+
+	<select id="getAppCelebrityApplyList" parameterType="yll.service.model.vo.RecruitEnterpriseDetailsVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		m.id, ifnull(m.name, '') name,
+		ifnull(d8.codename, '') nameStr,
+		ifnull(m.province, '') province,
+		ifnull(d2.name, '') provinceStr,
+		ifnull(m.city, '') city,
+		ifnull(d3.name, '') cityStr,
+		ifnull(m.education, '') education,
+		ifnull(d4.codename, '') educationStr,
+		ifnull(m.work_nature, '') work_nature,
+		ifnull(m.work_experience, '') work_experience,
+		ifnull(d5.codename, '') workExperienceStr,
+		ifnull(m.industry, '') industry,
+		ifnull(d6.codename, '') industryStr,
+		ifnull(m.salary, '') salary,
+		ifnull(d7.codename, '') salaryStr,
+		ifnull(m.state, 1) state,
+		ifnull(e.enterprise_name, '') enterprise_name,
+		ifnull(mc.mcn_name, '') mcnName,
+		ifnull(d1.codename, '') staffStr,
+		ifnull(d9.codename, '') experienceStr
+		FROM
+		<include refid="TABLE" /> m
+		LEFT JOIN
+		dh_enterprise e
+		ON e.creator = m.cid
+		LEFT JOIN
+		dh_mcn mc
+		ON mc.creator = m.cid
+		LEFT JOIN
+		dic d1
+		ON d1.code = e.staff
+		LEFT JOIN area d2
+		ON d2.id = m.province
+		LEFT JOIN area d3
+		ON d3.id = m.city
+		LEFT JOIN dic d4
+		ON d4.code = m.education
+		LEFT JOIN dic d5
+		ON d5.code = m.work_experience
+		LEFT JOIN dic d6
+		ON d6.code = m.industry
+		LEFT JOIN dic d7
+		ON d7.code = m.salary
+		LEFT JOIN dic d8
+		ON d8.code = m.name
+		LEFT JOIN dic d9
+		ON d9.code = m.work_experience
+		LEFT JOIN dh_recruit_celebrity_apply rca
+		ON rca.redid = m.id
+		WHERE m.id != '0'
+		<if test=" name != null and name != ''">
+			and m.name like CONCAT(CONCAT('%',#{name}),'%')
+		</if>
+		<if test=" cid != null and cid != ''">
+			and rca.cid = #{cid}
+		</if>
+	</select>
+
+	<select id="getAppDetails" parameterType="yll.service.model.vo.RecruitEnterpriseDetailsVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		m.id,
+		ifnull(m.cid, '') cid,
+		ifnull(m.name, '') name,
+		ifnull(d8.codename, '') nameStr,
+		ifnull(m.province, '') province,
+		ifnull(d2.name, '') provinceStr,
+		ifnull(m.city, '') city,
+		ifnull(d3.name, '') cityStr,
+		ifnull(m.education, '') education,
+		ifnull(d4.codename, '') educationStr,
+		ifnull(m.work_nature, '') work_nature,
+		ifnull(m.work_experience, '') work_experience,
+		ifnull(d5.codename, '') workExperienceStr,
+		ifnull(m.industry, '') industry,
+		ifnull(d6.codename, '') industryStr,
+		ifnull(m.salary, '') salary,
+		ifnull(d7.codename, '') salaryStr,
+		ifnull(m.state, 1) state,
+		ifnull(m.job_description, '') job_description, ifnull(m.recruit_description, '') recruit_description, ifnull(m.quantity, '') quantity,
+		CASE
+		WHEN
+		TIMESTAMPDIFF(DAY,now(),m.end_time) = 0
+		THEN
+		0
+		ELSE
+		TIMESTAMPDIFF(DAY,now(),m.end_time)
+		END
+		AS endTimeStr
+		FROM
+		<include refid="TABLE" /> m
+		LEFT JOIN area d2
+		ON d2.id = m.province
+		LEFT JOIN area d3
+		ON d3.id = m.city
+		LEFT JOIN dic d4
+		ON d4.code = m.education
+		LEFT JOIN dic d5
+		ON d5.code = m.work_experience
+		LEFT JOIN dic d6
+		ON d6.code = m.industry
+		LEFT JOIN dic d7
+		ON d7.code = m.salary
+		LEFT JOIN dic d8
+		ON d8.code = m.name
+		LEFT JOIN dic d9
+		ON d9.code = m.work_experience
+		WHERE m.id != '0'
+		<if test=" id != null and id != ''">
+			and m.id = #{id}
+		</if>
+	</select>
+
+	<delete id="deleteByCid" parameterType="java.lang.String">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		cid =#{cid}
+	</delete>
+
+
+	<select id="findBySchedule" parameterType="yll.service.model.vo.RecruitEnterpriseDetailsVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		<include refid="COLUMNS" />,
+		CASE
+		WHEN
+		TIMESTAMPDIFF(DAY,now(), end_time) = 0
+		THEN
+		0
+		ELSE
+		TIMESTAMPDIFF(DAY,now(), end_time)
+		END
+		AS endTimeStr
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
+	</select>
+
+</mapper>

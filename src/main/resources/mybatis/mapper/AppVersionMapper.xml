@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="yll.mapper.AppVersionMapper">
+
+	<resultMap id="RESULT_MAP" type="yll.entity.AppVersion">
+		<id property="id" column="id" jdbcType="INTEGER" />
+		<result property="versionType" column="version_type" jdbcType="VARCHAR" />
+		<result property="versionName" column="version_name" jdbcType="VARCHAR" />
+		<result property="creator" column="creator" jdbcType="VARCHAR" />
+		<result property="createdTime" column="created_time" jdbcType="TIMESTAMP" />
+		<result property="versionDetails" column="version_details" jdbcType="VARCHAR" />
+		<result property="fileUrl" column="file_url" jdbcType="VARCHAR" />
+		<result property="state" column="state" jdbcType="INTEGER" />
+		<result property="versionCode" column="version_code" jdbcType="INTEGER" />
+	</resultMap>
+
+	<sql id="TABLE">app_version</sql>
+
+	<sql id="COLUMNS">
+		id, version_type, version_name, creator, created_time, version_details, file_url, state, version_code
+	</sql>
+
+	<sql id="VALUES">
+		#{id}, #{versionType}, #{versionName},#{creator}, #{createdTime}, #{versionDetails}, #{fileUrl}, #{state}, #{versionCode}
+	</sql>
+
+	<sql id="SET_VALUES">
+		<trim suffixOverrides=",">
+			<if test=" versionType != null">
+				version_type = #{versionType},
+			</if>
+			<if test=" versionName != null">
+				version_name = #{versionName},
+			</if>
+			<if test=" creator != null">
+				creator = #{creator},
+			</if>
+			<if test=" createdTime != null">
+				created_time = #{createdTime},
+			</if>
+			<if test=" versionDetails != null">
+				version_details = #{versionDetails},
+			</if>
+			<if test=" fileUrl != null">
+				file_url = #{fileUrl},
+			</if>
+			<if test=" state != null">
+				state = #{state},
+			</if>
+			<if test=" versionCode != null">
+				version_code = #{versionCode},
+			</if>
+		</trim>
+	</sql>
+
+	<sql id="WHERES">
+		<if test=" id != null and id != ''">
+			and id = #{id}
+		</if>
+		<if test=" versionName != null and versionName != ''  ">
+			and version_name = #{versionName}
+		</if>
+		<if test=" state != null">
+			and state = #{state}
+		</if>
+	</sql>
+
+	<update id="save">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		) VALUES (
+		<include refid="VALUES" />
+		)
+		ON DUPLICATE KEY UPDATE
+		<include refid="SET_VALUES" />
+	</update>
+
+	<insert id="insert" parameterType="yll.entity.AppVersion">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		)
+		VALUES
+		(
+		<include refid="VALUES" />
+		)
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.String">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		id =#{id}
+	</delete>
+
+	<delete id="deleteAll">
+		DELETE FROM
+		<include refid="TABLE" />
+	</delete>
+
+	<update id="update" parameterType="yll.entity.AppVersion">
+		UPDATE
+		<include refid="TABLE" />
+		SET
+		<include refid="SET_VALUES" />
+		WHERE
+		id = #{id}
+	</update>
+
+	<select id="getById" parameterType="java.lang.String" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id =#{id}
+	</select>
+
+	<select id="findAll" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+	</select>
+
+	<select id="findBy" parameterType="yll.entity.AppVersion" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY id ASC
+	</select>
+
+	<select id="findByApp" parameterType="yll.entity.AppVersion" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY id DESC
+		limit 0,1
+	</select>
+
+</mapper>

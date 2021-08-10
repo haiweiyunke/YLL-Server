@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>认证编辑</title>
+<style>
+.el-picker-panel {
+	height: 320px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.el-date-editor.el-input, .el-input-number--small {
+	width: 100%;
+}
+
+.unit {
+	text-align: right;
+	line-height: 40px;
+}
+
+/*@media screen and(-ms-high-contrast:active),(-ms-high-contrast:none){
+	.el-picker-panel {
+		height: 200px;
+	}
+}*/
+</style>
+</head>
+<body>
+	<div id="vm"  v-cloak  class="vm">
+		<form is="el-form" :model="form" ref="form" :rules="rules" style="width: 100%;">
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="用户名" label-width="110px" >
+						<input is="el-input" v-model="form.name" controls-position="right" size="small" :disabled="true" autocomplete="off">
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="许可证号码" label-width="110px">
+						<input is="el-input" v-model="form.licences" controls-position="right" :disabled="true" autocomplete="off">
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="许可证照片" label-width="110px">
+						<a :href="form.licencesImg" target="_blank">
+							<img :src="form.licencesImg" alt="许可证照片"/>
+						</a>
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="状态" label-width="110px" prop="state">
+						<div is="el-radio" v-model="form.state" :label="0">未通过</div>
+						<div is="el-radio" v-model="form.state" :label="1">待审核</div>
+						<div is="el-radio" v-model="form.state" :label="2">通过</div>
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="审核意见" label-width="110px" prop="remark">
+						<input is="el-input" v-model="form.remark" controls-position="right" :min="1" :max="9999" />
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-form-item" align="center" style="margin-top: 20px;">
+					<button is="el-button" type="success" @click="confirm('form')">确定</button>
+					<button is="el-button" @click="cancel()">取消</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					id : '',
+					licences : '',
+					licencesImg : '',
+					state : 0,
+					remark : '',
+					enabled : '1'
+				},
+				rules:{
+					remark:[{
+						required : false,
+						message : '请输入审核建议',
+						trigger : 'blur'
+					}],
+
+				},
+				types : []
+			},
+			created : function() {
+			},
+			mounted : function() {
+				var vm = this, search = __.decodeUrlParams();
+				var id = search.id;
+				if (!__.isEmpty(id)) {
+					__.api('GET', '/rest/auth/' + id, {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						var form = result.data;
+						form.enabled = String(form.enabled);
+						form.licencesImg = '/rest/file/preview?path=' + form.licencesImg;
+						vm.form = form;
+					});
+				}
+			},
+			methods : {
+				confirm : function(formName) {
+					var vm = this, search = __.decodeUrlParams(),
+					id = search.id;
+					var params = {}, form = this.form;
+					if (form.state == 0 && !__.isEmpty(id) && __.isEmpty(form.remark)) {
+						vm.$message.info("请输入审核意见");
+						return ;
+					}
+					this.$refs[formName].validate(function(valid) {
+						if(valid){
+							__.api('POST', '/rest/auth/save', form, function(result) {
+								if (__.err(result)) {
+									vm.$message.warning(result.message);
+								} else {
+									vm.$message.info("保存成功");
+									__.dialog.close();
+								}
+							});
+						}else{
+							return false
+						}
+					})
+	
+				},
+				cancel : function() {
+					__.dialog.close();
+				},
+			}
+		})
+
+	</script>
+</body>
+</html>

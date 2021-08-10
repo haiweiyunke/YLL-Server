@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>达人新增和编辑</title>
+<style>
+.el-picker-panel {
+	height: 320px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.el-date-editor.el-input, .el-input-number--small {
+	width: 100%;
+}
+
+.unit {
+	text-align: right;
+	line-height: 40px;
+}
+
+/*@media screen and(-ms-high-contrast:active),(-ms-high-contrast:none){
+	.el-picker-panel {
+		height: 200px;
+	}
+}*/
+</style>
+</head>
+<body>
+	<div id="vm"  v-cloak  class="vm">
+		<form is="el-form" :model="form" ref="form" :rules="rules" style="width: 100%;">
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="真实姓名" label-width="110px" prop="realName">
+						<input is="el-input" v-model="form.realName" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="身份证号" label-width="110px" prop="realName">
+						<input is="el-input" v-model="form.idCard" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="机构(MCN)" label-width="110px" prop="mcnId">
+						<div is="el-select" v-model="form.mcnId" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in types"
+								 :key="item.creator"
+								 :label="item.mcnName"
+								 :value="item.creator">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="身高" label-width="110px" prop="height">
+						<input is="el-input" v-model="form.height" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="微博" label-width="110px" prop="microblog">
+						<input is="el-input" v-model="form.microblog" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="链接费用(元)" label-width="110px" prop="linkFee">
+						<input is="el-input" v-model="form.linkFee" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="出场费(元)" label-width="110px" prop="attendanceFee">
+						<input is="el-input" v-model="form.attendanceFee" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="专场费(元)" label-width="110px" prop="specialFee">
+						<input is="el-input" v-model="form.specialFee" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="线下活动费用(元)" label-width="110px" prop="underFee">
+						<input is="el-input" v-model="form.underFee" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="带货佣金(%)" label-width="110px" prop="commission">
+						<input is="el-input" v-model="form.commission" placeholder='请输入带货佣金，不要录入"%"' controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="公开状态" label-width="110px" prop="disclosure">
+						<div is="el-radio" v-model="form.disclosure" :label="1">不公开</div>
+						<div is="el-radio" v-model="form.disclosure" :label="2">公开</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="擅长领域" label-width="110px" prop="expertise">
+						<div is="el-checkbox" :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</div>
+						<div style="margin: 15px 0;"></div>
+						<div is="el-checkbox-group" v-model="checkedExpertise" @change="handleCheckedDicChange">
+							<div is="el-checkbox" v-for="item in expertiseOptions" :label="item.code" :key="item.codename" >{{item.codename}}</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="合作类型" label-width="110px" prop="cooperation">
+						<div is="el-checkbox" :indeterminate="isIndeterminateCoo" v-model="checkAllCoo" @change="handleCheckAllChangeCoo">全选</div>
+						<div style="margin: 15px 0;"></div>
+						<div is="el-checkbox-group" v-model="checkedCooperation" @change="handleCheckedDicChangeCoo">
+							<div is="el-checkbox" v-for="item in cooperationOptions" :label="item.code" :key="item.codename" >{{item.codename}}</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row" v-if="isOther">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="其他擅长" label-width="110px" prop="other">
+						<input is="el-input" v-model="form.other" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="个人描述" label-width="110px" prop="description">
+						<div is="el-input" type="textarea" autosize v-model="form.description" ></div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="申请平台" label-width="110px" prop="height" >
+						{{form.platformListStr}}
+						<!--<input is="el-input" v-model="form.platformListStr" controls-position="right" size="small" autocomplete="off">-->
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="申请时间" label-width="110px" prop="height" >
+						{{form.createdTimeStr}}
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="形象照片" label-width="110px">
+						<div is="el-upload"
+							 class="upload-demo"
+							 :accept="imageAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="personalPortraits"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="personalPortraitsFiles"
+							 list-type="picture">	 <!--  切换时，加上  :http-request="uploadFile" ，覆盖elui原"action"动作 -->
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{imageAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="身份证正面" label-width="110px">
+						<div is="el-upload"
+							 class="upload-demo"
+							 :accept="imageAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="image"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="imageFiles"
+							 list-type="picture">	 <!--  切换时，加上  :http-request="uploadFile" ，覆盖elui原"action"动作 -->
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{imageAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="身份证反面" label-width="110px">
+						<div is="el-upload"
+							 class="upload-demo"
+							 :accept="imageAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="picture"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="pictureFiles"
+							 list-type="picture">	 <!--  切换时，加上  :http-request="uploadFile" ，覆盖elui原"action"动作 -->
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{imageAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<div is="el-row" v-if="isExamine =='2'" >
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="审核状态" label-width="110px" prop="state">
+						<div is="el-radio" v-model="form.state" :label="1">待审核</div>
+						<div is="el-radio" v-model="form.state" :label="2">通过</div>
+						<div is="el-radio" v-model="form.state" :label="3">未通过</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row" v-if="isExamine =='2'">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="审核意见" label-width="110px" prop="description">
+						<div is="el-input" type="textarea" autosize v-model="form.remark" ></div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-form-item" align="center" style="margin-top: 20px;">
+					<button is="el-button" type="success" @click="confirm('form')">确定</button>
+					<button is="el-button" @click="cancel()">取消</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					id : '',
+					realName : '',
+					idCard : '',
+					image : '',
+					picture : '',
+					mcnId : '',
+					expertise : '',
+					cooperation : '',
+					description : '',
+					personalPortraits : '',
+					height : '',
+					microblog : '',
+					disclosure : '',
+					linkFee : '',
+					attendanceFee : '',
+					specialFee : '',
+					underFee : '',
+					other : '',
+					commission : '',
+					remark : '',
+					enabled : '0',
+					state : 2
+				},
+				rules:{
+					realName:[
+							{
+								required : true,
+								message : '请输入真实姓名',
+								trigger : 'blur'
+							},
+							{ type: 'string', min: 1, max: 50, message: '不允许大于50个字符', trigger: 'blur' }
+					],
+					description:[{
+						required : false,
+						message : '请输入个人描述',
+						trigger : 'blur'
+					}],
+					type:[{
+						required : false,
+						message : '请输入所属机构',
+						trigger : 'blur'
+					}]
+				},
+				coverFiles: [],
+                imageFiles: [],
+				pictureFiles: [],
+				personalPortraitsFiles: [],
+                videoFiles: [],
+				types : [],
+				uploadType : "",
+				uploadUrl : cc.uploadUrl,
+				imageAccept : cc.imageAccept,
+				videoAccept : cc.videoAccept,
+				checkAll: false,
+				checkAllCoo: false,
+				expertiseOptions: [],
+				expertiseOptionsStr: [],
+				checkedExpertise : [],
+				checkedExpertiseStr : [],
+				cooperationOptions: [],
+				cooperationOptionsStr: [],
+				checkedCooperation : [],
+				checkedCooperationStr : [],
+				isIndeterminate: false,
+				isIndeterminateCoo: false,
+				isOther: false,
+				isExamine: 1
+			},
+			created : function() {
+			},
+			mounted : function() {
+				var vm = this, search = __.decodeUrlParams();
+				var id = search.id;
+				vm.isExamine = search.isExamine;	//审核标识。1-非审核，2-审核页
+				if (!__.isEmpty(id)) {
+					__.api('GET', '/rest/internet-celebrity/creator/' + id, {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						var form = result.data;
+						form.enabled = String(form.enabled);
+						vm.form = form;
+						//多选框处理
+						var exp = vm.form.expertise;
+						if(!!exp){
+							vm.checkedExpertise = exp.split(',');
+							vm.checkedExpertiseStr = vm.form.expertise;
+							vm.otherExpertise();
+						}
+						var coo = vm.form.cooperation;
+						if(!!coo){
+							vm.checkedCooperation = coo.split(',');
+							vm.checkedCooperationStr = vm.form.cooperation;
+							// vm.otherCooperation();
+						}
+						//图片回显
+						vm.personalPortraitsFiles = cc.display(vm.form.personalPortraits, "personalPortraits");
+						vm.imageFiles = cc.display(vm.form.image, "image");
+						vm.pictureFiles = cc.display(vm.form.picture, "picture");
+					});
+				}
+				vm.getTypes();
+				vm.getDic();
+			},
+			methods : {
+				confirm : function(formName) {
+					var vm = this;
+					var params = {}, form = this.form;
+					//去除尾部逗号
+					cc.trim(form);
+					//拼接复选框值
+					vm.form.expertise = vm.checkedExpertise.toString();
+					vm.form.cooperation = vm.checkedCooperation.toString();
+					if(!!!vm.form.cooperation){
+						vm.$message.warning("最少勾选一项合作类型");
+						return;
+					}
+					console.log(form)
+					this.$refs[formName].validate(function(valid) {
+						console.log('==============')
+						console.log(form)
+						if(!!!form.mcnId){
+							form.mcnId = '';
+						}
+						if(valid){
+							__.api('POST', '/rest/internet-celebrity/save', form, function(result) {
+								if (__.err(result)) {
+									vm.$message.warning(result.message);
+								} else {
+									vm.$message.info("保存成功");
+									__.dialog.close();
+								}
+							});
+						}else{
+							return false
+						}
+					})
+
+				},
+				cancel : function() {
+					__.dialog.close();
+				},
+				getTypes : function() {
+					var vm = this;
+					//数据字典类别
+					__.api('GET', '/rest/mcn/all', {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							vm.types = result.data;
+							vm.types.unshift({
+								id: '',
+								mcnName: '无'
+							})
+						}
+					});
+				},
+				getDic : function() {
+					var vm = this;
+					//数据字典类别
+					__.api('POST', '/rest/dic/all', {'targetId' : 'expertise'}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							vm.expertiseOptions = result.data;
+							for (let i = 0; i < vm.expertiseOptions.length; i++) {
+								vm.expertiseOptionsStr.push(vm.expertiseOptions[i].code);
+							}
+						}
+					});
+					//合作类型
+					__.api('POST', '/rest/dic/all', {'targetId' : 'cooperation'}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							vm.cooperationOptions = result.data;
+							for (let i = 0; i < vm.cooperationOptions.length; i++) {
+								vm.cooperationOptionsStr.push(vm.cooperationOptions[i].code);
+							}
+						}
+					});
+				},
+				handleCheckAllChange : function(val) {
+					var vm = this;
+					vm.checkedExpertise = val ? vm.expertiseOptionsStr : [];
+					vm.isIndeterminate = false;
+					vm.checkedExpertiseStr = vm.checkedExpertise.toString();
+					console.log('11111');
+					console.log(vm.checkedExpertiseStr);
+					vm.otherExpertise();
+				},
+				handleCheckedDicChange : function(value) {
+					var vm = this;
+					let checkedCount = value.length;
+					vm.checkAll = checkedCount === vm.expertiseOptions.length;
+					vm.isIndeterminate = checkedCount > 0 && checkedCount < vm.expertiseOptions.length;
+					vm.checkedExpertiseStr = vm.checkedExpertise.toString();
+					console.log('22222');
+					console.log(vm.checkedExpertiseStr);
+					vm.otherExpertise();
+				},
+				handleCheckAllChangeCoo : function(val) {
+					var vm = this;
+					vm.checkedCooperation = val ? vm.cooperationOptionsStr : [];
+					vm.isIndeterminateCoo = false;
+					vm.checkedCooperationStr = vm.checkedCooperation.toString();
+					console.log('11111');
+					console.log(vm.checkedCooperationStr);
+					// vm.otherCooperation();
+				},
+				handleCheckedDicChangeCoo : function(value) {
+					var vm = this;
+					let checkedCount = value.length;
+					vm.checkAllCoo = checkedCount === vm.cooperationOptions.length;
+					vm.isIndeterminateCoo = checkedCount > 0 && checkedCount < vm.cooperationOptions.length;
+					vm.checkedCooperationStr = vm.checkedCooperation.toString();
+					console.log('22222');
+					console.log(vm.checkedCooperationStr);
+					// vm.otherCooperation();
+				},
+
+				/**
+				 * 是否展示其他擅长
+				 */
+				otherExpertise : function() {
+					var vm = this;
+					var ret = vm.checkedExpertiseStr.indexOf('e-other');
+					if(ret > -1){
+						vm.isOther = true;
+					} else{
+						vm.isOther = false;
+					}
+				},
+				/**
+				 * 是否展示其他合作类型
+				 */
+				otherCooperation : function() {
+					var vm = this;
+					var ret = vm.checkedCooperationStr.indexOf('e-other');
+					if(ret > -1){
+						vm.isOther = true;
+					} else{
+						vm.isOther = false;
+					}
+				},
+
+				/**
+				 * COS上传
+				 * @param file
+				 * @param fileList
+				 */
+				uploadFile : function(param){
+					var vm = this;
+					//上传视频大小限制（示例中为10MB）
+					// const isLt10M = file.size / 1024 / 1024  < 10;
+
+					var file = param.file;
+					var data = param.data;
+					vm.uploadType = data;
+					cosUtils.upload(param, vm.form, data);
+				},
+				handleRemove : function(file, fileList) {
+					vm = this;
+					//删除文件时
+					cc.handleRemove(file, fileList, vm.form, file.type);
+				},
+				handlePreview : function(file) {
+					vm = this;
+					//点击已上传的文件链接时
+					cc.handlePreview(file, vm.form);
+				},
+				handleSuccess : function(response,file,fileList) {
+					vm = this;
+					file.path = response.data;
+					//文件上传成功时
+					cc.handleSuccess(response, file, fileList, vm.form, vm.uploadType);
+				}
+			}
+		})
+
+	</script>
+</body>
+</html>

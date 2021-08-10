@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>轮播新增和编辑</title>
+<style>
+.el-picker-panel {
+	height: 320px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.el-date-editor.el-input, .el-input-number--small {
+	width: 100%;
+}
+
+.unit {
+	text-align: right;
+	line-height: 40px;
+}
+
+/*@media screen and(-ms-high-contrast:active),(-ms-high-contrast:none){
+	.el-picker-panel {
+		height: 200px;
+	}
+}*/
+</style>
+</head>
+<body>
+	<div id="vm"  v-cloak  class="vm">
+		<form is="el-form" :model="form" ref="form" :rules="rules" style="width: 100%;">
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="类别" label-width="110px" prop="type">
+						<div is="el-select" v-model="form.type" @change="changeType()" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in types"
+								 :key="item.code"
+								 :label="item.codename"
+								 :value="item.code">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 达人 -->
+			<div is="el-row" v-if="form.type=='customer' ">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="登录名" label-width="110px" prop="id">
+						<div is="el-select" v-model="form.targetId" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in dataList"
+								 :key="item.id"
+								 :label="item.username"
+								 :value="item.id">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 资讯 -->
+			<div is="el-row" v-if="form.type=='information' ">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="资讯" label-width="110px" prop="id">
+						<div is="el-select" v-model="form.targetId" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in dataList"
+								 :key="item.id"
+								 :label="item.name"
+								 :value="item.id">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 任务 -->
+			<div is="el-row" v-if="form.type=='task' ">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="任务主题" label-width="110px" prop="id">
+						<div is="el-select" v-model="form.targetId" filterable placeholder="请选择" >
+							<div is="el-option"
+								 v-for="item in dataList"
+								 :key="item.id"
+								 :label="item.taskName"
+								 :value="item.id">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 发布会 -->
+			<div is="el-row" v-if="form.type=='conferences' ">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="发布会主题" label-width="110px" prop="id">
+						<div is="el-select" v-model="form.targetId" filterable placeholder="请选择" >
+							<div is="el-option"
+								 v-for="item in dataList"
+								 :key="item.id"
+								 :label="item.theme"
+								 :value="item.id">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="序号" label-width="110px" prop="ordinal">
+						<input is="el-input" v-model="form.ordinal" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-form-item" align="center" style="margin-top: 20px;">
+					<button is="el-button" type="success" @click="confirm('form')">确定</button>
+					<button is="el-button" @click="cancel()">取消</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					id : '',
+					targetId : '',
+					name : '',
+					img : '',
+					type : '',
+					remark : '',
+					state : '',
+					enabled : '0'
+				},
+				rules:{
+					type:[{
+						required : true,
+						message : '请选择类别',
+						trigger : 'blur'
+					}]
+				},
+				types : [
+					{
+						code : 'information',
+						codename : '资讯'
+					},
+					{
+						code : 'customer',
+						codename : '达人'
+					},
+					{
+						code : 'task',
+						codename : '任务'
+					}/*,
+					{
+						code : 'conferences',
+						codename : '发布会'
+					}*/
+				],
+				dataList: [],
+				coverFiles: [],
+				imageFiles: [],
+				videoFiles: [],
+				coursewaresFiles: [],
+				uploadType : "",
+				uploadUrl : cc.uploadUrl,
+				imageAccept : cc.imageAccept,
+				videoAccept : cc.videoAccept,
+				coursewaresAccept : cc.coursewaresAccept
+			},
+			created : function() {
+			},
+			mounted : function() {
+				var vm = this, search = __.decodeUrlParams();
+				var id = search.id;
+				if (!__.isEmpty(id)) {
+					__.api('GET', '/rest/slide/' + id, {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						var form = result.data;
+						form.enabled = String(form.enabled);
+						vm.form = form;
+						vm.changeType();
+					});
+				}
+			},
+			methods : {
+				confirm: function (formName) {
+					var vm = this;
+					var params = {}, form = this.form;
+					this.$refs[formName].validate(function (valid) {
+						if (valid) {
+							__.api('POST', '/rest/slide/save', form, function (result) {
+								if (__.err(result)) {
+									vm.$message.warning(result.message);
+								} else {
+									vm.$message.info("保存成功");
+									__.dialog.close();
+								}
+							});
+						} else {
+							return false
+						}
+					})
+				},
+				changeType: function () {
+					var vm = this;
+					var t = vm.form.type;
+					var path = '';
+					if (t == 'information') {
+						path = '/rest/information/slide/list';
+					} else if (t == 'customer') {
+						path = '/rest/internet-celebrity/slide/list';
+					} else if (t == 'task') {
+						path = '/rest/task/slide/list';
+					} else if (t == 'conferences') {
+						path = '/rest/conferences/slide/list';
+					}
+					__.api('POST', path, {}, function (result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							vm.dataList = result.data;
+						}
+					});
+				},
+				cancel: function () {
+					__.dialog.close();
+				},
+				/**
+				 * COS上传
+				 * @param file
+				 * @param fileList
+				 */
+				uploadFile: function (param) {
+					var vm = this;
+					//上传视频大小限制（示例中为10MB）
+					// const isLt10M = file.size / 1024 / 1024  < 10;
+
+					var file = param.file;
+					var data = param.data;
+					vm.uploadType = data;
+					cosUtils.upload(param, vm.form, data);
+				},
+				handleRemove: function (file, fileList) {
+					vm = this;
+					//删除文件时
+					cc.handleRemove(file, fileList, vm.form, file.type);
+				},
+				handlePreview: function (file) {
+					vm = this;
+					//点击已上传的文件链接时
+					cc.handlePreview(file, vm.form);
+				},
+				handleSuccess: function (response, file, fileList) {
+					vm = this;
+					file.path = response.data;
+					//文件上传成功时
+					cc.handleSuccess(response, file, fileList, vm.form, vm.uploadType);
+				}
+			}
+		})
+
+	</script>
+</body>
+</html>

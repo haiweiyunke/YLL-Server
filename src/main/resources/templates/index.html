@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<object th:replace="_include/_meta"></object>
+<link rel="stylesheet" type="text/css" th:href="@{/s/assets/index.css}" />
+<title>管理平台</title>
+</head>
+<style>
+	.mdlist-warp {
+		width: 1255px
+	}
+</style>
+<body>
+	<div class="navIndex" id="vm">
+		<div class="banner">
+			<img th:src="@{s/assets/images/index-bj.png}" />
+		</div>
+		<div class="head">
+			<div>
+				<!--<img th:src="@{s/assets/images/logo.png}" />-->
+			</div>
+			<div>
+				<i style="vertical-align: sub;"><img @click="logout()" th:src="@{s/assets/images/guanbi1.png}"></i>
+			</div>
+			<div>
+				<i><img th:src="@{s/assets/images/touxiang.png}" /><span>用户名：<a herf="#" __:text="user.name" style="color: #fff;"></a></span></i>
+			</div>
+		</div>
+		<div class="module">
+			<h3>模块入口</h3>
+			<p>以此进入管理平台的各个模块</p>
+		</div>
+		<div class="module-list">
+			<div class="mdlist-warp">
+				<div v-for="(module,index) in modules" class="module-item" @click="go(module)">
+					<fieldset>
+						<img :src="module.img"/>
+						<figcaption>{{module.name}}</figcaption>
+					</fieldset>
+				</div>
+			</div>
+		</div>
+		<!-- <div class="module-list">
+			<div class="mdlist-warp">
+				<div class="module-item">
+					<fieldset>
+						<img th:src="@{s/assets/images/nav-shuj.png}" />
+						<figcaption>数据管理</figcaption>
+					</fieldset>
+				</div>
+				<div class="module-item">
+					<fieldset>
+						<img th:src="@{s/assets/images/nav-feiy.png}" />
+						<figcaption>费用管理</figcaption>
+					</fieldset>
+				</div>
+				<div class="module-item">
+					<fieldset>
+						<img th:src="@{s/assets/images/nav-shujuy.png}" />
+						<figcaption>数据源管理</figcaption>
+					</fieldset>
+				</div>
+				<div class="module-item">
+					<fieldset>
+						<img th:src="@{s/assets/images/nav-xitong.png}" />
+						<figcaption>系统管理</figcaption>
+					</fieldset>
+				</div>
+			</div>
+		</div> -->
+		<div is="el-row" class="navLink">—— 版权所有： ——</div>
+	</div>
+	<div class="titl">管理平台</div>
+	<script th:inline="javascript">
+		new Vue({
+			el : '#vm',
+			data : {
+				modules : [{
+					id : '80000',
+					name : '用户管理',
+					img : __.url('/s/assets/images/nav-yh.png'),
+					perm : /*[[ ${#__.hasPerm(70000)} ]]*/false
+				}, {
+					id : '20000',
+					name : '资讯管理',
+					img : __.url('/s/assets/images/nav-zx.png'),
+					perm : /*[[ ${#__.hasPerm(10000)} ]]*/false
+				} , {
+					id : '30000',
+					name : '培训管理',
+					img : __.url('/s/assets/images/nav-xx.png'),
+					perm : /*[[ ${#__.hasPerm(30000)} ]]*/false
+				},{
+					id : '40000',
+					name : '发布会管理',
+					img : __.url('/s/assets/images/nav-zb.png'),
+					perm : /*[[ ${#__.hasPerm(40000)} ]]*/false
+				}, {
+					id : '50000',
+					name : '任务管理',
+					img : __.url('/s/assets/images/nav-hd.png'),
+					perm : /*[[ ${#__.hasPerm(40000)} ]]*/false
+				} , {
+					id : '70000',
+					name : '店铺管理',
+					img : __.url('/s/assets/images/nav-hd.png'),
+					perm : /*[[ ${#__.hasPerm(40000)} ]]*/false
+				} , {
+                    id : '10000',
+                    name : '系统管理',
+                    img : __.url('/s/assets/images/nav-xt.png'),
+                    perm : /*[[ ${#__.hasPerm(10000)} ]]*/false
+                } ]
+			},
+			mounted : function() {
+				var vm = this;
+			},
+			methods : {
+				go : function(module) {
+					var vm = this;
+					if (module.perm) {
+						__.navigateTo('/home.html#module=' + module.id);
+					}else{
+						this.$message.warning("暂无权限,请点击其他模块进行操作!");
+					}
+				},
+				logout : function() {
+					__.api('POST', '/rest/logout', {}, function(result) {
+						window.location.href = window.location.href;
+					});
+				}
+			}
+		});
+	</script>
+</body>
+
+</html>

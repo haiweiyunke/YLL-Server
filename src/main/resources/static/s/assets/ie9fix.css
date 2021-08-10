@@ -1,0 +1,41 @@
+.el-range-editor .el-range-input{
+	-ms-transform:translate(0,-6px); 
+}
+.mdlist-warp {
+	width:820px;
+	text-align: center;
+	margin: 0 auto;
+	box-sizing: border-box;
+	padding-top: 4%;
+	clear: both;
+}
+
+.module-item {
+	margin: 0 6%;
+	padding: 0;
+	display: inline-block;
+	_display: inline;
+	*display: inline;
+	zoom: 1;
+	text-align: center;
+    cursor: pointer
+}
+.el-message{
+	position: absolute;
+	top:20px;
+	left:50%;
+	margin: 0 auto;
+	overflow:hidden;
+	-ms-transform: translateX(-50%);
+}
+.el-dialog__wrapper {
+  top:inherit;
+}
+
+.el-message-box__status{
+	top:inherit;
+}
+
+.elseIE9{
+	display:none;
+}

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>用户管理</title>
+</head>
+<body>
+	<div is="el-row" id="vm" v-cloak>
+		<div is="el-col" :span="24" class="warp">
+			<div is="el-row" class="element-row ">
+				<div is="el-col" :span="2" style="height: 55px;">
+					<div is="el-button" size="small" type="success" icon="el-icon-plus" @click="add()">新增</div>
+				</div>
+
+				<!--Excel 导入导出  -->
+				<div is="el-col" :span="4" style="height: 94px;">
+					<div is="el-button" size="small" type="success" icon="el-icon-document" @click="importExcel()">导入</div>
+					<!--<div is="el-upload" class="upload-demo"
+						 :accept="excelAccept"
+						 :action="excelUploadUrl"
+						 :on-preview="handlePreview"
+						 :on-success="handleSuccess"
+						 multiple
+						 :limit="1"
+						 :file-list="fileList">
+						<el-button size="small" type="success" icon="el-icon-document" >导入</el-button>
+						<div slot="tip" class="el-upload__tip">只能上传{{excelAccept}}文件，且不超过5MB</div>
+					</div>-->
+					<div is="el-button" size="small" type="success" icon="el-icon-document" @click="exportExcel()">导出</div>
+				</div>
+
+				<!-- Excel图片文件夹上传  -->
+				<!--<div is="el-col" :span="4" style="height: 94px;">
+					<div is="el-upload"
+						 class="upload-demo"
+						 :http-request="uploadFile"
+						 :on-success="handleSuccessFile"
+						 :file-list="folderList">
+						<el-button size="small" type="primary">上传图片文件夹</el-button>
+						<div slot="tip" class="el-upload__tip">请上传文件夹，命名规则为年月日+自定义序号，如2020062901</div>
+					</div>
+				</div>-->
+
+				<!--TODO Excel 导出
+					<div is="el-col" :span="2" style="margin-left: -109px;">
+					<div is="el-button" type="success" size="small" icon="el-icon-download" @click="exportExcel()">导出达人记录</div>
+				</div>-->
+				<div is="el-col" :span="14">
+					 <div is="el-form" :model="form" :inline="true" lable-width="80px" class="demo-form-inline clearfix">
+						<div class="fr">
+							<div is="el-form-item" label="登录名" label-width="85px">
+								<div is="el-input" v-model="form.keyword" placeholder="请输入登录名" clearable></div>
+							</div>
+
+							<div is="el-form-item" label="用户类型" label-width="110px" >
+								<div is="el-select" v-model="form.roleType"  filterable placeholder="请选择">
+									<div is="el-option"
+										 v-for="item in roleType"
+										 :key="item.code"
+										 :label="item.codename"
+										 :value="item.code">
+									</div>
+								</div>
+							</div>
+
+							<div is="el-form-item" label="注册时间" label-width="85px">
+								<el-date-picker
+										v-model="form.startTime"
+										type="date"
+										value-format="yyyy-MM-dd"
+										placeholder="选择日期">
+								</el-date-picker>
+								至
+								<el-date-picker
+										v-model="form.endTime"
+										type="date"
+										value-format="yyyy-MM-dd"
+										placeholder="选择日期">
+								</el-date-picker>
+							</div>
+
+							<div is="el-form-item">
+								<div is="el-button" type="warning" @click="search">查询</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="element-table">
+				<div is="el-table" ref="table" :data="page.records" border style="width: 100%"  v-loading="page.isLoading" element-loading-text="加载中" element-loading-spinner="el-icon-loading"
+					element-loading-background="rgba(0,0,0,0.4)">
+					<div is="el-table-column" align="center" prop="username" label="登录名"  width="400" show-overflow-tooltip></div>
+					<div is="el-table-column" align="center" prop="nickname" label="昵称"  width="400" show-overflow-tooltip></div>
+					<div is="el-table-column" align="center" prop="phone" label="手机号" ></div>
+					<div is="el-table-column" align="center" prop="createdTimeStr" label="注册时间"  width="220"></div>
+					<!--<div is="el-table-column" align="center" prop="point" label="积分" ></div>-->
+					<div is="el-table-column" align="center" label="操作" width="220">
+						<div slot-scope="scope">
+							<button is="el-button" type="text" size="mini" @click="update(scope.row)">编辑</button>
+							<button is="el-button" type="text" size="mini" @click="reset(scope.row)">重置密码</button>
+
+							<button is="el-button" type="text" v-if="scope.row.roleType=='2'" size="mini" @click="internetUpdate(scope.row)">达人</button>
+							<button is="el-button" type="text" v-if="scope.row.roleType=='3'" size="mini" @click="mcnUpdate(scope.row)">MCN</button>
+							<button is="el-button" type="text" v-if="scope.row.roleType=='4'" size="mini" @click="enterpriseUpdate(scope.row)">企业主</button>
+
+							<button is="el-button" type="text" v-if="scope.row.roleType=='2'" size="mini" @click="platformUpdate(scope.row)">平台</button>
+
+							<button is="el-button" type="text" size="mini" @click="deleteData(scope.row)">删除</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="pagination">
+				<div is="el-pagination" @current-change="pagedQuery" :current-page="page.currentPage" :page-size="page.limit" layout="total,prev,pager,next,jumper" :total="page.total"></div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					keyword : '',
+					roleType : '',
+					nickname : '',
+					startTime : '',
+					endTime : ''
+				},
+				page : {
+					currentPage : 1,
+					limit : 15,
+					total : 0,
+					records : [],
+					isLoading : false,
+					params : {
+						name : ''
+					}
+				},
+				roleType: [
+					{
+						code:"",
+						codename: "全部"
+					},
+					{
+						code:"1",
+						codename: "普通用户"
+					},
+					{
+						code:"2",
+						codename: "达人"
+					},
+					{
+						code:"3",
+						codename: "MCN"
+					},
+					{
+						code:"4",
+						codename: "企业主"
+					}
+				],
+				excelUploadUrl : '',
+				excelAccept : cc.excelAccept,
+				fileList : [],
+				folderList : []
+			},
+			created : function() {
+				__.$vm = this;
+			},
+			mounted : function() {
+				__.mask();
+				var vm = this
+				vm.excelUploadUrl = __.url("/rest/customer/import");
+				this.pagedQuery(1);
+				//处理分页输入框 可以输入小数的问题
+				var oInput = document.getElementsByTagName('input')[0];
+				oInput.onblur = function() {
+					if(!!oInput.value){
+						return oInput.value = oInput.value.replace(/^,*|,*$/g,'');
+					}
+					return "";
+				};
+				__.unmask();
+			},
+			methods : {
+				// 分页ele
+				pagedQuery : function(currentPage) {
+					var vm = this, page = vm.page;
+					currentPage && (page.currentPage = currentPage);
+					var params = __.pagedParams(page.currentPage, page.limit);
+					__.extend(params, vm.page.params);
+					__.api('GET', '/rest/customer/list', params, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						vm.page.total = result.total | 0;
+						var list = result.data;
+						//昵称base64解码
+						for (let i = 0; i < list.length; i++) {
+							list[i].nickname = vm.base64Decode(list[i].nickname);
+						}
+						vm.page.records = list;
+					});
+				},
+                search : function() {
+					this.form.basename = Base64.encode(__.trim(this.form.keyword));
+                    this.page.params = {
+                       username : __.trim(this.form.keyword),
+						nickname: __.trim(this.form.basename),
+						roleType : this.form.roleType,
+						startTime : this.form.startTime,
+						endTime : this.form.endTime
+                    }
+                    this.pagedQuery(1);
+                },
+				add: function(){
+					var vm = this;
+					__.dialog.open({
+						title : '新增',
+						width : '90%',
+						height : '100%',
+						url : __.url('/yll/customer/cust/customer-edit.html', {
+
+						}),
+						close : function(result) {
+							vm.pagedQuery();
+						}
+					});
+				},
+				update: function(record){
+					var vm = this;
+					__.dialog.open({
+						title : '编辑',
+						width : '90%',
+						height : '100%',
+						url : __.url('/yll/customer/cust/customer-edit.html', {
+							id : record.id
+						}),
+						close : function(result) {
+							vm.pagedQuery();
+						}
+					});
+				},
+				internetUpdate: function(record){
+					var vm = this;
+					__.dialog.open({
+						title : '达人',
+						width : '90%',
+						height : '100%',
+						url : __.url('/yll/internet-celebrity/internet-celebrity-edit.html', {
+							id : record.id
+						}),
+						close : function(result) {
+							vm.pagedQuery();
+						}
+					});
+				},
+				mcnUpdate: function(record){
+					var vm = this;
+					__.dialog.open({
+						title : 'MCN',
+						width : '90%',
+						height : '100%',
+						url : __.url('/yll/mcn/mcn-edit.html', {
+							id : record.id
+						}),
+						close : function(result) {
+							vm.pagedQuery();
+						}
+					});
+				},
+				enterpriseUpdate: function(record){
+					var vm = this;
+					__.dialog.open({
+						title : '企业主',
+						width : '90%',
+						height : '100%',
+						url : __.url('/yll/enterprise/enterprise-edit.html', {
+							id : record.id
+						}),
+						close : function(result) {
+							vm.pagedQuery();
+						}
+					});
+				},
+				platformUpdate: function(record){
+					var vm = this;
+					__.dialog.open({
+						title : '平台',
+						width : '90%',
+						height : '100%',
+						url : __.url('/yll/platform/platform-list.html', {
+							id : record.id
+						}),
+						close : function(result) {
+							vm.pagedQuery();
+						}
+					});
+				},
+				importExcel: function(){
+					var vm = this;
+					__.dialog.open({
+						title : '导入',
+						width : '90%',
+						height : '100%',
+						url : __.url('/yll/internet-celebrity/internet-celebrity-excel.html', {
+						}),
+						close : function(result) {
+							vm.pagedQuery();
+						}
+					});
+				},
+				exportExcel: function(){
+					var vm = this;
+					__.dialog.open({
+						title : '导入',
+						width : '90%',
+						height : '100%',
+						url : __.url('/yll/internet-celebrity/internet-celebrity-excel-export.html', {
+						}),
+						close : function(result) {
+							vm.pagedQuery();
+						}
+					});
+				},
+				resetpassword: function(record){
+					var vm = this;
+					var id = record.id;
+					var username = record.username;
+					var wechatId = record.wechatId;
+					var aliId = record.aliId;
+					vm.$confirm("确定要此用户将密码初始化为111111？", "初始化确认", {
+						confirmButtonText : "确定",
+						cancelButtonText : "取消",
+						type : "warning"
+					}).then(function() {
+						__.mask();
+						var hash = md5('111111');
+						let password = btoa(hash);
+						__.api('POST', '/rest/customer/save' ,
+								{
+									id : id,
+									password : password,
+									username : username,
+									wechatId : wechatId,
+									enabled : '1',
+									aliId : aliId
+								}, function(result) {
+									if (!__.err(result)) {
+										__.unmask();
+										vm.pagedQuery();
+										vm.$message({
+											message : '初始化成功！',
+											type : 'success'
+										});
+									} else {
+										__.unmask();
+										vm.$message.warning(result.message);
+										return;
+									}
+						});
+					})
+				},
+				deleteData: function(record){
+					var vm = this;
+					var id = record.id;
+					vm.$confirm("确定要删除？", "删除确认", {
+						confirmButtonText : "确定",
+						cancelButtonText : "取消",
+						type : "warning"
+					}).then(function() {
+						__.mask();
+						__.api('DELETE', '/rest/customer/' + id, {}, function(result) {
+							if (!__.err(result)) {
+								__.unmask();
+								vm.pagedQuery();
+								vm.$message({
+									message : '删除成功！',
+									type : 'success'
+								});
+							} else {
+								__.unmask();
+								vm.$message.warning(result.message);
+								return;
+							}
+						});
+					})
+				},
+				reset : function (record) {
+					var vm = this;
+					var id = record.id;
+					vm.$confirm("确定要重置密码为111111？", "重置确认", {
+						confirmButtonText : "确定",
+						cancelButtonText : "取消",
+						type : "warning"
+					}).then(function() {
+						__.mask();
+						__.api('GET', '/rest/customer/reset/'+id, {}, function(result) {
+							__.unmask();
+							if (__.err(result)) {
+								vm.$message.warning(result.message);
+								return;
+							}
+							vm.$message({
+								message : '重置成功！',
+								type : 'success'
+							});
+						});
+					})
+				},
+				beforeRemove : function(file, fileList) {
+					var vm = this;
+					//删除文件前
+					return vm.$confirm('确定移除 "'  + file.name + '" 导入的数据？');
+				},
+				handleRemove : function(file, fileList) {
+					var vm = this;
+					__.mask();
+					__.api('DELETE', '/rest/customer/remove' , {"activitiesId" : vm.page.params.activitiesId}, function(result) {
+						if (!__.err(result)) {
+							__.unmask();
+							vm.pagedQuery();
+							vm.$message({
+								message : '移除成功！',
+								type : 'success'
+							});
+						} else {
+							__.unmask();
+							vm.$message.warning(result.message);
+							return;
+						}
+					});
+				},
+				handlePreview : function(file) {
+					var vm = this;
+					//点击已上传的文件链接时
+				},
+				handleSuccess : function(response,file,fileList) {
+					var vm = this;
+					//文件上传成功时
+					file.path = response.data;
+					vm.search();
+					vm.$message.warning("导入成功");
+				},
+				/**
+				 * COS上传
+				 * @param file
+				 * @param fileList
+				 */
+				uploadFile : function(param){
+					var vm = this;
+					//上传大小限制（示例中为10MB）
+					// const isLt10M = file.size / 1024 / 1024  < 10;
+					var file = param.file;
+					cosUtils.uploadFolder(param);
+				},
+				handleSuccessFile : function(response,file,fileList) {
+					vm = this;
+					file.path = response.data;
+					//文件上传成功时
+					vm.$message.warning("上传成功");
+				},
+				base64Decode : function (input){
+					if(!!input){
+						// rv = window.atob(input);
+						// rv = escape(rv);
+						var rv = Base64.decode(input);
+						rv = decodeURIComponent(rv);
+						return rv;
+					}
+					return "";
+				}
+			}
+		});
+	</script>
+</body>
+</html>

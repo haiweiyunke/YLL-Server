@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>行政区划新增和编辑</title>
+<style>
+.el-picker-panel {
+	height: 320px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.el-date-editor.el-input, .el-input-number--small {
+	width: 100%;
+}
+
+.unit {
+	text-align: right;
+	line-height: 40px;
+}
+
+@media screen and(-ms-high-contrast:active),(-ms-high-contrast:none){
+	.el-picker-panel {
+		height: 200px;
+	}
+}
+</style>
+</head>
+<body>
+	<div id="vm" class="vm-virtual" v-cloak>
+		<form is="el-form" :model="form" ref="form" :rules="rules" style="width: 100%;">
+			<div is="el-row" v-if="isAdd">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="地区" label-width="110px" >
+						<div is="el-select" v-model="form.province" @change="area(2)" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in provinces"
+								 :key="item.id"
+								 :label="item.name"
+								 :value="item.id">
+							</div>
+						</div>
+						<div is="el-select" v-model="form.city" @change="area(3)" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in cities"
+								 :key="item.id"
+								 :label="item.name"
+								 :value="item.id">
+							</div>
+						</div>
+						<div is="el-select" v-model="form.district" @change="area(4)" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in districts"
+								 :key="item.id"
+								 :label="item.name"
+								 :value="item.id">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="名称" label-width="110px" prop="codename">
+						<input is="el-input" v-model="form.name" controls-position="right" autocomplete="off">
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="经度" label-width="110px">
+						<input is="el-input" v-model="form.lat" controls-position="right" autocomplete="off">
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="维度" label-width="110px">
+						<input is="el-input" v-model="form.lng" controls-position="right" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-form-item" align="center" style="margin-top: 20px;">
+					<button is="el-button" type="success" @click="confirm('form')">确定</button>
+					<button is="el-button" @click="cancel()">取消</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					id : '',
+					name : '',
+					lat : '',
+					lng : ''
+				},
+				rules:{
+					name:[{
+						required : true,
+						message : '请输入名称',
+						trigger : 'blur'
+					}]
+				},
+				isAdd : false
+			},
+			created : function() {
+			},
+			mounted : function() {
+				var vm = this, search = __.decodeUrlParams();
+				var id = search.id;
+				if (!__.isEmpty(id)) {
+					__.api('GET', '/rest/area/' + id, {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						var form = result.data;
+						vm.form = form;
+					});
+				} else{
+					vm.isAdd = true;
+				}
+				vm.dicType();
+			},
+			methods : {
+				confirm : function(formName) {
+					var vm = this;
+					var params = {}, form = this.form;
+					this.$refs[formName].validate(function(valid) {
+						if(valid){
+							__.api('POST', '/rest/area/save', form, function(result) {
+								if (__.err(result)) {
+									vm.$message.warning(result.message);
+								} else {
+									vm.$message.info("保存成功");
+									__.dialog.close();
+								}
+							});
+						}else{
+							return false
+						}
+					})
+				},
+				cancel : function() {
+					__.dialog.close();
+				}
+			}
+		})
+	</script>
+</body>
+</html>

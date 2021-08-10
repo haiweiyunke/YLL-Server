@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>管理平台</title>
+<link rel="stylesheet" th:href="@{/s/assets/home.css}" type="text/css" />
+<style>
+.element-icon {
+	font-size: 28px;
+	color: #b9ccf3;
+	line-height: inherit;
+}
+</style>
+</head>
+<body>
+	<div id="vm">
+		<div is="el-row" class="header">
+			<div is="el-col" :span="4" class="logo" onclick="window.location='index.html'"></div>
+			<!--<div is="el-col" :span="4" class="title">
+				<div>
+					<a>管理平台</a>
+				</div>
+			</div>-->
+			<div is="el-col" :span="14" :offset="showPwBtn?1:2" class="navList">
+				<ul is="el-menu" :default-active="active" class="el-menu-demo" mode="horizontal" @select="selectIndex" id="listUl">
+					<li v-for="(item,index) in menu.data" :index="index" is="el-menu-item" :class="(' '+item.icon)"><a>{{item.label}}</a></li>
+				</ul>
+			</div>
+			<div is="el-col" :span="3" class="name name2">
+				<i class="iconfont icon-usercircle" style="margin-left: 10px;"></i> <span>用户名：<a __:text="user.name" style="color: #fff;"></a></span>
+			</div>
+			<div is="el-col" v-if="showPwBtn" :span="1" class="name">
+				<a @click="password()" title="重置密码" style="cursor: pointer;"><i class="el-icon-setting element-icon "></i></a>
+			</div>
+			<div is="el-col" :span="1" class="name">
+				<a @click="logout()" title="退出" style="cursor: pointer;"><i class="iconfont icon-tuichu"></i></a>
+			</div>
+		</div>
+		<div is="el-row" class="nav"></div>
+		<div is="el-row" class="container">
+			<iframe name="mainiframe" :src="frame.url" scrolling="no" width="100%" style="border: none;" :style="{height:frame.height}"></iframe>
+		</div>
+	</div>
+	<script>
+		Vue.bus = new Vue();
+		new Vue({
+			el : '#vm',
+			data : {
+				menu : {
+					data : []
+				},
+				frame : {
+					url : 'about:blank',
+					height : '100%'
+				},
+				active : '0',
+				showPwBtn : false
+			},
+			mounted : function() {
+				var vm = this;
+				var activeModuleId = __.decodeUrlParams(location.hash)['module'] || '';
+				window.onresize = function() {
+					vm.frame.height = (document.documentElement.clientHeight - 110) + 'px';
+				};
+				__.api('GET', '/rest/permission/menu-tops', {}, function(result) {
+					vm.menu.data = result.data || [];
+					var active = 0;
+					__.each(vm.menu.data, function(i, menu) {
+						if (menu.id == activeModuleId) {
+							active = i;
+							return false;
+						}
+					});
+					!__.isEmpty(result.data) && vm.selectIndex(active);
+				});
+
+			},
+			methods : {
+				selectIndex : function(active) {
+					var vm = this, menu = vm.menu, module = menu.data[vm.active = active] || {};
+					vm.frame.url = module.value || 'about:blank';
+					location.hash = module.id ? ('module=' + module.id) : '';
+				},
+				password : function() {
+					__.dialog.open({
+						title : '密码修改',
+						width : '600px',
+						height : '260px',
+						url : __.url('/system/user/user-password.html', {
+							t : __.now()
+						}),
+						close : function(result) {
+						}
+					});
+				},
+				logout : function() {
+					__.api('POST', '/rest/logout', {}, function(result) {
+						window.location.href = __.url('/login.html');
+					});
+				},
+				handleTodoList : function() {
+					var vm = this;
+					vm.active = -1;
+					vm.frame.url = '/todo/todo-index.html';
+				}
+			}
+		});
+	</script>
+	<script>
+		document.onkeydown = function(event) {
+			e = event ? event : (window.event ? window.event : null);
+			if (e.keyCode == 8) {
+				return false
+			}
+		};
+	</script>
+</body>
+</html>

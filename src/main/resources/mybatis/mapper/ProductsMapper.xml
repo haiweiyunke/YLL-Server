@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="yll.mapper.ProductsMapper">
+
+	<resultMap id="RESULT_MAP" type="yll.entity.Products">
+		<id property="id" column="id" jdbcType="VARCHAR" />
+		<result property="name" column="name" jdbcType="VARCHAR" />
+		<result property="sid" column="sid" jdbcType="VARCHAR" />
+		<result property="cover" column="cover" jdbcType="LONGVARCHAR" />
+		<result property="image" column="image" jdbcType="LONGVARCHAR" />
+		<result property="picture" column="picture" jdbcType="LONGVARCHAR" />
+		<result property="video" column="video" jdbcType="LONGVARCHAR" />
+		<result property="profile" column="profile" jdbcType="VARCHAR" />
+		<result property="content" column="content" jdbcType="LONGVARCHAR" />
+		<result property="price" column="price" jdbcType="DECIMAL" />
+		<result property="sales" column="sales" jdbcType="VARCHAR" />
+		<result property="region" column="region" jdbcType="VARCHAR" />
+		<result property="platform" column="platform" jdbcType="VARCHAR" />
+		<result property="bringType" column="bring_type" jdbcType="VARCHAR" />
+		<result property="commission" column="commission" jdbcType="VARCHAR" />
+		<result property="giveBack" column="give_back" jdbcType="INTEGER" />
+		<result property="deposit" column="deposit" jdbcType="VARCHAR" />
+		<result property="other" column="other" jdbcType="VARCHAR" />
+		<result property="depositRatio" column="deposit_ratio" jdbcType="VARCHAR" />
+		<result property="discountPrice" column="discount_price" jdbcType="DECIMAL" />
+		<result property="link" column="link" jdbcType="VARCHAR" />
+		<result property="quantity" column="quantity" jdbcType="VARCHAR" />
+		<result property="advertisement" column="advertisement" jdbcType="VARCHAR" />
+		<result property="businessLicense" column="business_license" jdbcType="LONGVARCHAR" />
+		<result property="productLicense" column="product_license" jdbcType="LONGVARCHAR" />
+		<result property="certificate" column="certificate" jdbcType="LONGVARCHAR" />
+		<result property="qualityCertificate" column="quality_certificate" jdbcType="LONGVARCHAR" />
+		<result property="remark" column="remark" jdbcType="VARCHAR" />
+		<result property="type" column="type" jdbcType="VARCHAR" />
+		<result property="state" column="state" jdbcType="VARCHAR" />
+		<result property="share" column="share" jdbcType="INTEGER" />
+		<result property="collects" column="collects" jdbcType="INTEGER" />
+		<result property="likes" column="likes" jdbcType="INTEGER" />
+		<result property="ordinal" column="ordinal" jdbcType="INTEGER" />
+		<result property="slide" column="slide" jdbcType="INTEGER" />
+		<result property="enabled" column="enabled" jdbcType="INTEGER" />
+		<result property="deleted" column="deleted" jdbcType="INTEGER" />
+		<result property="creator" column="creator" jdbcType="VARCHAR" />
+		<result property="createdTime" column="created_time" jdbcType="TIMESTAMP" />
+		<result property="modifier" column="modifier" jdbcType="VARCHAR" />
+		<result property="modifiedTime" column="modified_time" jdbcType="TIMESTAMP" />
+		<result property="deleter" column="deleter" jdbcType="VARCHAR" />
+		<result property="deletedTime" column="deleted_time" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<resultMap id="RESULT_VO_MAP" type="yll.service.model.vo.ProductsVo" extends="RESULT_MAP">
+		<result property="codename" column="codename" jdbcType="VARCHAR" />
+		<result property="code" column="code" jdbcType="VARCHAR" />
+		<result property="recommend" column="recommend" jdbcType="INTEGER" />
+	</resultMap>
+
+	<sql id="TABLE">dh_products</sql>
+
+	<sql id="COLUMNS">
+		id, name,  sid,  cover,  image,   picture,  video, profile, content, price,
+		sales,  platform,   bring_type,  commission, give_back, deposit, other,
+		deposit_ratio, discount_price, link, quantity, business_license, product_license, certificate, quality_certificate, advertisement, region,
+		remark, type, state, share, collects, likes, slide,
+		ordinal, enabled,deleted, creator, created_time,
+		modifier, modified_time, deleter, deleted_time
+	</sql>
+
+	<sql id="VALUES">
+		#{id}, #{name}, #{sid}, #{cover},#{image},#{picture},#{video}, #{profile}, #{content}, #{price},
+		#{sales}, #{platform},#{bringType}, #{commission}, #{giveBack}, #{deposit}, #{other},
+		#{depositRatio}, #{discountPrice}, #{link}, #{quantity}, #{businessLicense}, #{productLicense}, #{certificate}, #{qualityCertificate}, #{advertisement}, #{region},
+		#{remark}, #{type}, #{state}, #{share},#{collects}, #{likes},#{slide},
+		#{ordinal}, #{enabled},#{deleted}, #{creator}, #{createdTime},
+		#{modifier},#{modifiedTime}, #{deleter}, #{deletedTime}
+	</sql>
+
+	<sql id="SET_VALUES">
+		<trim suffixOverrides=",">
+			<if test=" name != null">
+				name = #{name},
+			</if>
+			<if test=" sid != null">
+				sid = #{sid},
+			</if>
+			<if test=" cover != null">
+				cover = #{cover},
+			</if>
+			<if test=" image != null">
+				image = #{image},
+			</if>
+			<if test=" picture != null">
+				picture = #{picture},
+			</if>
+			<if test=" video != null">
+				video = #{video},
+			</if>
+			<if test=" profile != null">
+				profile = #{profile},
+			</if>
+			<if test=" content != null">
+				content = #{content},
+			</if>
+			<if test=" price != null">
+				price = #{price},
+			</if>
+			<if test=" sales != null">
+				sales = #{sales},
+			</if>
+			<if test=" platform != null">
+				platform = #{platform},
+			</if>
+			<if test=" bringType != null">
+				bring_type = #{bringType},
+			</if>
+			<if test=" commission != null">
+				commission = #{commission},
+			</if>
+			<if test=" giveBack != null">
+				give_back = #{giveBack},
+			</if>
+			<if test=" deposit != null">
+				deposit = #{deposit},
+			</if>
+			<if test=" other != null">
+				other = #{other},
+			</if>
+			<if test=" depositRatio != null">
+				deposit_ratio = #{depositRatio},
+			</if>
+			<if test=" discountPrice != null">
+				discount_price = #{discountPrice},
+			</if>
+			<if test=" link != null">
+				link = #{link},
+			</if>
+			<if test=" quantity != null">
+				quantity = #{quantity},
+			</if>
+			<if test=" region != null">
+				region = #{region},
+			</if>
+			<if test=" advertisement != null">
+				advertisement = #{advertisement},
+			</if>
+			<if test=" businessLicense != null">
+				business_license = #{businessLicense},
+			</if>
+			<if test=" productLicense != null">
+				product_license = #{productLicense},
+			</if>
+			<if test=" certificate != null">
+				certificate = #{certificate},
+			</if>
+			<if test=" qualityCertificate != null">
+				quality_certificate = #{qualityCertificate},
+			</if>
+			<if test=" remark != null">
+				remark = #{remark},
+			</if>
+			<if test=" type != null">
+				type = #{type},
+			</if>
+			<if test=" state != null">
+				state = #{state},
+			</if>
+			<if test=" share != null">
+				share = #{share},
+			</if>
+			<if test=" collects != null">
+				collects = #{collects},
+			</if>
+			<if test=" likes != null">
+				likes = #{likes},
+			</if>
+			<if test=" slide != null">
+				slide = #{slide},
+			</if>
+			<if test=" ordinal != null">
+				ordinal = #{ordinal},
+			</if>
+			<if test=" enabled != null">
+				enabled = #{enabled},
+			</if>
+			<if test=" deleted != null">
+				deleted = #{deleted},
+			</if>
+			<if test=" creator != null">
+				creator = #{creator},
+			</if>
+			<if test=" createdTime != null">
+				created_time = #{createdTime},
+			</if>
+			<if test=" modifier != null">
+				modifier = #{modifier},
+			</if>
+			<if test=" modifiedTime != null">
+				modified_time = #{modifiedTime},
+			</if>
+			<if test=" deleter != null">
+				deleter = #{deleter},
+			</if>
+			<if test=" deletedTime != null">
+				deleted_time = #{deletedTime},
+			</if>
+		</trim>
+	</sql>
+
+	<sql id="WHERES">
+		<if test=" id != null and id != ''">
+			and id = #{id}
+		</if>
+		<if test=" sid != null and sid != '' ">
+			and sid = #{sid}
+		</if>
+		<if test=" region != null and region != '' ">
+			and region = #{region}
+		</if>
+		<if test=" name != null and name != '' ">
+			and name like CONCAT(CONCAT('%',#{name}),'%')
+		</if>
+		<if test=" profile != null and profile != '' ">
+			and profile like CONCAT(CONCAT('%',#{profile}),'%')
+		</if>
+		<if test=" content != null and content != '' ">
+			and content like CONCAT(CONCAT('%',#{content}),'%')
+		</if>
+		<if test=" type != null and type != ''">
+			and type like CONCAT(CONCAT('%',#{type}),'%')
+		</if>
+		<if test=" platform != null and platform != ''">
+			and platform like CONCAT(CONCAT('%',#{platform}),'%')
+		</if>
+		<if test=" enabled != null ">
+			and enabled = #{enabled}
+		</if>
+		<if test=" slide != null and (slide == 0 or slide ==1) ">
+			and slide = #{slide}
+		</if>
+		and deleted = 0
+	</sql>
+
+	<update id="save">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		) VALUES (
+		<include refid="VALUES" />
+		)
+		ON DUPLICATE KEY UPDATE
+		<include refid="SET_VALUES" />
+	</update>
+
+	<insert id="insert" parameterType="yll.entity.Products">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		)
+		VALUES
+		(
+		<include refid="VALUES" />
+		)
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.String">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		id =#{id}
+	</delete>
+
+	<delete id="deleteAll">
+		DELETE FROM
+		<include refid="TABLE" />
+	</delete>
+
+	<update id="update" parameterType="yll.entity.Products">
+		UPDATE
+		<include refid="TABLE" />
+		SET
+		<include refid="SET_VALUES" />
+		WHERE
+		id = #{id}
+	</update>
+
+	<select id="getById" parameterType="java.lang.String" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id =#{id}
+	</select>
+
+	<select id="findAll" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+	</select>
+
+	<select id="findBy" parameterType="yll.entity.Products" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY ordinal ASC,  created_time DESC
+	</select>
+
+	<select id="findByWithType" parameterType="yll.service.model.vo.ProductsVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		m.id, m.name, m.sid, m.cover,m.image, m.picture, m.video, m.advertisement, m.profile, m.content, m.price,
+		m.sales, m.platform, m.bring_type,
+		 m.commission, m.give_back, m.deposit, m.other,
+		m.remark, m.type, m.state, m.share, m.collects, m.likes,m.slide,
+		m.ordinal, m.enabled, m.deleted, m.creator, m.created_time,
+		m.modifier, m.modified_time, m.deleter, m.deleted_time,
+		sec.codename
+		FROM
+		<include refid="TABLE" /> m
+		LEFT JOIN
+		dic sec
+		ON sec.code = m.type
+		WHERE m.id != '0'
+		<include refid="WHERES" />
+		ORDER BY m.ordinal is null, m.ordinal ASC,  m.created_time DESC
+	</select>
+
+	<select id="getAppList" parameterType="yll.service.model.vo.ProductsVo" resultMap="RESULT_VO_MAP">
+	SELECT
+	m.id, m.name, m.sid, ifnull(m.cover,'') cover, ifnull(m.image,'') image, ifnull(m.price,0) price, ifnull(m.discount_price,0) discount_price, ifnull(m.other, '') other,
+	m.sales, ifnull(m.deposit_ratio,'') deposit_ratio,
+	ifnull(appProductPlatformQuery(m.id), '') platform,
+	ifnull(appProductBringTypeQuery(m.id), '') bring_type,
+	ifnull(appProductsExpertiseQuery(m.id), '') type,
+	m.commission, m.give_back, m.deposit,
+	thr.codename	region
+	FROM
+	<include refid="TABLE" /> m
+	LEFT JOIN
+	dic sec
+	ON sec.code = m.type
+	LEFT JOIN
+	dic thr
+	ON thr.code = m.region
+	WHERE m.id != '0' AND m.enabled = 1
+	<include refid="WHERES" />
+	<if test=" creator != null and creator != ''">
+		and m.creator = #{creator}
+	</if>
+	ORDER BY
+	<if test=" hot != null and hot == '1' ">
+		m.sales is null, m.sales DESC,
+	</if>
+	m.ordinal is null, m.ordinal ASC,
+	m.created_time DESC
+</select>
+
+	<select id="getAppDetail" parameterType="yll.service.model.vo.ProductsVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		m.id, m.name, m.sid, ifnull(m.picture,'') picture,  ifnull(m.image,'') image,   ifnull(m.advertisement,'') advertisement,  ifnull(m.video,'') video,
+		ifnull(m.business_license,'') business_license,  ifnull(m.product_license,'') product_license, ifnull(m.certificate,'') certificate, ifnull(m.quality_certificate,'') quality_certificate,
+		ifnull(m.content,'') content,  ifnull(m.profile,'') profile, ifnull(m.price,0) price, ifnull(m.other,'') other,
+		ifnull(appProductPlatformQuery(m.id), '') platform,
+		ifnull(appProductBringTypeQuery(m.id), '') bring_type,
+		ifnull(appProductsExpertiseQuery(m.id), '') type,
+		m.commission, m.give_back, m.deposit,  ifnull(m.deposit_ratio,'') deposit_ratio,
+		ifnull(m.discount_price,0) discount_price, ifnull(m.quantity,0) quantity, ifnull(m.link,'') link,
+		thr.code region , thr.codename regionStr
+		FROM
+		<include refid="TABLE" /> m
+		LEFT JOIN
+		dic sec
+		ON sec.code = m.type
+		LEFT JOIN
+		dic thr
+		ON thr.code = m.region
+		WHERE m.id != '0'
+		AND m.id = #{id}
+		limit 0, 1
+	</select>
+
+	<select id="findBySlide" parameterType="yll.entity.Products" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY created_time DESC
+	</select>
+
+	<select id="getTaskProductList" parameterType="yll.service.model.vo.TaskProductsVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		m.id, m.name, m.sid, ifnull(m.cover,'') cover, ifnull(m.image,'') image,
+		ifnull(m.price,0) price, ifnull(m.discount_price,0) discount_price, ifnull(m.other, '') other,
+		m.sales, ifnull(m.deposit_ratio,'') deposit_ratio,
+		ifnull(appProductPlatformQuery(m.id), '') platform,
+		ifnull(appProductBringTypeQuery(m.id), '') bring_type,
+		ifnull(appProductsExpertiseQuery(m.id), '') type,
+		m.commission, m.give_back, m.deposit
+		FROM
+		dh_task_products tp
+		LEFT JOIN
+		<include refid="TABLE" /> m
+		ON m.id = tp.pid
+		WHERE m.id != '0'
+		<if test=" taskId != null and taskId != ''">
+			and tp.task_id = #{taskId}
+		</if>
+	</select>
+
+
+	<select id="getAppEnterpriseTaskCelebrityProductsList" parameterType="yll.service.model.vo.TaskCelebrityProductsVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		m.id,
+		ifnull(m.name,'') name
+		FROM
+		dh_task_celebrity_products tcp
+		LEFT JOIN
+		<include refid="TABLE" /> m
+		ON m.id = tcp.pid
+		WHERE m.id != '0'
+		<if test=" taskId != null ">
+			and tcp.task_id = #{taskId}
+		</if>
+		<if test=" cid != null ">
+			and tcp.cid = #{cid}
+		</if>
+		<if test=" tcId != null ">
+			and tcp.tc_id = #{tcId}
+		</if>
+	</select>
+
+
+	<select id="getAppTaskCelebrityProducts" parameterType="yll.service.model.vo.TaskCelebrityProductsVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		m.id, ifnull(tcp.id,'') tcpId,
+		ifnull(m.name,'') name, ifnull(m.cover,'') cover, ifnull(m.price,'') price,  ifnull(m.discount_price,'') discount_price, ifnull(m.commission,'') commission, ifnull(m.deposit,'') deposit, ifnull(m.deposit_ratio,'') deposit_ratio,
+		ifnull(tcp.receive,'') receive
+		FROM
+		dh_task_celebrity_products tcp
+		LEFT JOIN
+		<include refid="TABLE" /> m
+		ON m.id = tcp.pid
+		WHERE m.id != '0'
+		<if test=" taskId != null ">
+			and tcp.task_id = #{taskId}
+		</if>
+		<if test=" cid != null ">
+			and tcp.cid = #{cid}
+		</if>
+		<if test=" tcId != null ">
+			and tcp.tc_id = #{tcId}
+		</if>
+	</select>
+
+</mapper>

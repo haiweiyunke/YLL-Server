@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>用户 编辑</title>
+<style>
+.el-picker-panel {
+	height: 320px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.el-date-editor.el-input, .el-input-number--small {
+	width: 100%;
+}
+
+.unit {
+	text-align: right;
+	line-height: 40px;
+}
+
+/*@media screen and(-ms-high-contrast:active),(-ms-high-contrast:none){
+	.el-picker-panel {
+		height: 200px;
+	}
+}*/
+</style>
+</head>
+<body>
+	<div id="vm"  v-cloak  class="vm">
+		<form is="el-form" :model="form" ref="form" :rules="rules" style="width: 100%;">
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="登录名" label-width="110px" >
+						<input is="el-input" v-model="form.username" controls-position="right" size="small"     autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<!--<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="密码" label-width="110px" >
+						<input is="el-input" v-model="form.password" controls-position="right" size="small"     autocomplete="off">
+					</div>
+				</div>
+			</div>-->
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="手机号" label-width="110px">
+						<input is="el-input" v-model="form.phone" controls-position="right"    autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="用户名" label-width="110px">
+						<input is="el-input" v-model="form.nickname" controls-position="right"    autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+				<div is="el-form-item" label="出生日期" label-width="110px">
+					<el-date-picker
+							@change="ages"
+							v-model="form.birthday"
+							type="date"
+							value-format=" yyyy-MM-dd"
+							format="yyyy-MM-dd"
+							placeholder="选择日期">
+					</el-date-picker>
+				</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="所在地" label-width="110px" prop="location">
+						<div is="el-select" v-model="form.location" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in area"
+								 :key="item.id"
+								 :label="item.name"
+								 :value="item.id">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="年龄" label-width="110px">
+						<input is="el-input" v-model="form.age" controls-position="right"    autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="性别" label-width="110px" prop="gender">
+						<div is="el-radio" v-model="form.gender" :label="1">女</div>
+						<div is="el-radio" v-model="form.gender" :label="2">男</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="用户角色类型" label-width="110px" prop="roleType">
+						<div is="el-radio" v-model="form.roleType" :label='"1"'>普通用户</div>
+						<div is="el-radio" v-model="form.roleType" :label='"2"'>达人</div>
+						<div is="el-radio" v-model="form.roleType" :label='"3"'>MCN</div>
+						<div is="el-radio" v-model="form.roleType" :label='"4"'>企业主</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="头像" label-width="110px">
+						<div is="el-upload"
+							 class="upload-demo"
+							 :accept="imageAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="headImg"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="imageFiles"
+							 list-type="picture">	 <!--  切换时，加上  :http-request="uploadFile" ，覆盖elui原"action"动作 -->
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{imageAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-form-item" align="center" style="margin-top: 20px;">
+					<button is="el-button" type="success" @click="confirm('form')">确定</button>
+					<button is="el-button" @click="cancel()">取消</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					id : '',
+					username : '',
+					password : '',
+					phone : '',
+					nickname : '',
+					headImg : '',
+					birthday : '',
+					location : '',
+					roleType : '',
+					age : '',
+					state : 1,
+					gender : 2,
+					remark : '',
+					enabled : '1'
+				},
+				rules:{
+					username:[{
+						required :false,
+						message : '请输入标题',
+						trigger : 'blur'
+					}],
+				},
+				imageAccept : cc.imageAccept,
+				uploadUrl : cc.uploadUrl,
+				imageFiles: [],
+				area: []
+			},
+			created : function() {
+			},
+			mounted : function() {
+				var vm = this, search = __.decodeUrlParams();
+				var id = search.id;
+				if (!__.isEmpty(id)) {
+					__.api('GET', '/rest/customer/' + id, {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						var form = result.data;
+						form.enabled = String(form.enabled);
+						//用户名回显
+						form.nickname = vm.base64Decode(form.nickname);
+						vm.form = form;
+						//图片回显
+						vm.imageFiles = cc.display(vm.form.headImg, "headImg");
+					});
+				}
+				vm.getArea();
+			},
+			methods : {
+				confirm : function(formName) {
+					var vm = this, search = __.decodeUrlParams(),
+					id = search.id;
+					var params = {}, form = this.form;
+					//去除尾部逗号
+					cc.trim(form);
+					//用户名Base，防乱码
+					vm.form.nickname = Base64.encode(__.trim(vm.form.nickname));
+					this.$refs[formName].validate(function(valid) {
+						if(valid){
+							__.api('POST', '/rest/customer/save', form, function(result) {
+								if (__.err(result)) {
+									vm.$message.warning(result.message);
+								} else {
+									vm.$message.info("保存成功");
+									__.dialog.close();
+								}
+							});
+						}else{
+							return false
+						}
+					})
+				},
+				getArea : function() {
+					var vm = this;
+					__.mask();
+					__.api('GET', '/rest/area/all' , {pid : '', level : 1}, function(result) {
+						if (!__.err(result)) {
+							__.unmask();
+							vm.area = result.data;
+						} else {
+							__.unmask();
+							vm.$message.warning(result.message);
+							return;
+						}
+					});
+				},
+				cancel : function() {
+					__.dialog.close();
+				},
+				base64Decode : function (input){
+					if(!!input){
+						// rv = window.atob(input);
+						// rv = escape(rv);
+						var rv = Base64.decode(input);
+						rv = decodeURIComponent(rv);
+						return rv;
+					}
+					return "";
+				},
+				/**
+				 * 年龄计算
+				 */
+				ages : function (str){
+					var vm = this;
+					if(!!str){
+						var birthday=new Date(str.replace(/-/g, "\/"));
+						var d=new Date();
+						var age = d.getFullYear()-birthday.getFullYear()-((d.getMonth()<birthday.getMonth()|| d.getMonth()==birthday.getMonth() && d.getDate()<birthday.getDate())?1:0);
+						vm.form.age = age;
+					}
+				},
+				/**
+				 * COS上传
+				 * @param file
+				 * @param fileList
+				 */
+				uploadFile : function(param){
+					var vm = this;
+					//上传视频大小限制（示例中为10MB）
+					// const isLt10M = file.size / 1024 / 1024  < 10;
+
+					var file = param.file;
+					var data = param.data;
+					vm.uploadType = data;
+					cosUtils.upload(param, vm.form, data);
+				},
+				handleRemove : function(file, fileList) {
+					vm = this;
+					//删除文件时
+					cc.handleRemove(file, fileList, vm.form, file.type);
+				},
+				handlePreview : function(file) {
+					vm = this;
+					//点击已上传的文件链接时
+					cc.handlePreview(file, vm.form);
+				},
+				handleSuccess : function(response,file,fileList) {
+					vm = this;
+					file.path = response.data;
+					//文件上传成功时
+					cc.handleSuccess(response, file, fileList, vm.form, vm.uploadType);
+				}
+			}
+		})
+
+	</script>
+</body>
+</html>

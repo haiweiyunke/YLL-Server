@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="yll.mapper.PlatformMapper">
+
+	<resultMap id="RESULT_MAP" type="yll.entity.Platform">
+		<id property="id" column="id" jdbcType="VARCHAR" />
+		<result property="platformType" column="platform_type" jdbcType="INTEGER" />
+		<result property="platformId" column="platform_id" jdbcType="VARCHAR" />
+		<result property="onlineName" column="online_name" jdbcType="VARCHAR" />
+		<result property="headImg" column="head_img" jdbcType="LONGVARCHAR" />
+		<result property="fans" column="fans" jdbcType="INTEGER" />
+		<result property="duration" column="duration" jdbcType="VARCHAR" />
+		<result property="sessions" column="sessions" jdbcType="VARCHAR" />
+		<result property="liveTime" column="live_time" jdbcType="VARCHAR" />
+		<result property="fansGrowthRate" column="fans_growth_rate" jdbcType="VARCHAR" />
+		<result property="highestPopularity" column="highest_popularity" jdbcType="VARCHAR" />
+		<result property="appearanceFee" column="appearance_fee" jdbcType="VARCHAR" />
+		<result property="goodsNum" column="goods_num" jdbcType="VARCHAR" />
+		<result property="moneyNum" column="money_num" jdbcType="VARCHAR" />
+		<result property="lastFans" column="last_fans" jdbcType="VARCHAR" />
+		<result property="platformJson" column="platform_json" jdbcType="LONGVARCHAR" />
+		<result property="linkFeeOne" column="link_fee_one" jdbcType="VARCHAR" />
+		<result property="linkFeeTwo" column="link_fee_two" jdbcType="VARCHAR" />
+		<result property="specialFeeOne" column="special_Fee_one" jdbcType="VARCHAR" />
+		<result property="specialFeeTwo" column="special_Fee_two" jdbcType="VARCHAR" />
+
+		<result property="remark" column="remark" jdbcType="VARCHAR" />
+		<result property="state" column="state" jdbcType="VARCHAR" />
+		<result property="enabled" column="enabled" jdbcType="INTEGER" />
+		<result property="deleted" column="deleted" jdbcType="INTEGER" />
+		<result property="creator" column="creator" jdbcType="VARCHAR" />
+		<result property="createdTime" column="created_time" jdbcType="TIMESTAMP" />
+		<result property="modifier" column="modifier" jdbcType="VARCHAR" />
+		<result property="modifiedTime" column="modified_time" jdbcType="TIMESTAMP" />
+		<result property="deleter" column="deleter" jdbcType="VARCHAR" />
+		<result property="deletedTime" column="deleted_time" jdbcType="TIMESTAMP" />
+</resultMap>
+
+	<resultMap id="RESULT_VO_MAP" type="yll.service.model.vo.PlatformVo" extends="RESULT_MAP">
+		<result property="codename" column="codename" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap id="RESULT_ATTRIBUTES_MAP" type="yll.service.model.vo.PlatformVo" >
+		<result property="platformType" column="platform_type" jdbcType="VARCHAR" />
+		<result property="platformTypeStr" column="tname" jdbcType="VARCHAR" />
+		<result property="onlineName" column="online_name" jdbcType="VARCHAR" />
+		<collection property="attributes" ofType="yll.entity.PlatformAttributeValue">
+			<result property="kname" column="kname" />
+			<result property="vname" column="vname" />
+		</collection>
+	</resultMap>
+
+	<sql id="TABLE">dh_platform</sql>
+
+	<sql id="COLUMNS">
+		id, platform_type,  platform_id, online_name, head_img, platform_json, goods_num, money_num, link_fee_one, link_fee_two, special_fee_one, special_fee_two,
+		fans,  duration, sessions, live_time, fans_growth_rate, highest_popularity, appearance_fee,last_fans,
+		remark, state, enabled, deleted, creator, created_time,
+		modifier,modified_time, deleter, deleted_time
+	</sql>
+
+	<sql id="VALUES">
+		#{id}, #{platformType}, #{platformId}, #{onlineName}, #{headImg}, #{platformJson}, #{goodsNum}, #{moneyNum}, #{linkFeeOne},  #{linkFeeTwo},  #{specialFeeOne},#{specialFeeTwo},
+		#{fans}, #{duration}, #{sessions}, #{liveTime}, #{fansGrowthRate}, #{highestPopularity}, #{appearanceFee},#{lastFans},
+		#{remark}, #{state}, #{enabled},#{deleted}, #{creator}, #{createdTime},
+		#{modifier},#{modifiedTime}, #{deleter}, #{deletedTime}
+	</sql>
+
+	<sql id="SET_VALUES">
+		<trim suffixOverrides=",">
+			<if test=" platformType != null">
+				platform_type = #{platformType},
+			</if>
+			<if test=" platformId != null">
+				platform_id = #{platformId},
+			</if>
+			<if test=" onlineName != null">
+				online_name = #{onlineName},
+			</if>
+			<if test=" headImg != null">
+				head_img = #{headImg},
+			</if>
+			<if test=" fans != null">
+				fans = #{fans},
+			</if>
+			<if test=" duration != null">
+				duration = #{duration},
+			</if>
+			<if test=" sessions != null">
+				sessions = #{sessions},
+			</if>
+			<if test=" liveTime != null">
+				live_time = #{liveTime},
+			</if>
+			<if test=" fansGrowthRate != null">
+				fans_growth_rate = #{fansGrowthRate},
+			</if>
+			<if test=" highestPopularity != null">
+				highest_popularity = #{highestPopularity},
+			</if>
+			<if test=" appearanceFee != null">
+				appearance_fee = #{appearanceFee},
+			</if>
+			<if test=" lastFans != null">
+				last_fans = #{lastFans},
+			</if>
+			<if test=" goodsNum != null">
+				goods_num = #{goodsNum},
+			</if>
+			<if test=" moneyNum != null">
+				money_num = #{moneyNum},
+			</if>
+			<if test=" platformJson != null">
+				platform_json = #{platformJson},
+			</if>
+			<if test=" linkFeeOne != null">
+				link_fee_one = #{linkFeeOne},
+			</if>
+			<if test=" linkFeeTwo != null">
+				link_fee_two = #{linkFeeTwo},
+			</if>
+			<if test=" specialFeeOne != null">
+				special_fee_one = #{specialFeeOne},
+			</if>
+			<if test=" specialFeeTwo != null">
+				special_fee_two = #{specialFeeTwo},
+			</if>
+			<if test=" remark != null">
+				remark = #{remark},
+			</if>
+			<if test=" state != null">
+				state = #{state},
+			</if>
+			<if test=" enabled != null">
+				enabled = #{enabled},
+			</if>
+			<if test=" deleted != null">
+				deleted = #{deleted},
+			</if>
+			<if test=" creator != null">
+				creator = #{creator},
+			</if>
+			<if test=" createdTime != null">
+				created_time = #{createdTime},
+			</if>
+			<if test=" modifier != null">
+				modifier = #{modifier},
+			</if>
+			<if test=" modifiedTime != null">
+				modified_time = #{modifiedTime},
+			</if>
+			<if test=" deleter != null">
+				deleter = #{deleter},
+			</if>
+			<if test=" deletedTime != null">
+				deleted_time = #{deletedTime},
+			</if>
+		</trim>
+	</sql>
+
+	<sql id="WHERES">
+		<if test=" id != null and id != ''">
+			and id = #{id}
+		</if>
+		<if test=" onlineName != null and onlineName != '' ">
+			and online_name like CONCAT(CONCAT('%',#{onlineName}),'%')
+		</if>
+		<if test=" platformId != null and platformId != ''">
+			and platform_id = #{platformId}
+		</if>
+		<if test=" platformType != null  and platformType != ''">
+			and platform_type = #{platformType}
+		</if>
+		<if test=" creator != null and creator != ''">
+			and creator = #{creator}
+		</if>
+		<if test=" enabled != null ">
+			and enabled = #{enabled}
+		</if>
+		and deleted = 0
+	</sql>
+
+	<update id="save">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		) VALUES (
+		<include refid="VALUES" />
+		)
+		ON DUPLICATE KEY UPDATE
+		<include refid="SET_VALUES" />
+	</update>
+
+	<insert id="insert" parameterType="yll.entity.Platform">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		)
+		VALUES
+		(
+		<include refid="VALUES" />
+		)
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.String">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		id =#{id}
+	</delete>
+
+	<delete id="deleteAll">
+		DELETE FROM
+		<include refid="TABLE" />
+	</delete>
+
+	<update id="update" parameterType="yll.entity.Platform">
+		UPDATE
+		<include refid="TABLE" />
+		SET
+		<include refid="SET_VALUES" />
+		WHERE
+		id = #{id}
+	</update>
+
+	<select id="getById" parameterType="java.lang.String" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id =#{id}
+	</select>
+
+	<select id="findAll" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+	</select>
+
+	<select id="findBy" parameterType="yll.entity.Platform" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
+	</select>
+
+	<select id="findByCondition" parameterType="yll.entity.Platform" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
+		LIMIT 0, 1;
+	</select>
+
+	<select id="findByDic" parameterType="yll.service.model.vo.PlatformVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		m.id, m.platform_type,  m.platform_id, m.online_name, m.head_img,  m.platform_json,  m.goods_num,  m.money_num,
+		m.fans,  m.duration, m.sessions, m.live_time, m.fans_growth_rate, m.highest_popularity, m.appearance_fee,
+		m.link_fee_one, m.link_fee_two, m.special_fee_one, m.special_fee_two,
+		m.remark, m.state, m.enabled, m.deleted, m.creator, m.created_time,
+		m.modifier, m.modified_time, m.deleter, m.deleted_time,
+		sec.codename
+		FROM
+		<include refid="TABLE" /> m
+		LEFT JOIN
+		dic sec ON sec.code = m.platform_type
+		WHERE m.id != '0'
+		<if test=" onlineName != null and onlineName != '' ">
+			and m.online_name like CONCAT(CONCAT('%',#{onlineName}),'%')
+		</if>
+		<if test=" platformId != null and platformId != ''">
+			and m.platform_id = #{platformId}
+		</if>
+		<if test=" platformType != null  and platformType != ''">
+			and m.platform_type = #{platformType}
+		</if>
+		<if test=" creator != null and creator != ''">
+			and m.creator = #{creator}
+		</if>
+		<if test=" enabled != null ">
+			and m.enabled = #{enabled}
+		</if>
+		and m.deleted = 0
+		ORDER BY  m.created_time DESC
+	</select>
+
+
+	<select  id="getAppDetail" parameterType="yll.service.model.vo.PlatformVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		ifnull(m.platform_type,'') platform_type, ifnull(m.platform_id,'') platform_id, ifnull(m.online_name,'') online_name, ifnull(m.head_img,'') head_img, ifnull(m.fans,0) fans, ifnull(m.money_num,0) money_num, ifnull(m.goods_num,0) goods_num,
+		ifnull(m.sessions,'') sessions,  ifnull(m.fans_growth_rate,'') fans_growth_rate,  ifnull(m.highest_popularity,'') highest_popularity,
+		ifnull(m.duration,'') duration, ifnull(m.live_time,'')  live_time, ifnull(m.appearance_fee,'') appearance_fee, ifnull( m.platform_json,'') platform_json,
+		ifnull(m.link_fee_one,'') link_fee_one , ifnull(m.link_fee_two,'') link_fee_two , ifnull(m.special_fee_one,'') special_fee_one , ifnull(m.special_fee_two,'')  special_fee_two,
+		sec.codename
+		FROM dh_platform m
+		LEFT JOIN
+		dic sec
+		ON sec.code = m.platform_type
+		WHERE m.id != '0'
+		and m.creator = #{creator}
+		<if test=" platformType != null and platformType != ''">
+			and m.platform_type = #{platformType}
+		</if>
+	</select>
+
+	<select  id="getAppAuth" parameterType="yll.service.model.vo.PlatformVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		ifnull(m.platform_type,'') platform_type, ifnull(m.platform_id,'') platform_id, ifnull(m.online_name,'') online_name, ifnull(m.head_img,'') head_img, ifnull(m.fans,0) fans, ifnull(m.goods_num,0) goods_num, ifnull(m.money_num,0) money_num,
+		ifnull(m.sessions,'') sessions,  ifnull(m.fans_growth_rate,'') fans_growth_rate,  ifnull(m.highest_popularity,'') highest_popularity,
+		ifnull(m.link_fee_one,'') link_fee_one , ifnull(m.link_fee_two,'') link_fee_two , ifnull(m.special_fee_one,'') special_fee_one , ifnull(m.special_fee_two,'')  special_fee_two,
+		ifnull(m.duration,'') duration, ifnull(m.live_time,'')  live_time, ifnull(m.appearance_fee,'') appearance_fee, ifnull( m.platform_json,'') platform_json,
+		sec.codename
+		FROM dh_platform m
+		LEFT JOIN
+		dic sec
+		ON sec.code = m.platform_type
+		WHERE m.id != '0'
+		and m.creator = #{creator}
+		<if test=" platformType != null and platformType != ''">
+			and m.platform_type = #{platformType}
+		</if>
+	</select>
+
+	<delete id="deleteByCreator" parameterType="java.lang.String">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		creator = #{creator}
+	</delete>
+
+	<!-- 暂时不用 -->
+	<select id="findByAttributeList" parameterType="yll.service.model.vo.PlatformVo" resultMap="RESULT_ATTRIBUTES_MAP">
+		SELECT
+		m.platform_type, m.online_name,
+		sec.vname, thr.codename tname, k.name kname
+		FROM
+		<include refid="TABLE" /> m
+		LEFT JOIN
+		dh_platform_attribute_value sec
+		ON sec.pid = m.id
+		LEFT JOIN
+		dic thr
+		ON thr.code = m.platform_type
+		LEFT JOIN
+		dh_platform_attribute_key k
+		ON k.id = sec.kid
+		WHERE m.id != '0'
+		<if test=" creator != null ">
+			and m.creator = #{creator}
+		</if>
+		ORDER BY  m.creator, m.id
+	</select>
+
+</mapper>

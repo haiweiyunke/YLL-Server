@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="yll.mapper.CustomerLikesMapper">
+
+	<resultMap id="RESULT_MAP" type="yll.entity.CustomerLikes">
+		<id property="id" column="id" jdbcType="VARCHAR" />
+		<result property="targetId" column="target_id" jdbcType="VARCHAR" />
+		<result property="customerId" column="customer_id" jdbcType="VARCHAR" />
+		<result property="type" column="type" jdbcType="VARCHAR" />
+		<result property="dicId" column="dic_id" jdbcType="VARCHAR" />
+		<result property="state" column="state" jdbcType="VARCHAR" />
+		<result property="remark" column="remark" jdbcType="VARCHAR" />
+		<result property="enabled" column="enabled" jdbcType="INTEGER" />
+		<result property="deleted" column="deleted" jdbcType="INTEGER" />
+		<result property="creator" column="creator" jdbcType="VARCHAR" />
+		<result property="createdTime" column="created_time" jdbcType="TIMESTAMP" />
+		<result property="modifier" column="modifier" jdbcType="VARCHAR" />
+		<result property="modifiedTime" column="modified_time" jdbcType="TIMESTAMP" />
+		<result property="deleter" column="deleter" jdbcType="VARCHAR" />
+		<result property="deletedTime" column="deleted_time" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<resultMap id="RESULT_VO_MAP" type="yll.service.model.vo.CustomerLikesVo" extends="RESULT_MAP">
+		<result property="codename" column="codename" jdbcType="VARCHAR" />
+		<result property="headImg" column="head_img" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="TABLE">customer_likes</sql>
+
+	<sql id="COLUMNS">
+		id, target_id, customer_id, type, dic_id, state, remark,
+		enabled,deleted, creator, created_time,
+		modifier, modified_time, deleter, deleted_time
+	</sql>
+
+	<sql id="VALUES">
+		#{id}, #{targetId}, #{customerId}, #{type}, #{dicId}, #{state}, #{remark},
+		#{enabled},#{deleted}, #{creator}, #{createdTime},
+		#{modifier},#{modifiedTime}, #{deleter}, #{deletedTime}
+	</sql>
+
+	<sql id="SET_VALUES">
+		<trim suffixOverrides=",">
+			<if test=" targetId != null">
+				target_id = #{targetId},
+			</if>
+			<if test=" customerId != null">
+				customer_id = #{customerId},
+			</if>
+			<if test=" type != null">
+				type = #{type},
+			</if>
+			<if test=" targetId != null">
+				target_id = #{targetId},
+			</if>
+			<if test=" state != null">
+				state = #{state},
+			</if>
+			<if test=" remark != null">
+				remark = #{remark},
+			</if>
+			<if test=" enabled != null">
+				enabled = #{enabled},
+			</if>
+			<if test=" deleted != null">
+				deleted = #{deleted},
+			</if>
+			<if test=" creator != null">
+				creator = #{creator},
+			</if>
+			<if test=" createdTime != null">
+				created_time = #{createdTime},
+			</if>
+			<if test=" modifier != null">
+				modifier = #{modifier},
+			</if>
+			<if test=" modifiedTime != null">
+				modified_time = #{modifiedTime},
+			</if>
+			<if test=" deleter != null">
+				deleter = #{deleter},
+			</if>
+			<if test=" deletedTime != null">
+				deleted_time = #{deletedTime},
+			</if>
+		</trim>
+	</sql>
+
+	<sql id="WHERES">
+		<if test=" id != null and id != ''">
+			and id = #{id}
+		</if>
+		<if test=" targetId != null and targetId != ''">
+			and target_id = #{targetId}
+		</if>
+		<if test=" customerId != null and customerId != ''">
+			and customer_id = #{customerId}
+		</if>
+		<if test=" type != null and type != ''">
+			and type = #{type}
+		</if>
+		<if test=" enabled != null ">
+			and enabled = #{enabled}
+		</if>
+		and deleted = 0
+	</sql>
+
+	<update id="save">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		) VALUES (
+		<include refid="VALUES" />
+		)
+		ON DUPLICATE KEY UPDATE
+		<include refid="SET_VALUES" />
+	</update>
+
+	<insert id="insert" parameterType="yll.entity.CustomerLikes">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		)
+		VALUES
+		(
+		<include refid="VALUES" />
+		)
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.String">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		id =#{id}
+	</delete>
+
+	<delete id="deleteAll">
+		DELETE FROM
+		<include refid="TABLE" />
+	</delete>
+
+	<update id="update" parameterType="yll.entity.CustomerLikes">
+		UPDATE
+		<include refid="TABLE" />
+		SET
+		<include refid="SET_VALUES" />
+		WHERE
+		id = #{id}
+	</update>
+
+	<select id="getById" parameterType="java.lang.String" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id =#{id}
+	</select>
+
+	<select id="findAll" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+	</select>
+
+	<select id="findBy" parameterType="yll.entity.CustomerLikes" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY ordinal ASC,  created_time DESC
+	</select>
+
+	<select id="findById" parameterType="yll.entity.CustomerLikes" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		<if test=" targetId != null and targetId != ''">
+			and target_id = #{targetId}
+		</if>
+		ORDER BY created_time DESC
+	</select>
+
+	<select id="findByWithType" parameterType="yll.service.model.vo.CustomerLikesVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		m.id, m.target_id, m.remark, m.type, m.state,
+		m.enabled,deleted, m.creator, m.created_time,
+		m.modifier, m.modified_time, m.deleter, m.deleted_time,
+		sec.codename
+		FROM
+		<include refid="TABLE" /> m
+		LEFT JOIN
+		dic_type sec
+		ON sec.code = m.type
+		WHERE m.id != '0'
+		<include refid="WHERES" />
+		<if test=" targetId != null and targetId != ''">
+			and m.target_id = #{targetId}
+		</if>
+		<if test=" codename != null and codename != ''">
+			and sec.codename like CONCAT(CONCAT('%',#{codename}),'%')
+		</if>
+		ORDER BY m.ordinal is null, m.ordinal ASC,  m.created_time DESC
+	</select>
+
+	<select id="findByWithJoin" parameterType="yll.service.model.vo.CustomerLikesVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		m.id, m.target_id, customer_id, m.type, dic_id, m.state, m.remark,
+		m.enabled,deleted, m.creator, m.created_time,
+		m.modifier, m.modified_time, m.deleter, m.deleted_time,
+		sec.codename, sec.remark dicmark,
+		CASE
+		WHEN m.type = 'customer' THEN
+		(
+		select ifnull(th.nickname,'') nickname from customer th WHERE th.id = m.target_id
+		)
+		ELSE ''
+		END nickname,
+
+		CASE
+		WHEN m.type = 'customer' THEN
+		(
+		select ifnull(th.head_img,'') head_img from customer th WHERE th.id = m.target_id
+		)
+		ELSE ''
+		END head_img,
+
+		CASE
+		WHEN m.type = 'customer' THEN
+		(
+		select ifnull(th.collects,'') collects from customer th WHERE th.id = m.target_id
+		)
+		ELSE ''
+		END collects,
+
+		CASE
+		WHEN m.type = 'customer' THEN
+		(
+		select ifnull(th.likes,'') likes from customer th WHERE th.id = m.target_id
+		)
+		ELSE ''
+		END likes,
+
+		CASE
+		WHEN m.type = 'customer' THEN
+		(
+		select ifnull(appICquery(m.target_id), '') expertise
+		)
+		ELSE ''
+		END expertise,
+
+		CASE
+		WHEN m.type = 'customer' THEN
+		(
+		select ifnull(appPlatformQuery(m.target_id), '')  platform
+		)
+		ELSE ''
+		END platform,
+
+		CASE
+		WHEN m.type = 'dynamic' THEN
+		(
+		select th.image from dh_dynamic th WHERE th.id = m.target_id
+		)
+		ELSE ''
+		END image,
+
+		CASE
+		WHEN m.type = 'dynamic' THEN
+		(
+		select th.video from dh_dynamic th WHERE th.id = m.target_id
+		)
+		ELSE ''
+		END video,
+
+		CASE
+		WHEN m.type = 'dynamic' THEN
+		(
+		select th.words from dh_dynamic th WHERE th.id = m.target_id
+		)
+		ELSE ''
+		END words
+
+		FROM
+		<include refid="TABLE" /> m
+		LEFT JOIN
+		dic sec
+		ON sec.code = m.dic_id
+		WHERE m.id != '0'
+		<include refid="WHERES" />
+		<if test=" customerId != null and customerId != ''">
+			and m.customer_id = #{customerId}
+		</if>
+		<if test=" code != null and code != ''">
+			and sec.code = #{code}
+		</if>
+		GROUP BY target_id, customer_id
+		ORDER BY m.created_time DESC
+	</select>
+
+	<update id="updateMerge">
+		UPDATE
+		<include refid="TABLE" />
+		SET
+		customer_id = #{newId}, creator = #{newId}
+		WHERE customer_id = #{oldId}
+	</update>
+
+</mapper>

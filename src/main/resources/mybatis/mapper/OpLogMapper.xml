@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="yll.mapper.OpLogMapper">
+
+	<resultMap id="RESULT_MAP" type="yll.entity.OpLog">
+		<id property="id" column="id" jdbcType="VARCHAR" />
+		<result property="url" column="url" jdbcType="VARCHAR" />
+		<result property="comment" column="comment" jdbcType="VARCHAR" />
+		<result property="userId" column="user_id" jdbcType="VARCHAR" />
+		<result property="userName" column="user_name" jdbcType="VARCHAR" />
+		<result property="userIp" column="user_ip" jdbcType="VARCHAR" />
+		<result property="createdBy" column="created_by" jdbcType="VARCHAR" />
+		<result property="createdAt" column="created_at" jdbcType="TIMESTAMP" />
+		<result property="updatedBy" column="updated_by" jdbcType="VARCHAR" />
+		<result property="updatedAt" column="updated_at" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="TABLE">op_log</sql>
+
+	<sql id="COLUMNS">
+		id, url, comment, user_id, user_name, user_ip,
+		created_by, created_at, updated_by, updated_at
+	</sql>
+
+	<sql id="VALUES">
+		#{id}, #{url}, #{comment}, #{userId}, #{userName}, #{userIp},
+		#{createdBy}, #{createdAt}, #{updatedBy}, #{updatedAt}
+	</sql>
+
+	<sql id="RECORD_VALUES">
+		#{record.id}, #{record.url}, #{record.comment}, #{record.userId}, #{record.userName}, #{record.userIp},
+		#{record.createdBy}, #{record.createdAt}, #{record.updatedBy}, #{record.updatedAt}
+	</sql>
+
+	<sql id="SET_VALUES">
+		<trim suffixOverrides=",">
+			<if test=" url != null">
+				url = #{url},
+			</if>
+			<if test=" comment != null">
+				comment = #{comment},
+			</if>
+			<if test=" userId != null">
+				user_id = #{userId},
+			</if>
+			<if test=" userName != null">
+				user_name = #{userName},
+			</if>
+			<if test=" userIp != null">
+				user_ip = #{userIp},
+			</if>
+			<if test=" createdBy != null">
+				created_by = #{createdBy},
+			</if>
+			<if test=" createdAt != null">
+				created_at = #{createdAt},
+			</if>
+			<if test=" updatedBy != null">
+				updated_by = #{updatedBy},
+			</if>
+			<if test=" updatedAt != null">
+				updated_at = #{updatedAt},
+			</if>
+		</trim>
+	</sql>
+
+	<sql id="WHERES">
+		<if test=" comment != null and comment !='' ">
+			AND comment like CONCAT(CONCAT('%',#{comment}),'%')
+		</if>
+		<if test=" createdAtBegin != null">
+			AND <![CDATA[ created_at >= #{createdAtBegin} ]]>
+		</if>
+		<if test=" createdAtEnd != null">
+			AND <![CDATA[ created_at <= #{createdAtEnd} ]]>
+		</if>
+	</sql>
+
+	<update id="save">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		) VALUES (
+		<include refid="VALUES" />
+		)
+		ON DUPLICATE KEY UPDATE
+		<include refid="SET_VALUES" />
+	</update>
+
+	<insert id="insert">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		)
+		VALUES
+		(
+		<include refid="VALUES" />
+		)
+	</insert>
+
+	<insert id="inserts">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		)
+		VALUES
+		<foreach collection="array" item="record" index="index" separator=",">
+			(
+			<include refid="RECORD_VALUES" />
+			)
+		</foreach>
+	</insert>
+
+	<delete id="deleteById">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		id =#{id}
+	</delete>
+
+	<delete id="deleteAll">
+		DELETE FROM
+		<include refid="TABLE" />
+	</delete>
+
+	<update id="update">
+		UPDATE
+		<include refid="TABLE" />
+		SET
+		<include refid="SET_VALUES" />
+		WHERE
+		id = #{id}
+	</update>
+
+	<select id="getById" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id = #{id}
+	</select>
+
+	<select id="findAll" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+	</select>
+
+	<select id="findBy" parameterType="yll.entity.OpLog" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE 1=1
+		<include refid="WHERES" />
+		ORDER BY created_at DESC
+	</select>
+</mapper>

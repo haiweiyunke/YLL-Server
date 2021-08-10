@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>达人平台新增和编辑</title>
+<style>
+.el-picker-panel {
+	height: 320px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.el-date-editor.el-input, .el-input-number--small {
+	width: 100%;
+}
+
+.unit {
+	text-align: right;
+	line-height: 40px;
+}
+
+/*@media screen and(-ms-high-contrast:active),(-ms-high-contrast:none){
+	.el-picker-panel {
+		height: 200px;
+	}
+}*/
+</style>
+</head>
+<body>
+	<div id="vm"  v-cloak  class="vm">
+		<form is="el-form" :model="form" ref="form" :rules="rules" style="width: 100%;">
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="平台" label-width="110px" prop="type">
+						<div is="el-select" v-model="form.platformType" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in options"
+								 :key="item.code"
+								 :label="item.codename"
+								 :value="item.code">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="平台ID" label-width="110px" prop="platformId">
+						<input is="el-input" v-model="form.platformId" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="网名" label-width="110px" prop="onlineName">
+						<input is="el-input" v-model="form.onlineName" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="粉丝数" label-width="110px" prop="fans">
+						<div is="el-input-number" v-model="form.fans" :min="1" :max="1000000000" label="粉丝数"></div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 暂时不用的固定属性 -->
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="平均每日时长" label-width="110px" prop="duration">
+						<input is="el-input" v-model="form.duration" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="开播次数" label-width="110px" prop="sessions">
+						<input is="el-input" v-model="form.sessions" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="直播时段" label-width="110px" prop="liveTime">
+						<input is="el-input" v-model="form.liveTime" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="粉丝增长" label-width="110px" prop="fansGrowthRate">
+						<input is="el-input" v-model="form.fansGrowthRate" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="最高场观" label-width="110px" prop="highestPopularity">
+						<input is="el-input" v-model="form.highestPopularity" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="单场带货数" label-width="110px" prop="goodsNum">
+						<input is="el-input" v-model="form.goodsNum" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="单场带货金额" label-width="110px" prop="moneyNum">
+						<input is="el-input" v-model="form.moneyNum" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="链接费(下限)" label-width="110px" >
+						<input is="el-input" v-model="form.linkFeeOne" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="链接费(上限)" label-width="110px" >
+						<input is="el-input" v-model="form.linkFeeTwo" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="专场费(下限)" label-width="110px" >
+						<el-input v-model="form.specialFeeOne" controls-position="right" size="small" autocomplete="off"></el-input>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="专场费(上限)" label-width="110px" >
+						<el-input v-model="form.specialFeeTwo" controls-position="right" size="small" autocomplete="off"></el-input>
+					</div>
+				</div>
+			</div>
+			<div slot="tip" class="el-upload__tip">只能上传 </div>
+
+			<!--<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="出场费" label-width="110px" prop="name">
+						<input is="el-input" v-model="form.appearanceFee" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>-->
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="头像" label-width="110px">
+						<div is="el-upload"
+							 class="upload-demo"
+							 :accept="imageAccept"
+							 :action="uploadUrl"
+							 :http-request="uploadFile"
+							 data="headImg"
+							 :on-preview="handlePreview"
+							 :on-remove="handleRemove"
+							 :on-success="handleSuccess"
+							 :file-list="imageFiles"
+							 list-type="picture">	 <!--  切换时，加上  :http-request="uploadFile" ，覆盖elui原"action"动作 -->
+							<el-button size="small" type="primary">点击上传</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{imageAccept}}文件。</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-form-item" align="center" style="margin-top: 20px;">
+					<button is="el-button" type="success" @click="confirm('form')">确定</button>
+					<button is="el-button" @click="cancel()">取消</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					id : '',
+					platformType : '',
+					platformId : '',
+					onlineName : '',
+					headImg : '',
+					fans : 0,
+					duration : '',
+					sessions : '',
+					liveTime : '',
+					fansGrowthRate : '',
+					highestPopularity : '',
+					appearanceFee : '',
+					goodsNum : '',
+					moneyNum : '',
+					platformJson : '',
+					linkFeeOne : '',
+					linkFeeTwo : '',
+					specialFeeOne : '',
+					specialFeeTwo : '',
+					remark : '',
+					enabled : '0'
+				},
+				rules:{
+					platformId:[
+							{
+								required : true,
+								message : '请输入平台ID',
+								trigger : 'blur'
+							}
+					],
+					platformType:[{
+						required : false,
+						message : '请选择平台',
+						trigger : 'blur'
+					}]
+				},
+				coverFiles: [],
+                imageFiles: [],
+                videoFiles: [],
+				types : [],
+				uploadType : "",
+				uploadUrl : cc.uploadUrl,
+				imageAccept : cc.imageAccept,
+				videoAccept : cc.videoAccept,
+				options : []
+			},
+			created : function() {
+			},
+			mounted : function() {
+				var vm = this, search = __.decodeUrlParams();
+				var id = search.id;
+				var creator = search.creator;
+				if(!!creator){
+					vm.form.creator = creator;
+				}
+				if (!__.isEmpty(id)) {
+					__.api('GET', '/rest/platform/creator/' + id, {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						var form = result.data;
+						form.enabled = String(form.enabled);
+						//用户名回显
+						form.onlineName = vm.base64Decode(form.onlineName);
+						vm.form = form;
+						//图片回显
+						vm.imageFiles = cc.display(vm.form.headImg, "headImg");
+					});
+				}
+				vm.getDic();
+			},
+			methods : {
+				confirm : function(formName) {
+					var vm = this;
+					var params = {}, form = this.form;
+					//佣金上下限对比
+					if( !!form.linkFeeTwo && !!form.linkFeeOne && form.linkFeeTwo < form.linkFeeOne){
+						vm.$message.warning("链接费的上下限数值有误");
+						return false;
+					}
+					if(!!form.specialFeeOne && !!form.specialFeeTwo && form.specialFeeTwo < form.specialFeeOne){
+						vm.$message.warning("专场费的上下限数值有误");
+						return false;
+					}
+					//去除尾部逗号
+					cc.trim(form);
+					//用户名Base，防乱码
+					vm.form.onlineName = Base64.encode(__.trim(vm.form.onlineName));
+					this.$refs[formName].validate(function(valid) {
+						if(valid){
+							__.api('POST', '/rest/platform/save', form, function(result) {
+								if (__.err(result)) {
+									vm.$message.warning(result.message);
+								} else {
+									vm.$message.info("保存成功");
+									__.dialog.close();
+								}
+							});
+						}else{
+							return false
+						}
+					})
+				},
+				cancel : function() {
+					__.dialog.close();
+				},
+				getDic : function() {
+					var vm = this;
+					//数据字典类别
+					__.api('POST', '/rest/dic/all', {'targetId' : 'platform'}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							vm.options = result.data;
+						}
+					});
+				},
+				base64Decode : function (input){
+					if(!!input){
+						// rv = window.atob(input);
+						// rv = escape(rv);
+						var rv = Base64.decode(input);
+						rv = decodeURIComponent(rv);
+						return rv;
+					}
+					return "";
+				},
+				/**
+				 * COS上传
+				 * @param file
+				 * @param fileList
+				 */
+				uploadFile : function(param){
+					var vm = this;
+					//上传视频大小限制（示例中为10MB）
+					// const isLt10M = file.size / 1024 / 1024  < 10;
+
+					var file = param.file;
+					var data = param.data;
+					vm.uploadType = data;
+					cosUtils.upload(param, vm.form, data);
+				},
+				handleRemove : function(file, fileList) {
+					vm = this;
+					//删除文件时
+					cc.handleRemove(file, fileList, vm.form, file.type);
+				},
+				handlePreview : function(file) {
+					vm = this;
+					//点击已上传的文件链接时
+					cc.handlePreview(file, vm.form);
+				},
+				handleSuccess : function(response,file,fileList) {
+					vm = this;
+					file.path = response.data;
+					//文件上传成功时
+					cc.handleSuccess(response, file, fileList, vm.form, vm.uploadType);
+				}
+			}
+		})
+
+	</script>
+</body>
+</html>

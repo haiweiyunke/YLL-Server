@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>任务订单查看</title>
+<style>
+.el-picker-panel {
+	height: 320px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.el-date-editor.el-input, .el-input-number--small {
+	width: 100%;
+}
+
+.unit {
+	text-align: right;
+	line-height: 40px;
+}
+
+/*@media screen and(-ms-high-contrast:active),(-ms-high-contrast:none){
+	.el-picker-panel {
+		height: 200px;
+	}
+}*/
+</style>
+</head>
+<body>
+	<div id="vm"  v-cloak  class="vm">
+		<form is="el-form" :model="form" ref="form" :rules="rules" style="width: 100%;">
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="任务名称" label-width="110px" >
+						<input is="el-input" v-model="form.taskName" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="服务价格" label-width="110px" >
+						<input is="el-input" v-model="form.servicePrice" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="商品平台" label-width="110px" >
+						<input is="el-input" v-model="form.platformStr" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="任务场地" label-width="110px" >
+						<input is="el-input" v-model="form.taskPlaceStr" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="带货方式" label-width="110px" >
+						<input is="el-input" v-model="form.typeStr" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="有效开始日期" label-width="110px" >
+						<input is="el-input" v-model="form.validStartTimeStr" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="有效结束日期" label-width="110px" >
+						<input is="el-input" v-model="form.validEndTimeStr" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="当前流程状态" label-width="110px" >
+						<input is="el-input" v-model="form.currentStateStr" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+
+		<!--
+			-->
+			<div is="el-row">
+				<div is="el-form-item" align="center" style="margin-top: 20px;">
+					<!--<button is="el-button" type="success" @click="confirm('form')">确定</button>-->
+					<button is="el-button" @click="cancel()">返回</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					id : '',
+					eid : '',
+					name : '',
+					remark : '',
+					ordinal : 99,
+					enabled : '1',
+					state : '2'
+				},
+				rules:{
+					name:[{
+						required : true,
+						message : '请输入名称',
+						trigger : 'blur'
+					}],
+					content:[{
+						required : false,
+						message : '请输入基本信息',
+						trigger : 'blur'
+					}],
+					type:[{
+						required : true,
+						message : '请输入类别',
+						trigger : 'blur'
+					}]
+				},
+				coverFiles: [],
+                imageFiles: [],
+                pictureFiles: [],
+				list : [],
+				uploadType : "",
+				uploadUrl : cc.uploadUrl,
+				imageAccept : cc.imageAccept
+			},
+			created : function() {
+			},
+			mounted : function() {
+				var vm = this, search = __.decodeUrlParams();
+				var id = search.id;
+				if (!__.isEmpty(id)) {
+					__.api('GET', '/rest/task/celebrity/' + id, {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						var form = result.data;
+						form.enabled = String(form.enabled);
+						vm.form = form;
+						//富文本回显
+						//cc.wangEditor('wangEditor', vm.form, vm.form.content);
+						//图片回显
+						// vm.imageFiles = cc.display(vm.form.image, "image");
+						// vm.coverFiles = cc.display(vm.form.cover, "cover");
+						// vm.pictureFiles = cc.display(vm.form.picture, "picture");
+					});
+				}
+				//cc.wangEditor('wangEditor', vm.form);
+			},
+			methods : {
+				confirm : function(formName) {
+					var vm = this;
+					var params = {}, form = this.form;
+					//去除尾部逗号
+					cc.trim(form);
+					//引入富文本公共html
+					//form.content = cc.editorImportHtml(form.content);
+					this.$refs[formName].validate(function(valid) {
+						if(valid){
+							__.api('POST', '/rest/shops/save', form, function(result) {
+								if (__.err(result)) {
+									vm.$message.warning(result.message);
+								} else {
+									vm.$message.info("保存成功");
+									__.dialog.close();
+								}
+							});
+						}else{
+							return false
+						}
+					})
+				},
+				cancel : function() {
+					__.dialog.close();
+				},
+				/**
+				 * COS上传
+				 * @param file
+				 * @param fileList
+				 */
+				uploadFile : function(param){
+					var vm = this;
+					var file = param.file;
+					var data = param.data;
+					vm.uploadType = data;
+					cosUtils.upload(param, vm.form, data);
+				},
+				handleRemove : function(file, fileList) {
+					vm = this;
+					//删除文件时
+					cc.handleRemove(file, fileList, vm.form, file.type);
+				},
+
+				handlePreview : function(file) {
+					//点击已上传的文件链接时
+					cc.handlePreview(file, vm.form);
+				},
+				handleSuccess : function(response,file,fileList) {
+					vm = this;
+					file.path = response.data;
+					//文件上传成功时
+					cc.handleSuccess(response, file, fileList, vm.form, vm.uploadType);
+				},
+
+			}
+		})
+
+	</script>
+</body>
+</html>

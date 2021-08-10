@@ -1,0 +1,67 @@
+#vm {
+	width: 100%;
+	height: 100%;
+	min-width: 1360px;
+	overflow: hidden;
+}
+
+.header {
+	width: 100%;
+	height: 80px;
+	background: #7399e6;
+}
+
+.navList .el-menu-item  a {
+	color: #c1d0f1;
+}
+
+.title div {
+	width: 216px;
+	margin: 22px 0;
+	text-align: center;
+	background: #ffffff;
+	border-radius: 33px;
+}
+
+.title a {
+	display: block;
+	font-size: 14px;
+	padding: 8px 22px;
+	color: #4277e9;
+}
+
+.nav {
+	width: 100%;
+	height: 30px;
+	background: #f5f5f5;
+}
+
+.name {
+	height: 80px;
+	line-height: 80px;
+}
+
+.container {
+	width: 100%;
+	height: calc(100% - 110px);
+	background: #ffffff;
+}
+
+.cont-left {
+	height: 100%;
+	background-color: rgb(245, 245, 245);
+	border-right: solid 2px #e6e6e6
+}
+
+.cont-left .el-menu {
+	border-right: none;
+}
+
+.cont-right {
+	height: 100%;
+}
+
+.setElItem {
+	padding: 0;
+	background-color: rgb(245, 245, 245);
+}

@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="yll.mapper.TaskProcessMapper">
+
+	<resultMap id="RESULT_MAP" type="yll.entity.TaskProcess">
+		<id property="id" column="id" jdbcType="VARCHAR" />
+		<result property="tid" column="tid" jdbcType="VARCHAR" />
+		<result property="tcId" column="tc_id" jdbcType="VARCHAR" />
+		<result property="process" column="process" jdbcType="VARCHAR" />
+		<result property="type" column="type" jdbcType="VARCHAR" />
+
+		<result property="remark" column="remark" jdbcType="VARCHAR" />
+		<result property="state" column="state" jdbcType="VARCHAR" />
+		<result property="enabled" column="enabled" jdbcType="INTEGER" />
+		<result property="deleted" column="deleted" jdbcType="INTEGER" />
+		<result property="creator" column="creator" jdbcType="VARCHAR" />
+		<result property="createdTime" column="created_time" jdbcType="TIMESTAMP" />
+		<result property="modifier" column="modifier" jdbcType="VARCHAR" />
+		<result property="modifiedTime" column="modified_time" jdbcType="TIMESTAMP" />
+		<result property="deleter" column="deleter" jdbcType="VARCHAR" />
+		<result property="deletedTime" column="deleted_time" jdbcType="TIMESTAMP" />
+
+	</resultMap>
+
+	<resultMap id="RESULT_VO_MAP" type="yll.service.model.vo.TaskProcessVo" extends="RESULT_MAP">
+		<result property="processName" column="process_name" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="TABLE">dh_task_process</sql>
+
+	<sql id="COLUMNS">
+		id, tid,  tc_id, process,  type,
+		remark, state, enabled, deleted, creator, created_time,
+		modifier,modified_time, deleter, deleted_time
+	</sql>
+
+	<sql id="VALUES">
+		#{id}, #{tid}, #{tcId}, #{process}, #{type},
+		#{remark}, #{state}, #{enabled},#{deleted}, #{creator}, #{createdTime},
+		#{modifier},#{modifiedTime}, #{deleter}, #{deletedTime}
+	</sql>
+
+	<sql id="SET_VALUES">
+		<trim suffixOverrides=",">
+			<if test=" tid != null">
+				tid = #{tid},
+			</if>
+			<if test=" tcId != null">
+				tc_id = #{tcId},
+			</if>
+			<if test=" process != null">
+				process = #{process},
+			</if>
+			<if test=" type != null">
+				type = #{type},
+			</if>
+			<if test=" remark != null">
+				remark = #{remark},
+			</if>
+			<if test=" state != null">
+				state = #{state},
+			</if>
+			<if test=" deleted != null">
+				deleted = #{deleted},
+			</if>
+			<if test=" creator != null">
+				creator = #{creator},
+			</if>
+			<if test=" createdTime != null">
+				created_time = #{createdTime},
+			</if>
+			<if test=" modifier != null">
+				modifier = #{modifier},
+			</if>
+			<if test=" modifiedTime != null">
+				modified_time = #{modifiedTime},
+			</if>
+			<if test=" deleter != null">
+				deleter = #{deleter},
+			</if>
+			<if test=" deletedTime != null">
+				deleted_time = #{deletedTime},
+			</if>
+		</trim>
+	</sql>
+
+	<sql id="WHERES">
+		<if test=" id != null and id != ''">
+			and id = #{id}
+		</if>
+		<if test=" tid != null and tid != ''">
+			and tid = #{tid}
+		</if>
+		<if test=" tcId != null and tcId != ''">
+			and tc_id = #{tcId}
+		</if>
+		<if test=" process != null and process != '' ">
+			and process = #{process}
+		</if>
+		<if test=" type != null and type != ''">
+			and type = #{type}
+		</if>
+		<if test=" state != null and state != ''">
+			and state = #{state}
+		</if>
+		<if test=" enabled != null ">
+			and enabled = #{enabled}
+		</if>
+		and deleted = 0
+	</sql>
+
+	<update id="save">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		) VALUES (
+		<include refid="VALUES" />
+		)
+		ON DUPLICATE KEY UPDATE
+		<include refid="SET_VALUES" />
+	</update>
+
+	<insert id="insert" parameterType="yll.entity.TaskProcess">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		)
+		VALUES
+		(
+		<include refid="VALUES" />
+		)
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.String">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		id =#{id}
+	</delete>
+
+	<delete id="deleteAll">
+		DELETE FROM
+		<include refid="TABLE" />
+	</delete>
+
+	<update id="update" parameterType="yll.entity.TaskProcess">
+		UPDATE
+		<include refid="TABLE" />
+		SET
+		<include refid="SET_VALUES" />
+		WHERE
+		id = #{id}
+	</update>
+
+	<select id="getById" parameterType="java.lang.String" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id =#{id}
+	</select>
+
+	<select id="findAll" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+	</select>
+
+	<select id="findBy" parameterType="yll.entity.TaskProcess" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
+	</select>
+
+	<select id="findByCondition" parameterType="yll.entity.TaskProcess" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
+		LIMIT 0, 1;
+	</select>
+
+	<delete id="deleteByPid" parameterType="java.lang.String">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		pid =#{pid}
+	</delete>
+
+	<select id="getList" parameterType="yll.service.model.vo.TaskProcessVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		m.id, m.tid,  m.tc_id, m.process, m.type, m.remark,
+		sec.codename process_name
+		FROM
+		<include refid="TABLE" /> m
+		LEFT JOIN
+		dic sec ON sec.code = m.process
+		LEFT JOIN
+		dic thr ON thr.code = m.type
+		WHERE m.id != '0'
+		<if test=" id != null and id != ''">
+			and m.id = #{id}
+		</if>
+		<if test=" tcId != null and tcId != ''">
+			and m.tc_id = #{tcId}
+		</if>
+		<if test=" process != null and process != '' ">
+			and m.process = #{process}
+		</if>
+		<if test=" type != null and type != ''">
+			and m.type = #{type}
+		</if>
+		<if test=" state != null and state != ''">
+			and m.state = #{state}
+		</if>
+		<if test=" enabled != null ">
+			and m.enabled = #{enabled}
+		</if>
+		and m.deleted = 0
+	</select>
+
+	<select id="getAppList" parameterType="yll.service.model.vo.TaskProcessVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		id, tid,  tc_id, process, type, remark
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+	</select>
+
+
+	<select id="findByCurrent" parameterType="yll.service.model.vo.TaskProcessVo" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
+		LIMIT 0, 1;
+	</select>
+
+	<delete id="deleteByTcId" parameterType="java.lang.String">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		tc_id =#{tcId}
+	</delete>
+
+</mapper>

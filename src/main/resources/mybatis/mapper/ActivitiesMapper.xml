@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="yll.mapper.ActivitiesMapper">
+
+	<resultMap id="RESULT_MAP" type="yll.entity.Activities">
+		<id property="id" column="id" jdbcType="VARCHAR" />
+		<result property="name" column="name" jdbcType="VARCHAR" />
+		<result property="cover" column="cover" jdbcType="LONGVARCHAR" />
+		<result property="image" column="image" jdbcType="LONGVARCHAR" />
+		<result property="video" column="video" jdbcType="LONGVARCHAR" />
+		<result property="realNum" column="real_num" jdbcType="INTEGER" />
+		<result property="operateNum" column="operate_num" jdbcType="INTEGER" />
+		<result property="remark" column="remark" jdbcType="VARCHAR" />
+		<result property="type" column="type" jdbcType="VARCHAR" />
+		<result property="state" column="state" jdbcType="VARCHAR" />
+		<result property="ordinal" column="ordinal" jdbcType="INTEGER" />
+		<result property="startTime" column="start_time" jdbcType="TIMESTAMP" />
+		<result property="endTime" column="end_time" jdbcType="TIMESTAMP" />
+		<result property="enabled" column="enabled" jdbcType="INTEGER" />
+		<result property="deleted" column="deleted" jdbcType="INTEGER" />
+		<result property="creator" column="creator" jdbcType="VARCHAR" />
+		<result property="createdTime" column="created_time" jdbcType="TIMESTAMP" />
+		<result property="modifier" column="modifier" jdbcType="VARCHAR" />
+		<result property="modifiedTime" column="modified_time" jdbcType="TIMESTAMP" />
+		<result property="deleter" column="deleter" jdbcType="VARCHAR" />
+		<result property="deletedTime" column="deleted_time" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<resultMap id="RESULT_VO_MAP" type="yll.service.model.vo.ActivitiesVo" extends="RESULT_MAP">
+		<result property="codename" column="codename" jdbcType="VARCHAR" />
+		<result property="appStartTime" column="appStartTime" jdbcType="VARCHAR" />
+		<result property="appEndTime" column="appEndTime" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="TABLE">activities</sql>
+
+	<sql id="COLUMNS">
+		id, name, cover,  image, video,  real_num,  operate_num, remark, type, state, ordinal,
+		start_time, end_time, enabled,deleted, creator, created_time,
+		modifier,modified_time, deleter, deleted_time
+	</sql>
+
+	<sql id="VALUES">
+		#{id}, #{name},  #{cover}, #{image}, #{video}, #{realNum}, #{operateNum}, #{remark}, #{type}, #{state},
+		#{ordinal}, #{startTime}, #{endTime}, #{enabled},#{deleted}, #{creator}, #{createdTime},
+		#{modifier},#{modifiedTime}, #{deleter}, #{deletedTime}
+	</sql>
+
+	<sql id="SET_VALUES">
+		<trim suffixOverrides=",">
+			<if test=" name != null">
+				name = #{name},
+			</if>
+			<if test=" cover != null">
+				cover = #{cover},
+			</if>
+			<if test=" image != null">
+				image = #{image},
+			</if>
+			<if test=" video != null">
+				video = #{video},
+			</if>
+			<if test=" realNum != null">
+				real_num = #{realNum},
+			</if>
+			<if test=" operateNum != null">
+				operate_num = #{operateNum},
+			</if>
+			<if test=" remark != null">
+				remark = #{remark},
+			</if>
+			<if test=" type != null">
+				type = #{type},
+			</if>
+			<if test=" state != null">
+				state = #{state},
+			</if>
+			<if test=" ordinal != null">
+				ordinal = #{ordinal},
+			</if>
+			<if test=" startTime != null">
+				start_time = #{startTime},
+			</if>
+			<if test=" endTime != null">
+				end_time = #{endTime},
+			</if>
+			<if test=" enabled != null">
+				enabled = #{enabled},
+			</if>
+			<if test=" deleted != null">
+				deleted = #{deleted},
+			</if>
+			<if test=" creator != null">
+				creator = #{creator},
+			</if>
+			<if test=" createdTime != null">
+				created_time = #{createdTime},
+			</if>
+			<if test=" modifier != null">
+				modifier = #{modifier},
+			</if>
+			<if test=" modifiedTime != null">
+				modified_time = #{modifiedTime},
+			</if>
+			<if test=" deleter != null">
+				deleter = #{deleter},
+			</if>
+			<if test=" deletedTime != null">
+				deleted_time = #{deletedTime},
+			</if>
+		</trim>
+	</sql>
+
+	<sql id="WHERES">
+		<if test=" id != null and id != ''">
+			and id = #{id}
+		</if>
+		<if test=" name != null and name != '' ">
+			and name like CONCAT(CONCAT('%',#{name}),'%')
+		</if>
+		<if test=" type != null and type != ''">
+			and type = #{type}
+		</if>
+		<if test=" enabled != null ">
+			and enabled = #{enabled}
+		</if>
+		and deleted = 0
+	</sql>
+
+	<update id="save">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		) VALUES (
+		<include refid="VALUES" />
+		)
+		ON DUPLICATE KEY UPDATE
+		<include refid="SET_VALUES" />
+	</update>
+
+	<insert id="insert" parameterType="yll.entity.Activities">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		)
+		VALUES
+		(
+		<include refid="VALUES" />
+		)
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.String">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		id =#{id}
+	</delete>
+
+	<delete id="deleteAll">
+		DELETE FROM
+		<include refid="TABLE" />
+	</delete>
+
+	<update id="update" parameterType="yll.entity.Activities">
+		UPDATE
+		<include refid="TABLE" />
+		SET
+		<include refid="SET_VALUES" />
+		WHERE
+		id = #{id}
+	</update>
+
+	<select id="getById" parameterType="java.lang.String" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id =#{id}
+	</select>
+
+	<select id="findAll" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+	</select>
+
+	<select id="findBy" parameterType="yll.entity.Activities" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY ordinal ASC,  created_time DESC
+	</select>
+
+	<select id="findByWithType" parameterType="yll.service.model.vo.ActivitiesVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		m.id, m.name, m.cover, m.image, m.video, m.real_num, m.operate_num, m.remark, m.type, m.state,
+		m.ordinal, m.start_time, m.end_time, m.enabled, m.deleted, m.creator, m.created_time,
+		m.modifier, m.modified_time, m.deleter, m.deleted_time,
+		sec.codename
+		FROM
+		<include refid="TABLE" /> m
+		LEFT JOIN
+		dic sec
+		ON sec.code = m.type
+		WHERE m.id != '0'
+		<include refid="WHERES" />
+		ORDER BY m.ordinal is null, m.ordinal ASC,  m.created_time DESC
+	</select>
+
+	<select id="getAppList" parameterType="yll.service.model.vo.ActivitiesVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		m.id, m.name, ifnull(m.cover,'') cover,  ifnull(m.image,'') image, m.type, m.real_num, m.operate_num,
+		DATE_FORMAT(m.start_time , '%Y-%m-%d') appStartTime,
+		DATE_FORMAT(m.end_time , '%Y-%m-%d') appEndTime,
+		sec.target_id code, sec.codename,
+		CASE
+		WHEN
+		NOW() &gt;= m.start_time
+		AND
+		NOW() &lt;= m.end_time
+		THEN
+		0
+		ELSE
+		1
+		END
+		AS ends,
+		CASE
+		WHEN
+		TIMESTAMPDIFF(HOUR,now(),m.end_time) &lt; 0
+		THEN
+		-1
+		WHEN
+		TIMESTAMPDIFF(DAY,now(),m.end_time) = 0
+		THEN
+		0
+		ELSE
+		1
+		END
+		AS endsType,
+		CASE
+		WHEN
+		TIMESTAMPDIFF(HOUR,now(),m.end_time) &lt; 0
+		THEN
+		-1
+		WHEN
+		TIMESTAMPDIFF(DAY,now(),m.end_time) = 0
+		THEN
+		TIMESTAMPDIFF(HOUR,now(),m.end_time)
+		ELSE
+		TIMESTAMPDIFF(DAY,now(),m.end_time)
+		END
+		AS endsNum
+		FROM
+		<include refid="TABLE" /> m
+		LEFT JOIN
+		dic sec
+		ON sec.code = m.type
+		WHERE m.id != '0' AND m.enabled = 1
+		<include refid="WHERES" />
+		ORDER BY m.ordinal is null, m.ordinal ASC,  m.created_time DESC
+	</select>
+
+</mapper>

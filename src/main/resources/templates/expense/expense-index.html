@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>费用管理首页</title>
+</head>
+<body>
+	<div is="el-row" id="vm" v-cloak>
+		<div is="el-col" :span="3" class="element-sideLeft">
+			<ul>
+				<li v-for="(menu,index) in menus" @click="selectIndex(index)" v-bind:class="{active:index==active}">{{menu.label}}</li>
+			</ul>
+		</div>
+		<div is="el-col" :span="21" class="element-sideRight">
+			<div is="el-row" class="element-rwarp">
+				<iframe :src="contentUrl" width="100%" height="100%" frameborder="0"></iframe>
+			</div>
+		</div>
+	</div>
+	<script>
+		var tree = new Vue({
+			el : '#vm',
+			data : {
+				menus : [],
+				active : null,
+				menus : [],
+				contentUrl : 'about:blank'
+			},
+			mounted : function() {
+				var vm = this;
+				__.api('GET', '/rest/permission/menu-tree/30000', {}, function(result) {
+					vm.menus = result.data;
+					vm.selectIndex(0);
+				});
+			},
+			methods : {
+				selectIndex : function(index) {
+					var vm = this, menu = vm.menus[index] || {}, path = menu.value;
+					if (!__.isEmpty(path) && path != '#') {
+						vm.contentUrl = path;
+						vm.active = index;
+					}
+				}
+			}
+		})
+	</script>
+</body>
+</html>

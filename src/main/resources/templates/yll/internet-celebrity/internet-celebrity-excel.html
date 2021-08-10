@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>达人导入</title>
+<style>
+.el-picker-panel {
+	height: 320px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.el-date-editor.el-input, .el-input-number--small {
+	width: 100%;
+}
+
+.unit {
+	text-align: right;
+	line-height: 40px;
+}
+
+/*@media screen and(-ms-high-contrast:active),(-ms-high-contrast:none){
+	.el-picker-panel {
+		height: 200px;
+	}
+}*/
+</style>
+</head>
+<body>
+	<div id="vm"  v-cloak  class="vm">
+		<form is="el-form" :model="form" ref="form" :rules="rules" style="width: 100%;">
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="文件夹名称" label-width="110px" prop="folderName">
+						<input is="el-input" v-model="form.folderName"  placeholder='名称格式为年月日+自定义序号，如2020063001' controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="图片文件夹" label-width="110px" >
+						<!--<input type="file" webkitdirectory directory multiple onchange="picUpload()"/>-->
+						<input ref="file"  class="fileUploaderClass" type='file' name="file" webkitdirectory @change.stop="picUpload"/>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="Excel" label-width="110px" >
+						<div is="el-upload" class="upload-demo"
+							 ref="upload"
+							 :accept="excelAccept"
+							 :action="excelUploadUrl"
+							 :before-upload="beforeUploadExcel"
+							 :on-preview="handlePreviewExcel"
+							 :on-success="handleSuccessExcel"
+							 multiple
+							 :limit="1"
+							 :file-list="excelList"
+							 :auto-upload="false">
+							<el-button size="small" type="success" icon="el-icon-document" >导入</el-button>
+							<div slot="tip" class="el-upload__tip">只能上传{{excelAccept}}文件，且不超过5MB</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			<div is="el-row">
+				<div is="el-form-item" align="center" style="margin-top: 20px;">
+					<button is="el-button" type="success" @click="confirm('form')">上传</button>
+					<button is="el-button" @click="cancel()">关闭</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					id : '',
+					folderName : ''
+				},
+				rules:{
+				},
+				excelUploadUrl : '',
+				excelAccept : cc.excelAccept,
+				excelList : [],
+				fileList : []
+			},
+			created : function() {
+			},
+			mounted : function() {
+				var vm = this;
+				vm.excelUploadUrl = __.url("/rest/customer/import");
+			},
+			methods : {
+				confirm : function(formName) {
+					var vm = this;
+					var params = {}, form = this.form;
+					//TODO  本地测试注释
+					/*if(vm.fileList.length < 1){
+						vm.$message.warning("请上传图片文件夹");
+						return ;
+					}
+					if(!!!vm.form.folderName){
+						vm.$message.warning("请按照正确格式填写文件夹名称");
+						return ;
+					}*/
+					for (let i = 0; i < vm.fileList.length; i++) {
+						vm.uploadFile(vm.fileList[i]);
+					}
+					vm.$refs.upload.submit();
+					vm.$message.info("上传成功");
+				},
+				cancel : function() {
+					__.dialog.close();
+				},
+				picUpload : function() {
+					var vm = this;
+					console.log(11);
+					console.log(this.$refs.file.files);
+					vm.fileList = this.$refs.file.files;
+				},
+				/**
+				 * Excel上传
+				 */
+				beforeUploadExcel : function(file) {
+					var vm = this;
+					//点击已上传的文件链接时
+					console.log(vm.form);
+					//TODO  本地测试注释
+					/*if(!!!vm.form.folderName){
+						vm.$message.warning("请按照正确格式填写文件夹名称");
+						return false;
+					}
+					if(vm.fileList.length < 1){
+						vm.$message.warning("请上传图片文件夹");
+						return false;
+					}*/
+				},
+				handlePreviewExcel : function(file) {
+					var vm = this;
+					//点击已上传的文件链接时
+				},
+				handleSuccessExcel : function(response,file,fileList) {
+					var vm = this;
+					//文件上传成功时
+					file.path = response.data;
+					/*vm.$message.warning("导入成功");*/
+				},
+				/**
+				 * COS上传
+				 * @param file
+				 * @param fileList
+				 */
+				uploadFile : function(file){
+					var vm = this;
+					//上传视频大小限制（示例中为10MB）
+					// const isLt10M = file.size / 1024 / 1024  < 10;
+					cosUtils.uploadFolder(file, vm.form.folderName);
+				}
+
+			}
+		})
+
+	</script>
+</body>
+</html>

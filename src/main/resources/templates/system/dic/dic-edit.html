@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>数据字典新增和编辑</title>
+<style>
+.el-picker-panel {
+	height: 320px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.el-date-editor.el-input, .el-input-number--small {
+	width: 100%;
+}
+
+.unit {
+	text-align: right;
+	line-height: 40px;
+}
+
+@media screen and(-ms-high-contrast:active),(-ms-high-contrast:none){
+	.el-picker-panel {
+		height: 200px;
+	}
+}
+</style>
+</head>
+<body>
+	<div id="vm" class="vm-virtual" v-cloak>
+		<form is="el-form" :model="form" ref="form" :rules="rules" style="width: 100%;">
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="编码" label-width="110px" prop="code">
+						<input is="el-input" v-model="form.code" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="编码名称" label-width="110px" prop="codename">
+						<input is="el-input" v-model="form.codename" controls-position="right" autocomplete="off">
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="编码类别" label-width="110px" prop="targetId">
+						<div is="el-select" v-model="form.targetId" filterable placeholder="请选择">
+							<div is="el-option"
+									v-for="item in types"
+									:key="item.code"
+									:label="item.codename"
+									:value="item.code">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="说明" label-width="110px">
+						<input is="el-input" v-model="form.remark" controls-position="right" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="备注" label-width="110px">
+						<input is="el-input" v-model="form.remarks" controls-position="right" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="排序" label-width="110px" prop="ordinal">
+						<input is="el-input" v-model="form.ordinal" controls-position="right" autocomplete="off">
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-form-item" align="center" style="margin-top: 20px;">
+					<button is="el-button" type="success" @click="confirm('form')">确定</button>
+					<button is="el-button" @click="cancel()">取消</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					id : '',
+					code : '',
+					codename : '',
+					targetId : '',
+					remark : '',
+					remarks : '',
+					ordinal : ''
+				},
+				rules:{
+					code:[{
+						required : true,
+						message : '请输入编码',
+						trigger : 'blur'
+					}],
+					codename:[{
+						required : true,
+						message : '请输入编码名称',
+						trigger : 'blur'
+					}]
+				},
+				types : [],
+			},
+			created : function() {
+			},
+			mounted : function() {
+				var vm = this, search = __.decodeUrlParams();
+				var id = search.id;
+
+				if (!__.isEmpty(id)) {
+					__.api('GET', '/rest/dic/' + id, {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						var form = result.data;
+						vm.form = form;
+					});
+				}
+				vm.dicType();
+			},
+			methods : {
+				confirm : function(formName) {
+					var vm = this;
+					var params = {}, form = this.form;
+					this.$refs[formName].validate(function(valid) {
+						if(valid){
+							__.api('POST', '/rest/dic/save', form, function(result) {
+								if (__.err(result)) {
+									vm.$message.warning(result.message);
+								} else {
+									vm.$message.info("保存成功");
+									__.dialog.close();
+								}
+							});
+						}else{
+							return false
+						}
+					})
+
+				},
+				cancel : function() {
+					__.dialog.close();
+				},
+				dicType : function() {
+					vm = this;
+					//数据字典类别
+					__.api('POST', '/rest/dic-type/all', {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							vm.types = result.data;
+						}
+					});
+				}
+			}
+		})
+	</script>
+</body>
+</html>

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>达人平台自定义属性新增和编辑</title>
+<style>
+.el-picker-panel {
+	height: 320px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.el-date-editor.el-input, .el-input-number--small {
+	width: 100%;
+}
+
+.unit {
+	text-align: right;
+	line-height: 40px;
+}
+
+/*@media screen and(-ms-high-contrast:active),(-ms-high-contrast:none){
+	.el-picker-panel {
+		height: 200px;
+	}
+}*/
+</style>
+</head>
+<body>
+	<div id="vm"  v-cloak  class="vm">
+		<form is="el-form" :model="form" ref="form" :rules="rules" style="width: 100%;">
+
+			<!--<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="平台" label-width="110px" prop="type">
+						<div is="el-select" v-model="form.platformType" @change="changeType($event)" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in options"
+								 :key="item.code"
+								 :label="item.codename"
+								 :value="item.code">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>-->
+
+			<div is="el-row">
+				<div is="el-col" style="margin-left: 3%;padding-bottom: 4px">
+					<div is="el-button" @click="addItem" type="success" icon="el-icon-plus" circle></div>
+				</div>
+				<div v-for="(item, index) in addList" :key="index" >
+					<div is="el-col" :span="10">
+						<div is="el-form-item" label="属性：" label-width="110px"
+							 :prop="'addList.' + index + '.key'"
+							 :rules="{
+									required: true, message: '属性不能为空', trigger: 'blur'
+								}">
+							<div is="el-input" style="width: 95%" v-model="item.key"></div>
+						</div>
+					</div>
+					<div is="el-col" :span="10">
+						<div is="el-form-item" label="值：" label-width="110px"
+							 :prop="'addList.' + index + '.value'"
+							 :rules="{
+									required: true, message: '值不能为空', trigger: 'blur'
+								}">
+							<div is="el-input" style="width: 95%" v-model="item.value"></div>
+						</div>
+					</div>
+					<div is="el-col" :span="2">
+						<div is="el-form-item">
+							<i class="el-icon-delete" @click="deleteItem(item, index)"></i>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 平台其他Json信息 -->
+			<!--<div is="el-row">
+				<div is="el-col" :span="21">
+					<label class="el-form-item__label" style="width: 100%;color: red;padding-left: 4%;text-align: left;">以下为平台其他自定义信息。</label>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21"  >
+					<div is="el-form-item"  label-width="110px" v-for="(item,index) in form.platformJson" :label="item.key">
+						<input is="el-input" v-model=" form.platformJson[index].value" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>-->
+
+			<div is="el-row">
+				<div is="el-form-item" align="center" style="margin-top: 20px;">
+					<button is="el-button" type="success" @click="confirm('form')">确定</button>
+					<button is="el-button" @click="cancel()">取消</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					id : '',
+					platformJson : '',
+					platformType : '',
+					remark : ''
+				},
+				addList : [],
+				platformObj : '',
+				rules:{
+					type:[
+							{
+								required : false,
+								message : '请选择平台',
+								trigger : 'blur'
+							}
+					]
+				},
+				coverFiles: [],
+                imageFiles: [],
+                videoFiles: [],
+				uploadType : "",
+				uploadUrl : cc.uploadUrl,
+				imageAccept : cc.imageAccept,
+				videoAccept : cc.videoAccept,
+				types : [],
+				options : []
+			},
+			created : function() {
+			},
+			mounted : function() {
+				var vm = this, search = __.decodeUrlParams();
+				var id = search.id;
+				var creator = search.creator;
+				if(!!creator){
+					vm.form.creator = creator;
+				}
+				if (!__.isEmpty(id)) {
+					__.api('GET', '/rest/platform/creator/' + id, {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						var form = result.data;
+						form.enabled = String(form.enabled);
+						//用户名回显
+						form.onlineName = vm.base64Decode(form.onlineName);
+						// vm.form = form;
+						vm.form.platformType = form.platformType;
+						//渲染平台其他信息
+						if(!!result.data.platformJson){
+							form.platformJson = JSON.parse(result.data.platformJson);
+							vm.addList =  form.platformJson;
+							console.log("============二次打印===========");
+							console.log(form.platformJson);
+						}
+						// var jstr = "[{\"key\": \"累计观看(人)\",\"value\": \"378\",\"type\": \"string\",\"ordinal\": 1,\"remark\": \"\"},{\"key\": \"最高同时在线人数(人)\",\"value\": \"15\",\"type\": \"string\",\"ordinal\": 1,\"remark\": \"\"}]";
+						// form.platformJson = JSON.parse(jstr);
+					});
+				}
+				vm.getDic();
+			},
+			methods : {
+				confirm : function(formName) {
+					var vm = this;
+					var params = {}, form = this.form;
+					//去除尾部逗号
+					cc.trim(form);
+					//用户名Base，防乱码
+					vm.form.onlineName = Base64.encode(__.trim(vm.form.onlineName));
+					//平台自定义属性转json串
+					if(!!vm.addList && vm.addList.length>0){
+						form.platformJson = JSON.stringify(vm.addList);
+					}
+					//防止网名被base更改导致编辑回显错误
+					vm.form.onlineName = '';
+					this.$refs[formName].validate(function(valid) {
+						if(valid){
+							__.api('POST', '/rest/platform/save', form, function(result) {
+								if (__.err(result)) {
+									vm.$message.warning(result.message);
+								} else {
+									vm.$message.info("保存成功");
+									__.dialog.close();
+								}
+							});
+						}else{
+							return false
+						}
+					})
+				},
+				cancel : function() {
+					__.dialog.close();
+				},
+				getDic : function() {
+					var vm = this;
+					//数据字典类别
+					__.api('POST', '/rest/dic/all', {'targetId' : 'platform'}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							vm.options = result.data;
+							//获取平台信息
+							vm.changeType(vm.form.platformType);
+						}
+					});
+				},
+				changeType : function(event) {
+					var vm = this;
+					var jsonStr = '';
+					//获取选中平台
+					for (let i = 0; i < vm.options.length; i++) {
+						console.log(vm.options[i]);
+						if(vm.options[i].code == event){
+							jsonStr = vm.options[i].remarks;
+							break;
+						}
+					}
+					//模板json串转json对象
+					if(!!jsonStr){
+						var obj = JSON.parse(jsonStr);
+						for (let i = 0; i < obj.length; i++) {
+							var k = obj[i].key;
+							var v=  obj[i].value;
+							var isExit = false;
+							for (let j = 0; j < vm.addList.length; j++) {
+								//存在则不添加
+								if(k == vm.addList[j].key){
+									isExit = true;
+									break;
+								} else if(j == vm.addList.length-1){
+									isExit = false;
+								}
+							}
+							if(!isExit){
+								vm.addList.push({
+									"key": k,
+									"value": v,
+									"type": "string",
+									"ordinal": 999,
+									"remark": ""
+								});
+							}
+						}
+						vm.form.addList = vm.addList;
+						/*if(!!obj && obj.length > 0){
+							vm.addList = vm.addList.concat(obj);
+						}*/
+					}
+				},
+				/**
+				 * 动态添加选择项
+				 */
+				addItem () {
+					var vm = this;
+					this.addList.push({
+						"key": "",
+						"value": "",
+						"type": "",
+						"ordinal": 999,
+						"remark": ""
+					})
+					vm.form.addList = vm.addList;
+				},
+				/**
+				 * 动态删除选择项
+				 */
+				deleteItem (item, index) {
+					this.addList.splice(index, 1);
+				},
+
+				base64Decode : function (input){
+					if(!!input){
+						// rv = window.atob(input);
+						// rv = escape(rv);
+						var rv = Base64.decode(input);
+						rv = decodeURIComponent(rv);
+						return rv;
+					}
+					return "";
+				},
+				/**
+				 * COS上传
+				 * @param file
+				 * @param fileList
+				 */
+				uploadFile : function(param){
+					var vm = this;
+					//上传视频大小限制（示例中为10MB）
+					// const isLt10M = file.size / 1024 / 1024  < 10;
+
+					var file = param.file;
+					var data = param.data;
+					vm.uploadType = data;
+					cosUtils.upload(param, vm.form, data);
+				},
+				handleRemove : function(file, fileList) {
+					vm = this;
+					//删除文件时
+					cc.handleRemove(file, fileList, vm.form, file.type);
+				},
+				handlePreview : function(file) {
+					vm = this;
+					//点击已上传的文件链接时
+					cc.handlePreview(file, vm.form);
+				},
+				handleSuccess : function(response,file,fileList) {
+					vm = this;
+					file.path = response.data;
+					//文件上传成功时
+					cc.handleSuccess(response, file, fileList, vm.form, vm.uploadType);
+				}
+			}
+		})
+
+	</script>
+</body>
+</html>

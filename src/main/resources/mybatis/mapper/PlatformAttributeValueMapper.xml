@@ -1,0 +1,709 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="yll.mapper.PlatformAttributeValueMapper">
+
+	<resultMap id="RESULT_MAP" type="yll.entity.PlatformAttributeValue">
+		<id property="id" column="id" jdbcType="VARCHAR" />
+		<result property="type" column="type" jdbcType="VARCHAR" />
+		<result property="name" column="name" jdbcType="VARCHAR" />
+		<result property="kid" column="kid" jdbcType="VARCHAR" />
+		<result property="pid" column="pid" jdbcType="VARCHAR" />
+		<result property="cid" column="cid" jdbcType="VARCHAR" />
+		<result property="gid" column="gid" jdbcType="VARCHAR" />
+		<result property="liveTime" column="live_time" jdbcType="TIMESTAMP" />
+
+		<result property="ordinal" column="ordinal" jdbcType="INTEGER" />
+		<result property="remark" column="remark" jdbcType="VARCHAR" />
+		<result property="state" column="state" jdbcType="VARCHAR" />
+		<result property="enabled" column="enabled" jdbcType="INTEGER" />
+		<result property="deleted" column="deleted" jdbcType="INTEGER" />
+		<result property="creator" column="creator" jdbcType="VARCHAR" />
+		<result property="createdTime" column="created_time" jdbcType="TIMESTAMP" />
+		<result property="modifier" column="modifier" jdbcType="VARCHAR" />
+		<result property="modifiedTime" column="modified_time" jdbcType="TIMESTAMP" />
+		<result property="deleter" column="deleter" jdbcType="VARCHAR" />
+		<result property="deletedTime" column="deleted_time" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<resultMap id="RESULT_VO_MAP" type="yll.service.model.vo.PlatformAttributeValueVo" extends="RESULT_MAP">
+		<result property="kname" column="kname" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap id="RESULT_EXCEL_MAP" type="yll.service.model.vo.ExcelExportChartVo" >
+		<result property="column01" column="column01" jdbcType="VARCHAR" />
+		<result property="column02" column="column02" jdbcType="VARCHAR" />
+		<result property="column03" column="column03" jdbcType="VARCHAR" />
+		<result property="column04" column="column04" jdbcType="VARCHAR" />
+		<result property="column05" column="column05" jdbcType="VARCHAR" />
+		<result property="column06" column="column06" jdbcType="VARCHAR" />
+		<result property="column07" column="column07" jdbcType="VARCHAR" />
+		<result property="column08" column="column08" jdbcType="VARCHAR" />
+		<result property="column09" column="column09" jdbcType="VARCHAR" />
+		<result property="column10" column="column10" jdbcType="VARCHAR" />
+		<result property="column11" column="column11" jdbcType="VARCHAR" />
+		<result property="column12" column="column12" jdbcType="VARCHAR" />
+		<result property="column13" column="column13" jdbcType="VARCHAR" />
+		<result property="column14" column="column14" jdbcType="VARCHAR" />
+		<result property="column15" column="column15" jdbcType="VARCHAR" />
+		<result property="column16" column="column16" jdbcType="VARCHAR" />
+		<result property="column17" column="column17" jdbcType="VARCHAR" />
+		<result property="column18" column="column18" jdbcType="VARCHAR" />
+		<result property="column19" column="column19" jdbcType="VARCHAR" />
+		<result property="column20" column="column20" jdbcType="VARCHAR" />
+		<result property="column21" column="column21" jdbcType="VARCHAR" />
+		<result property="column22" column="column22" jdbcType="VARCHAR" />
+		<result property="column23" column="column23" jdbcType="VARCHAR" />
+		<result property="column24" column="column24" jdbcType="VARCHAR" />
+		<result property="column25" column="column25" jdbcType="VARCHAR" />
+		<result property="column26" column="column26" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<sql id="TABLE">dh_platform_attribute_value</sql>
+
+	<sql id="COLUMNS">
+		id, type, name, kid, pid, cid, gid, live_time,
+		ordinal, remark, state, enabled, deleted, creator, created_time,
+		modifier,modified_time, deleter, deleted_time
+	</sql>
+
+	<sql id="VALUES">
+		#{id}, #{type}, #{name}, #{kid}, #{pid}, #{cid}, #{gid}, #{liveTime},
+		#{ordinal}, #{remark}, #{state}, #{enabled},#{deleted}, #{creator}, #{createdTime},
+		#{modifier},#{modifiedTime}, #{deleter}, #{deletedTime}
+	</sql>
+
+	<sql id="SET_VALUES">
+		<trim suffixOverrides=",">
+			<if test=" type != null">
+				type = #{type},
+			</if>
+			<if test=" name != null">
+				name = #{name},
+			</if>
+			<if test=" kid != null">
+				kid = #{kid},
+			</if>
+			<if test=" pid != null">
+				pid = #{pid},
+			</if>
+			<if test=" cid != null">
+				cid = #{cid},
+			</if>
+			<if test=" gid != null">
+				gid = #{gid},
+			</if>
+			<if test=" ordinal != null">
+				ordinal = #{ordinal},
+			</if>
+			<if test=" remark != null">
+				remark = #{remark},
+			</if>
+			<if test=" state != null">
+				state = #{state},
+			</if>
+			<if test=" enabled != null">
+				enabled = #{enabled},
+			</if>
+			<if test=" deleted != null">
+				deleted = #{deleted},
+			</if>
+			<if test=" liveTime != null">
+				live_time = #{liveTime},
+			</if>
+			<if test=" creator != null">
+				creator = #{creator},
+			</if>
+			<if test=" createdTime != null">
+				created_time = #{createdTime},
+			</if>
+			<if test=" modifier != null">
+				modifier = #{modifier},
+			</if>
+			<if test=" modifiedTime != null">
+				modified_time = #{modifiedTime},
+			</if>
+			<if test=" deleter != null">
+				deleter = #{deleter},
+			</if>
+			<if test=" deletedTime != null">
+				deleted_time = #{deletedTime},
+			</if>
+		</trim>
+	</sql>
+
+	<sql id="WHERES">
+		<if test=" id != null and id != ''">
+			and id = #{id}
+		</if>
+		<if test=" type != null ">
+			and type = #{type}
+		</if>
+		<if test=" name != null ">
+			and name like CONCAT(CONCAT('%',#{name}),'%')
+		</if>
+		<if test=" kid != null and kid != ''">
+			and kid = #{kid}
+		</if>
+		<if test=" pid != null and pid != ''">
+			and pid = #{pid}
+		</if>
+		<if test=" cid != null and cid != ''">
+			and cid = #{cid}
+		</if>
+		<if test=" gid != null and gid != ''">
+			and gid = #{gid}
+		</if>
+		<if test=" creator != null and creator != ''">
+			and creator = #{creator}
+		</if>
+		<if test=" enabled != null ">
+			and enabled = #{enabled}
+		</if>
+		and deleted = 0
+	</sql>
+
+	<update id="save">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		) VALUES (
+		<include refid="VALUES" />
+		)
+		ON DUPLICATE KEY UPDATE
+		<include refid="SET_VALUES" />
+	</update>
+
+	<insert id="insert" parameterType="yll.entity.PlatformAttributeValue">
+		INSERT INTO
+		<include refid="TABLE" />
+		(
+		<include refid="COLUMNS" />
+		)
+		VALUES
+		(
+		<include refid="VALUES" />
+		)
+	</insert>
+
+	<delete id="deleteById" parameterType="java.lang.String">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		id =#{id}
+	</delete>
+
+	<delete id="deleteAll">
+		DELETE FROM
+		<include refid="TABLE" />
+	</delete>
+
+	<delete id="deleteByGid" parameterType="java.lang.String">
+		DELETE FROM
+		<include refid="TABLE" />
+		WHERE
+		gid =#{gid}
+	</delete>
+
+	<update id="update" parameterType="yll.entity.PlatformAttributeValue">
+		UPDATE
+		<include refid="TABLE" />
+		SET
+		<include refid="SET_VALUES" />
+		WHERE
+		id = #{id}
+	</update>
+
+	<select id="getById" parameterType="java.lang.String" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id =#{id}
+	</select>
+
+	<select id="findAll" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+	</select>
+
+	<select id="findBy" parameterType="yll.entity.PlatformAttributeValue" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
+	</select>
+
+	<select id="findByCondition" parameterType="yll.entity.PlatformAttributeValue" resultMap="RESULT_MAP">
+		SELECT
+		<include refid="COLUMNS" />
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
+		LIMIT 0, 1;
+	</select>
+
+	<select id="getBySelf" parameterType="yll.entity.PlatformAttributeValue" resultMap="RESULT_VO_MAP">
+		SELECT
+		m.id, m.name, sec.name kname, sec.id kid
+		FROM
+		<include refid="TABLE" /> m
+		 LEFT JOIN
+		dh_platform_attribute_key sec
+		ON
+		sec.id = m.kid
+		WHERE m.id != '0'
+		<if test=" gid != null and gid != ''">
+			and gid = #{gid}
+		</if>
+		ORDER BY  m.id ASC
+	</select>
+
+	<select id="chart" parameterType="yll.service.model.vo.PlatformAttributeValueVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		sum(pav.name)
+		<if test=" flag != null and flag == 2">
+			/count(pav.name)
+		</if>
+		name
+		<choose>
+			<when test="appCreatedTime != null and appCreatedTime == 'year' ">
+				, YEAR(pav.live_time) appCreatedTime
+			</when>
+			<when test="appCreatedTime != null and appCreatedTime == 'quarter' ">
+				, CONCAT(YEAR(pav.live_time),'-',QUARTER(pav.live_time),'季度') appCreatedTime
+			</when>
+			<when test="appCreatedTime != null and appCreatedTime == 'month' and flag != null and flag == 1 ">
+				, CONCAT(YEAR(pav.live_time),'-', MONTH(pav.live_time)) appCreatedTime
+			</when>
+			<when test="appCreatedTime != null and appCreatedTime == 'week'  and flag != null and flag == 1 ">
+				, CONCAT(LEFT(date_format(pav.live_time,'%X%V'),4),'-',substring(date_format(pav.live_time,'%X%V'),5),'周') appCreatedTime
+			</when>
+			<when test="appCreatedTime != null and appCreatedTime == 'month' and flag != null and flag == 2 ">
+				, date_format(pav.live_time,'%d')  appCreatedTime
+			</when>
+			<when test="appCreatedTime != null and appCreatedTime == 'week'  and flag != null and flag == 2">
+				, replace (date_format(pav.live_time,'%w'),'0','7')  appCreatedTime
+			</when>
+			<otherwise>
+				, DATE_FORMAT(pav.live_time , '%Y-%m-%d') appCreatedTime
+			</otherwise>
+		</choose>
+		FROM
+		<include refid="TABLE" /> pav
+		LEFT JOIN
+		dh_platform_attribute_key pak
+		ON pav.id = pav.kid
+		WHERE
+		pav.id != 0 AND pav.state=1 AND pav.enabled=1
+		AND
+		pav.type = #{type}
+		AND
+		pav.kid = #{kid}
+		<if test=" cid != null and cid != '' ">
+			and pav.cid = #{cid}
+		</if>
+		<if test=" startTime != null  and endTime != null  ">
+			and (pav.live_time &gt;= #{startTime} and pav.live_time &lt;= REPLACE(#{endTime},'00:00:00.0','23:59:59') )
+		</if>
+		GROUP BY appCreatedTime
+		<if test=" flag != null and flag == 2">
+			ORDER BY appCreatedTime
+		</if>
+		<if test=" flag != null and flag != 2">
+			ORDER BY pav.live_time
+		</if>
+	</select>
+
+
+	<select id="chartCalculationPinduoduo" parameterType="yll.service.model.vo.PlatformAttributeValueVo" resultMap="RESULT_VO_MAP">
+		<include refid="SELECT_CHART" />
+	</select>
+
+	<sql id="APP_CREATED_TIME">
+		<choose>
+			<when test="appCreatedTime != null and appCreatedTime == 'year' ">
+				, YEAR(v1.live_time) appCreatedTime
+			</when>
+			<when test="appCreatedTime != null and appCreatedTime == 'quarter' ">
+				, CONCAT(YEAR(v1.live_time),'-',QUARTER(v1.live_time),'季度') appCreatedTime
+			</when>
+			<when test="appCreatedTime != null and appCreatedTime == 'month'  and flag != null and flag == 1 ">
+				, CONCAT(YEAR(v1.live_time),'-', MONTH(v1.live_time)) appCreatedTime
+			</when>
+			<when test="appCreatedTime != null and appCreatedTime == 'week'  and flag != null and flag == 1 ">
+				, CONCAT(LEFT(date_format(v1.live_time,'%X%V'),4),'-',substring(date_format(v1.live_time,'%X%V'),5),'周') appCreatedTime
+			</when>
+			<when test="appCreatedTime != null and appCreatedTime == 'month' and flag != null and flag == 2 ">
+				, date_format(v1.live_time,'%d')  appCreatedTime
+			</when>
+			<when test="appCreatedTime != null and appCreatedTime == 'week'  and flag != null and flag == 2">
+				, replace (date_format(v1.live_time,'%w'),'0','7')  appCreatedTime
+			</when>
+			<otherwise>
+				, DATE_FORMAT(v1.live_time , '%Y-%m-%d') appCreatedTime
+			</otherwise>
+		</choose>
+	</sql>
+
+	<!-- TODO 测试此处 -->
+	<sql id="SELECT_CHART">
+		<choose>
+			<when test="type == 'p-pinduoduo' and kid == '2020070117115413300002' ">
+				SELECT
+					IFNULL(ROUND(
+					SUM(
+					v1.name * (
+					SELECT
+					round(
+					LEFT (
+					v2.name,
+					char_length(v2.name) - 1
+					) * 0.01,
+					4
+					) name
+					FROM
+					dh_platform_attribute_value v2
+					WHERE
+					v2.type = #{type}
+					AND v2.kid = '2020052716420160700002'
+					AND v1.gid = v2.gid
+					)
+					)
+					<if test=" flag != null and flag == 2">
+						/count(v1.name)
+					</if>
+					,
+					4
+					),0) name
+					<include refid="APP_CREATED_TIME" />
+					FROM
+					dh_platform_attribute_value v1
+					WHERE
+					v1.type = #{type}
+					AND v1.kid = '2020052716395123300002'
+					<if test=" cid != null and cid != '' ">
+						AND v1.cid = #{cid}
+					</if>
+					<if test=" startTime != null  and endTime != null  ">
+						AND (v1.live_time &gt;= #{startTime} and v1.live_time &lt;= REPLACE(#{endTime},'00:00:00.0','23:59:59') )
+					</if>
+					GROUP BY appCreatedTime
+					<if test=" flag != null and flag == 2">
+						ORDER BY appCreatedTime
+					</if>
+			</when>
+			<when test="type == 'p-pinduoduo' and kid == '2020070117141250700002' ">
+				SELECT
+					IFNULL(ROUND(
+					SUM(
+					v1.name / (
+					SELECT
+					v2.name
+					FROM
+					dh_platform_attribute_value v2
+					WHERE
+					v2.type = #{type}
+					AND v2.kid = '2020052716392870100002'
+					AND v1.gid = v2.gid
+					)
+					)
+					<if test=" flag != null and flag == 2">
+						/count(v1.name)
+					</if>
+					,
+					4
+					),0) name
+					<include refid="APP_CREATED_TIME" />
+					FROM
+					dh_platform_attribute_value v1
+					WHERE
+					v1.type = #{type}
+					AND v1.kid = '2020052716412416900002'
+					<if test=" cid != null and cid != '' ">
+						AND v1.cid = #{cid}
+					</if>
+					<if test=" startTime != null  and endTime != null  ">
+						AND (v1.live_time &gt;= #{startTime} and v1.live_time &lt;= REPLACE(#{endTime},'00:00:00.0','23:59:59') )
+					</if>
+					GROUP BY appCreatedTime
+					<if test=" flag != null and flag == 2">
+						ORDER BY appCreatedTime
+					</if>
+			</when>
+			<when test="type == 'p-pinduoduo' and kid == '2020070117142697600002' ">
+				SELECT
+					IFNULL(ROUND(
+					SUM(
+					v1.name / (
+					SELECT
+					v2.name
+					FROM
+					dh_platform_attribute_value v2
+					WHERE
+					v2.type = #{type}
+					AND v2.kid = '2020052716392870100002'
+					AND v1.gid = v2.gid
+					)
+					)
+					<if test=" flag != null and flag == 2">
+						/count(v1.name)
+					</if>
+					,
+					4
+					),0) name
+					<include refid="APP_CREATED_TIME" />
+					FROM
+					dh_platform_attribute_value v1
+					WHERE
+					v1.type = #{type}
+					AND v1.kid = '2020052716401512300002'
+					<if test=" cid != null and cid != '' ">
+						AND v1.cid = #{cid}
+					</if>
+					<if test=" startTime != null  and endTime != null  ">
+						AND (v1.live_time &gt;= #{startTime} and v1.live_time &lt;= REPLACE(#{endTime},'00:00:00.0','23:59:59') )
+					</if>
+					GROUP BY appCreatedTime
+					<if test=" flag != null and flag == 2">
+						ORDER BY appCreatedTime
+					</if>
+			</when>
+			<when test="type == 'p-pinduoduo' and kid == '2020070117150810100002' ">
+				SELECT
+					IFNULL(ROUND(
+					SUM(
+					v1.name / (
+					SELECT
+					v2.name
+					FROM
+					dh_platform_attribute_value v2
+					WHERE
+					v2.type = #{type}
+					AND v2.kid = '2020052716401512300002'
+					AND v1.gid = v2.gid
+					)
+					)
+					<if test=" flag != null and flag == 2">
+						/count(v1.name)
+					</if>
+					,
+					4
+					),0) name
+					<include refid="APP_CREATED_TIME" />
+					FROM
+					dh_platform_attribute_value v1
+					WHERE
+					v1.type = #{type}
+					AND v1.kid = '2020070117144516300002'
+					<if test=" cid != null and cid != '' ">
+						AND v1.cid = #{cid}
+					</if>
+					<if test=" startTime != null  and endTime != null  ">
+						AND (v1.live_time &gt;= #{startTime} and v1.live_time &lt;= REPLACE(#{endTime},'00:00:00.0','23:59:59') )
+					</if>
+					GROUP BY appCreatedTime
+					<if test=" flag != null and flag == 2">
+						ORDER BY appCreatedTime
+					</if>
+			</when>
+		</choose>
+	</sql>
+
+
+	<select id="exportExcelForPinduoduo" parameterType="yll.service.model.vo.PlatformAttributeValueVo" resultMap="RESULT_EXCEL_MAP">
+		SELECT
+		v1.gid,
+		MAX(CASE v1.kid WHEN '2020052716382696700002' THEN v1.name ELSE #{username} END) column01,
+		MAX(CASE v1.kid WHEN '2020070613480374000002' THEN v1.name ELSE '' END) column02,
+		MAX(CASE v1.type WHEN 'p-pinduoduo' THEN replace(date_format(v1.live_time,'%w'),'0','7')  ELSE '' END) column03,
+		MAX(CASE v1.kid WHEN '2020070613483692800002' THEN v1.name ELSE '' END) column04,
+		MAX(CASE v1.kid WHEN '2020070613485513100002' THEN v1.name ELSE '' END) column05,
+		MAX(CASE v1.kid WHEN '2020052716392870100002' THEN v1.name ELSE '' END) column06,
+		MAX(CASE v1.kid WHEN '2020052716395123300002' THEN v1.name ELSE '' END) column07,
+		MAX(CASE v1.kid WHEN '2020070116572931800002' THEN v1.name ELSE '' END) column08,
+		MAX(CASE v1.kid WHEN '2020052716400235800002' THEN v1.name ELSE '' END) column09,
+		MAX(CASE v1.kid WHEN '2020070117131717900002' THEN v1.name ELSE '' END) column10,
+		MAX(CASE v1.kid WHEN '2020052716401512300002' THEN v1.name ELSE '' END) column11,
+		MAX(CASE v1.kid WHEN '2020052716402768500002' THEN v1.name ELSE '' END) column12,
+		MAX(CASE v1.kid WHEN '2020052716405837300002' THEN v1.name ELSE '' END) column13,
+		MAX(CASE v1.kid WHEN '2020052716411115400002' THEN v1.name ELSE '' END) column14,
+		MAX(CASE v1.kid WHEN '2020052716395123300002' THEN
+		t1.name
+		ELSE '' END) column15,
+		MAX(CASE v1.kid WHEN '2020052716412416900002' THEN v1.name ELSE '' END) column16,
+		MAX(CASE v1.kid WHEN '2020052716414220000002' THEN v1.name ELSE '' END) column17,
+		MAX(CASE v1.kid WHEN '2020052716420160700002' THEN v1.name ELSE '' END) column18,
+		MAX(CASE v1.kid WHEN '2020052716421651300002' THEN v1.name ELSE '' END) column19,
+		MAX(CASE v1.kid WHEN '2020070117133905400002' THEN v1.name ELSE '' END) column20,
+		MAX(CASE v1.kid WHEN '2020070117135771000002' THEN v1.name ELSE '' END) column21,
+		MAX(CASE v1.kid WHEN '2020052716412416900002' THEN
+		t2.name
+		ELSE '' END) column22,
+		MAX(CASE v1.kid WHEN '2020052716401512300002' THEN
+		t3.name
+		ELSE '' END) column23,
+		MAX(CASE v1.kid WHEN '2020070117144516300002' THEN v1.name ELSE '' END) column24,
+		MAX(CASE v1.kid WHEN '2020070117144516300002' THEN
+		t4.name
+		ELSE '' END) column25,
+		MAX(CASE v1.type WHEN 'p-pinduoduo' THEN '' ELSE '' END) column26
+		FROM
+		dh_platform_attribute_value v1
+		LEFT JOIN
+		(SELECT
+		v3.id,
+		IFNULL(ROUND(
+		v3.name * (
+		SELECT
+		round(
+		LEFT (
+		v2.name,
+		char_length(v2.name) - 1
+		) * 0.01,
+		4
+		) name
+		FROM
+		dh_platform_attribute_value v2
+		WHERE
+		v2.type = 'p-pinduoduo'
+		AND v2.kid = '2020052716420160700002'
+		AND v3.gid = v2.gid
+		)
+		,
+		4
+		),0) name
+		, DATE_FORMAT(v3.live_time , '%Y-%m-%d') appCreatedTime
+		FROM
+		dh_platform_attribute_value v3
+		WHERE
+		v3.type = 'p-pinduoduo'
+		AND v3.kid = '2020052716395123300002'
+		<if test=" cid != null and cid != '' ">
+			AND v3.cid = #{cid}
+		</if>
+		<if test=" startTime != null  and endTime != null  ">
+			AND (v3.live_time &gt;= #{startTime} and v3.live_time &lt;= REPLACE(#{endTime},'00:00:00.0','23:59:59') )
+		</if>
+		) t1
+		ON v1.id=t1.id
+
+		LEFT JOIN
+		(SELECT
+		v3.id,
+		IFNULL(ROUND(
+		v3.name / (
+		SELECT
+		v2.name
+		FROM
+		dh_platform_attribute_value v2
+		WHERE
+		v2.type = 'p-pinduoduo'
+		AND v2.kid = '2020052716392870100002'
+		AND v3.gid = v2.gid
+		)
+		,
+		4
+		),0) name
+		, DATE_FORMAT(v3.live_time , '%Y-%m-%d') appCreatedTime
+		FROM
+		dh_platform_attribute_value v3
+		WHERE
+		v3.type = 'p-pinduoduo'
+		AND v3.kid = '2020052716412416900002'
+		<if test=" cid != null and cid != '' ">
+			AND v3.cid = #{cid}
+		</if>
+		<if test=" startTime != null  and endTime != null  ">
+			AND (v3.live_time &gt;= #{startTime} and v3.live_time &lt;= REPLACE(#{endTime},'00:00:00.0','23:59:59') )
+		</if>
+		) t2
+		ON v1.id=t2.id
+
+		LEFT JOIN
+		(
+		SELECT
+		v3.id,
+		IFNULL(ROUND(
+		v3.name / (
+		SELECT
+		v2.name
+		FROM
+		dh_platform_attribute_value v2
+		WHERE
+		v2.type = 'p-pinduoduo'
+		AND v2.kid = '2020052716392870100002'
+		AND v3.gid = v2.gid
+		)
+		,
+		4
+		),0) name
+		, DATE_FORMAT(v3.live_time , '%Y-%m-%d') appCreatedTime
+		FROM
+		dh_platform_attribute_value v3
+		WHERE
+		v3.type = 'p-pinduoduo'
+		AND v3.kid = '2020052716401512300002'
+		<if test=" cid != null and cid != '' ">
+			AND v3.cid = #{cid}
+		</if>
+		<if test=" startTime != null  and endTime != null  ">
+			AND (v3.live_time &gt;= #{startTime} and v3.live_time &lt;= REPLACE(#{endTime},'00:00:00.0','23:59:59') )
+		</if>
+		)t3
+		ON v1.id=t3.id
+
+		LEFT JOIN
+		(
+		SELECT
+		v3.id,
+		IFNULL(ROUND(
+		v3.name / (
+		SELECT
+		v2.name
+		FROM
+		dh_platform_attribute_value v2
+		WHERE
+		v2.type = 'p-pinduoduo'
+		AND v2.kid = '2020052716401512300002'
+		AND v3.gid = v2.gid
+		)
+		,
+		4
+		),0) name
+		, DATE_FORMAT(v3.live_time , '%Y-%m-%d') appCreatedTime
+		FROM
+		dh_platform_attribute_value v3
+		WHERE
+		v3.type = 'p-pinduoduo'
+		AND v3.kid = '2020070117144516300002'
+		<if test=" cid != null and cid != '' ">
+			AND v3.cid = #{cid}
+		</if>
+		<if test=" startTime != null  and endTime != null  ">
+			AND (v3.live_time &gt;= #{startTime} and v3.live_time &lt;= REPLACE(#{endTime},'00:00:00.0','23:59:59') )
+		</if>
+
+		)t4
+		ON v1.id=t4.id
+		WHERE
+		v1.type = 'p-pinduoduo'
+		<if test=" startTime != null  and endTime != null  ">
+			AND (v1.live_time &gt;= #{startTime} and v1.live_time &lt;= REPLACE(#{endTime},'00:00:00.0','23:59:59') )
+		</if>
+		<if test=" cid != null and cid != '' ">
+			AND v1.cid = #{cid}
+		</if>
+		GROUP BY gid;
+
+	</select>
+
+
+</mapper>

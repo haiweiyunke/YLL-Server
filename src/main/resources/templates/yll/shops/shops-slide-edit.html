@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>商品轮播图添加和编辑</title>
+<style>
+.el-picker-panel {
+	height: 320px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.el-date-editor.el-input, .el-input-number--small {
+	width: 100%;
+}
+
+.unit {
+	text-align: right;
+	line-height: 40px;
+}
+
+/*@media screen and(-ms-high-contrast:active),(-ms-high-contrast:none){
+	.el-picker-panel {
+		height: 200px;
+	}
+}*/
+</style>
+</head>
+<body>
+	<div id="vm"  v-cloak  class="vm">
+		<form is="el-form" :model="form" ref="form" :rules="rules" style="width: 100%;">
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="类别" label-width="110px" prop="type">
+						<div is="el-select" v-model="type" filterable placeholder="请选择" @change="getInformation">
+							<div is="el-option"
+								 v-for="item in types"
+								 :key="item.code"
+								 :label="item.codename"
+								 :value="item.code">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="商品" label-width="110px" prop="id">
+						<div is="el-select" v-model="form.id" filterable placeholder="请选择">
+							<div is="el-option"
+								 v-for="item in lives"
+								 :key="item.id"
+								 :label="item.name"
+								 :value="item.id">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="序号" label-width="110px" prop="ordinal">
+						<input is="el-input" v-model="form.ordinal" controls-position="right" size="small" autocomplete="off">
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<label class="el-form-item__label" style="width: 100%;color: red;padding-left: 4%;text-align: left;">*请从已添加的商品列表中选取要轮播的商品。</label>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-form-item" align="center" style="margin-top: 20px;">
+					<button is="el-button" type="success" @click="confirm('form')">确定</button>
+					<button is="el-button" @click="cancel()">取消</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					id : '',
+					ordinal : '',
+					oldLiveId : ''
+				},
+				rules:{
+					id:[{
+						required : true,
+						message : '请选择商品',
+						trigger : 'blur'
+					}]
+				},
+				type : '',
+				types : [],
+				lives : []
+			},
+			created : function() {
+			},
+			mounted : function() {
+				var vm = this, search = __.decodeUrlParams();
+				var id = search.id;
+				if (!__.isEmpty(id)) {
+					vm.form.oldLiveId = id;
+					__.api('GET', '/rest/products/' + id, {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						var form = result.data;
+						form.enabled = String(form.enabled);
+						vm.form = form;
+						vm.type = form.type;
+						vm.getInformation();
+					});
+				}
+				vm.getDic();
+			},
+			methods : {
+				confirm : function(formName) {
+					var vm = this;
+					var params = {}, form = this.form;
+					this.$refs[formName].validate(function(valid) {
+						if(valid){
+							__.api('POST', '/rest/products/slide/save', form, function(result) {
+								if (__.err(result)) {
+									vm.$message.warning(result.message);
+								} else {
+									vm.$message.info("保存成功");
+									__.dialog.close();
+								}
+							});
+						}else{
+							return false
+						}
+					})
+
+				},
+				cancel : function() {
+					__.dialog.close();
+				},
+				getDic : function() {
+					vm = this;
+					//数据字典类别
+					__.api('POST', '/rest/dic/all', {'targetId' : 'expertise'}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							vm.types = result.data;
+						}
+					});
+				},
+				getInformation : function() {
+					vm = this;
+					__.api('POST', '/rest/products/slide/list', {'type' : vm.type}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							vm.lives = result.data;
+						}
+					});
+				}
+			}
+		})
+
+	</script>
+</body>
+</html>

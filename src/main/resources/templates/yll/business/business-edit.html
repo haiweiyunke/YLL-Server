@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>用户消息 新增/编辑</title>
+<style>
+.el-picker-panel {
+	height: 320px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.el-date-editor.el-input, .el-input-number--small {
+	width: 100%;
+}
+
+.unit {
+	text-align: right;
+	line-height: 40px;
+}
+
+/*@media screen and(-ms-high-contrast:active),(-ms-high-contrast:none){
+	.el-picker-panel {
+		height: 200px;
+	}
+}*/
+</style>
+</head>
+<body>
+	<div id="vm"  v-cloak  class="vm">
+		<form is="el-form" :model="form" ref="form" :rules="rules" style="width: 100%;">
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="达人" label-width="110px" >
+						{{form.nickname}}
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="洽谈人" label-width="110px">
+						{{form.negotiator}}
+					</div>
+				</div>
+			</div>
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="内容" label-width="110px" >
+						{{form.content}}
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-form-item" align="center" style="margin-top: 20px;">
+					<button is="el-button" @click="cancel()">关闭</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					id : '',
+					nickname : '',
+					negotiator : '',
+					content : '',
+					state : 1,
+					remark : '',
+					enabled : '0'
+				},
+				rules:{
+				}
+			},
+			created : function() {
+			},
+			mounted : function() {
+				var vm = this, search = __.decodeUrlParams();
+				var id = search.id;
+				if (!__.isEmpty(id)) {
+					__.api('GET', '/rest/business/' + id, {}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+							return;
+						}
+						var form = result.data;
+						form.enabled = String(form.enabled);
+						vm.form = form;
+						//昵称处理
+						if(!!form.nickname){
+							form.nickname = vm.base64Decode(form.nickname);
+						}
+					});
+				}
+			},
+			methods : {
+				confirm : function(formName) {
+					var vm = this, search = __.decodeUrlParams(),
+					id = search.id;
+					var params = {}, form = this.form;
+					this.$refs[formName].validate(function(valid) {
+						if(valid){
+							//引入富文本公共html
+							form.content = cc.editorImportHtml(form.content);
+							__.api('POST', '/rest/business/save', form, function(result) {
+								if (__.err(result)) {
+									vm.$message.warning(result.message);
+								} else {
+									vm.$message.info("保存成功");
+									__.dialog.close();
+								}
+							});
+						}else{
+							return false
+						}
+					})
+				},
+				base64Decode : function (input){
+					if(!!input){
+						// rv = window.atob(input);
+						// rv = escape(rv);
+						var rv = Base64.decode(input);
+						rv = decodeURIComponent(rv);
+						return rv;
+					}
+					return "";
+				},
+				cancel : function() {
+					__.dialog.close();
+				},
+			}
+		})
+
+	</script>
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8" />
+<object th:replace="_include/_meta"></object>
+<title>达人导出</title>
+<style>
+.el-picker-panel {
+	height: 320px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.el-date-editor.el-input, .el-input-number--small {
+	width: 100%;
+}
+
+.unit {
+	text-align: right;
+	line-height: 40px;
+}
+
+/*@media screen and(-ms-high-contrast:active),(-ms-high-contrast:none){
+	.el-picker-panel {
+		height: 200px;留言时间
+	}
+}*/
+</style>
+</head>
+<body>
+	<div id="vm"  v-cloak  class="vm">
+		<form is="el-form" :model="form" ref="form" :rules="rules" style="width: 100%;">
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="起止日期" label-width="110px" >
+						<el-date-picker
+								v-model="form.startTime"
+								type="date"
+								placeholder="选择日期">
+						</el-date-picker>
+						至
+						<el-date-picker
+								v-model="form.endTime"
+								type="date"
+								placeholder="选择日期">
+						</el-date-picker>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="平台" label-width="110px" >
+							<div is="el-select" v-model="form.type"  filterable placeholder="请选择">
+								<div is="el-option"
+									 v-for="item in platformType"
+									 :key="item.code"
+									 :label="item.codename"
+									 :value="item.code">
+								</div>
+							</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-col" :span="21">
+					<div is="el-form-item" label="达人" label-width="110px" >
+							<div is="el-select" v-model="form.cid"  filterable placeholder="请选择">
+								<div is="el-option"
+									 v-for="item in custList"
+									 :key="item.id"
+									 :label="item.username"
+									 :value="item.id">
+								</div>
+							</div>
+					</div>
+				</div>
+			</div>
+
+			<div is="el-row">
+				<div is="el-form-item" align="center" style="margin-top: 20px;">
+					<button is="el-button" type="success" @click="confirm('form')">导出</button>
+					<button is="el-button" @click="cancel()">关闭</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<script>
+		new Vue({
+			el : '#vm',
+			data : {
+				form : {
+					type : '',
+					startTime : '',
+					endTime : ''
+				},
+				rules:{
+				},
+				excelAccept : cc.excelAccept,
+				excelList : [],
+				fileList : [],
+				custList : [],
+				platformType : []
+			},
+			created : function() {
+			},
+			mounted : function() {
+				var vm = this;
+				vm.getDic();
+				vm.getCust();
+			},
+			methods : {
+				confirm : function(formName) {
+					var vm = this;
+					var params = {}, form = this.form;
+					if(!!!vm.form.type){
+						vm.$message.warning("平台类型不能为空");
+						return ;
+					}
+					if((!!vm.form.startTime && !!!vm.form.endTime) || (!!!vm.form.startTime && !!vm.form.endTime)){
+						vm.$message.warning("起止时间不能为空");
+						return ;
+					}
+					/*var url = '/app/chart/export?type=' + vm.form.type
+					if(!!vm.form.startTime && !!vm.form.endTime){
+						url += '&startTime=' + vm.form.startTime + '&endTime=' + vm.form.endTime;
+					}
+					__.navigateTo(url); */
+					if(!!vm.form.startTime && !!vm.form.endTime){
+						var std = new Date(vm.form.startTime);
+						var etd = new Date(vm.form.endTime);
+						var st = std.getFullYear() + '-' + (std.getMonth() + 1) + '-' + std.getDate() + ' ' + std.getHours() + ':' + std.getMinutes() + ':' + std.getSeconds();
+						var et = etd.getFullYear() + '-' + (etd.getMonth() + 1) + '-' + etd.getDate() + ' ' + etd.getHours() + ':' + etd.getMinutes() + ':' + etd.getSeconds();
+						vm.form.startTime = st;
+						vm.form.endTime = et;
+					}
+					vm.exportExcel(vm.form, '/app/chart/export');
+				},
+				cancel : function() {
+					__.dialog.close();
+				},
+				getDic : function() {
+					var vm = this;
+					//数据字典类别
+					__.api('POST', '/rest/dic/all', {'targetId' : 'platform'}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							vm.platformType = result.data;
+						}
+					});
+				},
+				getCust : function() {
+					var vm = this;
+					//用户
+					__.api('POST', '/rest/customer/all', {'roleType' : 2}, function(result) {
+						if (__.err(result)) {
+							vm.$message.warning(result.message);
+						} else {
+							vm.custList = result.data;
+						}
+					});
+				},
+				postExcelFile(params, url) {
+					// params是post请求需要的参数，url是请求url地址
+					const form = document.createElement('form');
+					form.style.display = 'none';
+					form.action = url;
+					form.method = 'post';
+					document.body.appendChild(form);
+					// 动态创建input并给value赋值
+					/* eslint-disable-next-line */
+					for (const key in params) {
+						if (params[key]) {
+							const input = document.createElement('input');
+							input.type = 'hidden';
+							input.name = key;
+							input.value = params[key];
+							form.appendChild(input);
+						}
+					}
+					form.submit();
+					form.remove();
+				},
+				exportExcel(params, url) {
+					var vm = this;
+					vm.postExcelFile(
+							params,
+							url
+					);
+				},
+				/**
+				 * COS上传
+				 * @param file
+				 * @param fileList
+				 */
+				uploadFile : function(file){
+					var vm = this;
+					//上传视频大小限制（示例中为10MB）
+					// const isLt10M = file.size / 1024 / 1024  < 10;
+					cosUtils.uploadFolder(file, vm.form.folderName);
+				}
+
+			}
+		})
+
+	</script>
+</body>
+</html>

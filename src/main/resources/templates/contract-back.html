@@ -1,0 +1,22 @@
+<!--<!DOCTYPE html>-->
+<html lang="en">
+<head>
+</head>
+<body>
+</body>
+<script>
+    window.onload = function () {
+        //加载关闭webview事件触发
+        var u = navigator.userAgent;
+        var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //g
+        var isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+        if (isAndroid) {
+            //Android
+            window.AndroidJs.yllContactGoBack();
+        }
+        //iOS
+        window.webkit.messageHandlers.yllContactGoBack.postMessage(null);
+
+    }
+</script>
+</html>
