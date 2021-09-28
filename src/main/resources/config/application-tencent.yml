@@ -26,7 +26,40 @@ sms:
 
 # 微信(未用,目前使用友盟)
 wechat:
-  #移动应用配置
+  ########################移动应用配置#######################################
   appid: wx5087d28cdae9e623
   appSecret: 1ea9a271148387a90e859450c23f8215
   tokenUrl: https://api.weixin.qq.com/sns/oauth2/access_token?appid=APPID&secret=SECRET&code=CODE&grant_type=authorization_code
+########################微信支付参数#######################################
+  pay:
+    #商户号
+    mchId: 1607190935
+    #商户在微信公众平台申请服务号对应的APPID
+    appId: wxb195a203f7da672d
+    #商户平台设置的密钥key
+    key: Fentiaoer18911900673xingjingxuan
+    #回调报文解密V3密钥key
+    v3Key: Fentiaoer18911900673xingjingxuan
+    #微信API证书路径（根据实际存放路径修改）
+    certificatePath: E:/upload/yanyu_daihuo/apiclient_cert.pem
+    #微信API密钥路径（根据实际存放路径修改）
+    keyPath: E:/upload/yanyu_daihuo/apiclient_key.pem
+    #微信获取平台证书列表地址
+    certificatesUrl: https://api.mch.weixin.qq.com/v3/certificates
+    #微信APP下单URL
+    unifiedOrderUrl: https://api.mch.weixin.qq.com/v3/pay/transactions/app
+    #微信APP查询订单URL
+    queryOrderUrl: https://api.mch.weixin.qq.com/v3/pay/transactions/out-trade-no/%s?mchid=%s
+    #异步接收微信支付结果通知的回调地址 必须是https -TODO 需修改
+    notifyUrl: https://www.fentiaoer.com.cn/app/wallet/details/wechat/notify
+    #小程序对应的APPID（用于获取openid）
+    appIdMini: wx8638923ceb1cccfd
+    #小程序 appSecret
+    appSecretMini: b4d93b6e5714bf950cf15fc6545d2bd0
+    #小程序用于获取openid的URL
+    code2SessionUrl: https://api.weixin.qq.com/sns/jscode2session?appid=wx8638923ceb1cccfd&secret=b4d93b6e5714bf950cf15fc6545d2bd0&js_code=MINI_JSCODE&grant_type=authorization_code
+    #微信小程序下单URL
+    wechatUnifiedMiniOrderUrl: https://api.mch.weixin.qq.com/v3/pay/transactions/jsapi
+
+############################################################################
+

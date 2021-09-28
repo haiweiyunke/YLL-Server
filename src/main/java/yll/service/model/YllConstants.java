@@ -96,6 +96,24 @@ public class YllConstants {
     /** 短信类型--注册 */
     public static final String SMS_REGISTER = "register";
 
+
+    // ============================== 支 付 ==========================================
+    /** 订单流水类型--充值 */
+    public static final String PAY_ORDER_TYPE_ONE = "walletOrderType-payRecharge";
+    /** 支付-待支付 */
+    public static final Integer PAY_STATE_ONE = 21;
+    /** 支付-已支付 */
+    public static final Integer PAY_STATE_TWO = 22;
+    /** 支付-取消支付 */
+    public static final Integer PAY_STATE_THREE = 23;
+    /** 支付-商品描述 */
+    public static final String PAY_DESCRIPTION = "粉条儿充值";
+    /** 支付渠道-微信-APP */
+    public static final String PAY_TYPE_ONE = "wechatApp";
+    /** 支付渠道-微信-小程序 */
+    public static final String PAY_TYPE_TWO = "wechatMini";
+
+
     // ==============================字典表==========================================
     /** 用户地址标签--其它 */
     public static final String DIC_ADDRESSES_TAG_OTHER = "addressesOther";

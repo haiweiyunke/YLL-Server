@@ -120,9 +120,14 @@ public class SecurityFilter implements Filter {
             || path.indexOf("/app/recruit/enterprise/details/get") != -1
             //和签-签名
             || path.indexOf("/app/process/sign") != -1
+            //微信支付-回调
+            || path.indexOf("/app/wallet/details/wechat/notify") != -1
+            //微信支付-小程序openid获取
+            || path.indexOf("/app/wallet/details/wechat/openid") != -1
             //中台测试
             || path.indexOf("/app/recruit/post/test") != -1
             || path.indexOf("/app/recruit/get/test") != -1
+            || path.indexOf("/app/wallet/test") != -1
 
         ) {
             //不需要登录

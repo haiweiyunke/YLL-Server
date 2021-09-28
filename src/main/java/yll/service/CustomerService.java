@@ -41,6 +41,8 @@ public class CustomerService {
     @Autowired
     private CustomerPointsService customerPointsService;
     @Autowired
+    private CustomerWalletService customerWalletService;
+    @Autowired
     private CustomerCollectsMapper customerCollectsMapper;
     @Autowired
     private CustomerLikesMapper customerLikesMapper;
@@ -141,6 +143,11 @@ public class CustomerService {
         customerPoints.setTargetId(entity.getId());
         customerPoints.setPoint(YllConstants.ZERO);
         customerPointsService.insert(customerPoints);
+        //用户钱包表新增数据
+        CustomerWallet customerWallet = new CustomerWallet();
+        customerWallet.setTargetId(entity.getId());
+        customerWallet.setPrice(YllConstants.ZERO);
+        customerWalletService.insert(customerWallet);
         //根据角色类型，新增不同表的数据（1-普通，2-达人，3-mcn，4-企业主）
         String roleType = vo.getRoleType();
         addByRoleType(entity, roleType);
@@ -211,6 +218,11 @@ public class CustomerService {
         customerPoints.setTargetId(entity.getId());
         customerPoints.setPoint(YllConstants.ZERO);
         customerPointsService.insert(customerPoints);
+        //用户钱包新增数据
+        CustomerWallet customerWallet = new CustomerWallet();
+        customerWallet.setTargetId(entity.getId());
+        customerWallet.setPrice(YllConstants.ZERO);
+        customerWalletService.insert(customerWallet);
         return entity;
     }
 
