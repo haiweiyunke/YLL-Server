@@ -57,4 +57,10 @@ public interface CustomerRechargeMapper extends BasicMapper<CustomerRecharge, St
      */
     void updateMerge(@Param("oldId") String oldId, @Param("newId") String newId) ;
 
+    /**
+     * 定时任务列表查询
+     * @param condition
+     */
+    List<CustomerRechargeVo> findBySchedule(CustomerRechargeVo condition);
+
 }

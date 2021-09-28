@@ -6,6 +6,7 @@
 		<id property="id" column="id" jdbcType="VARCHAR" />
 		<result property="targetId" column="target_id" jdbcType="VARCHAR" />
 		<result property="orderNumber" column="order_number" jdbcType="VARCHAR" />
+		<result property="prepayId" column="prepay_id" jdbcType="VARCHAR" />
 		<result property="orderName" column="order_name" jdbcType="VARCHAR" />
 		<result property="signs" column="signs" jdbcType="INTEGER" />
 		<result property="price" column="price" jdbcType="INTEGER" />
@@ -26,19 +27,20 @@
 	<resultMap id="RESULT_VO_MAP" type="yll.service.model.vo.CustomerRechargeVo" extends="RESULT_MAP">
 		<result property="username" column="username" jdbcType="VARCHAR" />
 		<result property="num" column="num" jdbcType="INTEGER" />
+		<result property="dayNum" column="dayNum" jdbcType="INTEGER" />
 	</resultMap>
 
 	<sql id="TABLE">customer_recharge</sql>
 
 	<sql id="COLUMNS">
-		id, target_id, order_number, order_name,
+		id, target_id, order_number, prepay_id, order_name,
 		signs, price, pay_type, state, remark,
 		enabled, deleted, creator, created_time,
 		modifier, modified_time, deleter, deleted_time
 	</sql>
 
 	<sql id="VALUES">
-		#{id}, #{targetId}, #{orderNumber}, #{orderName},
+		#{id}, #{targetId}, #{orderNumber},  #{prepayId}, #{orderName},
 		#{signs}, #{price}, #{payType}, #{state}, #{remark},
 		#{enabled}, #{deleted}, #{creator}, #{createdTime},
 		#{modifier},#{modifiedTime}, #{deleter}, #{deletedTime}
@@ -51,6 +53,9 @@
 			</if>
 			<if test=" orderNumber != null">
 				order_number = #{orderNumber},
+			</if>
+			<if test=" prepayId != null">
+				prepay_id = #{prepayId},
 			</if>
 			<if test=" orderName != null">
 				order_name = #{orderName},
@@ -194,7 +199,7 @@
 
 	<select id="findByWithName" parameterType="yll.service.model.vo.CustomerRechargeVo" resultMap="RESULT_VO_MAP">
 		SELECT
-		m.id, m.target_id, m.order_number, m.order_name,
+		m.id, m.target_id, m.order_number, m.prepay_id, m.order_name,
 	   m.signs, m.price, m.pay_type, m.state, m.remark,
 		m.enabled,deleted, m.creator, m.created_time,
 		m.modifier, m.modified_time, m.deleter, m.deleted_time,
@@ -214,8 +219,17 @@
 
 	<select id="getAppList" parameterType="yll.service.model.vo.CustomerRechargeVo" resultMap="RESULT_VO_MAP">
 		SELECT
-		m.signs, m.price, m.remark, m.order_name,
-		DATE_FORMAT(m.created_time , '%Y-%m-%d  %H:%i') appCreatedTime
+		m.signs, m.price, m.remark, m.order_number, m.prepay_id,
+		DATE_FORMAT(m.created_time , '%Y-%m-%d  %H:%i') appCreatedTime,
+		CASE
+		WHEN m.state = '21' THEN
+		'待支付'
+		WHEN m.state = '22' THEN
+		'已支付 '
+		WHEN m.state = '23' THEN
+		'取消支付'
+		ELSE '未知状态'
+		END AS state
 		FROM
 		<include refid="TABLE" /> m
 		WHERE id != '0'
@@ -238,6 +252,25 @@
 			<![CDATA[   and DATE_FORMAT(created_time , '%Y-%m-%d') = CURDATE()   ]]>
 		</if>
 		limit 0,1
+	</select>
+
+	<select id="findBySchedule" parameterType="yll.service.model.vo.CustomerRechargeVo" resultMap="RESULT_VO_MAP">
+		SELECT
+		<include refid="COLUMNS" />,
+		CASE
+		WHEN
+		TIMESTAMPDIFF(DAY,now(), end_time) = 0
+		THEN
+		0
+		ELSE
+		TIMESTAMPDIFF(DAY,now(), end_time)
+		END
+		AS dayNum
+		FROM
+		<include refid="TABLE" />
+		WHERE id != '0'
+		<include refid="WHERES" />
+		ORDER BY  created_time DESC
 	</select>
 
 	<update id="updateMerge">

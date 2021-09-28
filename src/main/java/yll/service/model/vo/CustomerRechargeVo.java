@@ -20,4 +20,8 @@ public class CustomerRechargeVo extends CustomerRecharge {
     /** 完成次数 */
     private Integer num;
 
+    /** 下单日期与当前时间差天数 */
+    private String dayNum;
+
+
 }

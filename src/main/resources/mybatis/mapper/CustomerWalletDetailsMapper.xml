@@ -13,6 +13,8 @@
 		<result property="payType" column="pay_type" jdbcType="VARCHAR" />
 		<result property="state" column="state" jdbcType="VARCHAR" />
 		<result property="remark" column="remark" jdbcType="VARCHAR" />
+		<result property="remarks" column="remarks" jdbcType="VARCHAR" />
+		<result property="otherId" column="other_id" jdbcType="VARCHAR" />
 		<result property="enabled" column="enabled" jdbcType="INTEGER" />
 		<result property="deleted" column="deleted" jdbcType="INTEGER" />
 		<result property="creator" column="creator" jdbcType="VARCHAR" />
@@ -33,14 +35,14 @@
 
 	<sql id="COLUMNS">
 		id, target_id, order_number, order_name, order_type,
-		signs, price, pay_type, state, remark,
+		signs, price, pay_type, state, remark, remarks, other_id,
 		enabled, deleted, creator, created_time,
 		modifier, modified_time, deleter, deleted_time
 	</sql>
 
 	<sql id="VALUES">
 		#{id}, #{targetId}, #{orderNumber}, #{orderName}, #{orderType},
-		#{signs}, #{price}, #{payType}, #{state}, #{remark},
+		#{signs}, #{price}, #{payType}, #{state}, #{remark}, #{remarks}, #{otherId},
 		#{enabled}, #{deleted}, #{creator}, #{createdTime},
 		#{modifier},#{modifiedTime}, #{deleter}, #{deletedTime}
 	</sql>
@@ -73,6 +75,12 @@
 			</if>
 			<if test=" remark != null">
 				remark = #{remark},
+			</if>
+			<if test=" remarks != null">
+				remarks = #{remarks},
+			</if>
+			<if test=" otherId != null">
+				other_id = #{otherId},
 			</if>
 			<if test=" enabled != null">
 				enabled = #{enabled},
@@ -199,7 +207,7 @@
 	<select id="findByWithName" parameterType="yll.service.model.vo.CustomerWalletDetailsVo" resultMap="RESULT_VO_MAP">
 		SELECT
 		m.id, m.target_id, m.order_number, m.order_name, m.order_type,
-	   m.signs, m.price, m.pay_type, m.state, m.remark,
+	   m.signs, m.price, m.pay_type, m.state, m.remark,  m.remarks, m.other_id,
 		m.enabled,deleted, m.creator, m.created_time,
 		m.modifier, m.modified_time, m.deleter, m.deleted_time,
 		sec.username
@@ -227,6 +235,7 @@
 		<if test=" orderType != null and orderType != ''">
 			and m.type = #{order_type}
 		</if>
+		AND state NOT IN (21,23)
 		ORDER BY  m.created_time DESC
 	</select>
 

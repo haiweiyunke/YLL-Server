@@ -22,12 +22,10 @@ import yll.component.pay.tools.PayRequestUtils;
 import yll.component.pay.tools.PayResponseUtils;
 import yll.component.pay.vo.NotifyResourceVO;
 import yll.component.pay.vo.PayNotifyVO;
-import yll.entity.Customer;
-import yll.entity.CustomerWallet;
-import yll.entity.CustomerWalletDetails;
-import yll.entity.Dic;
+import yll.entity.*;
 import yll.service.*;
 import yll.service.model.YllConstants;
+import yll.service.model.vo.CustomerRechargeVo;
 import yll.service.model.vo.CustomerWalletDetailsVo;
 
 import javax.servlet.http.HttpServletRequest;
@@ -58,6 +56,9 @@ public class WalletAppController {
 
     @Autowired
     private CustomerWalletDetailsService customerWalletDetailsService;
+
+    @Autowired
+    private CustomerRechargeService customerRechargeService;
 
     @Autowired
     private DicService dicService;
@@ -207,6 +208,21 @@ public class WalletAppController {
     }
 
 
+    /**
+     * [POST] /app/wallet/recharge//list <br>
+     * 查询钱包流水列表
+     */
+    @PostMapping(value = "/recharge/list")
+    public Result<?> rechargeList(Pagination pagination, CustomerRechargeVo condition) {
+        String customerId = AppSecuritysUtil.getCustomerId();
+        //金额明细
+        condition = ObjectUtils.defaultIfNull(condition, new CustomerRechargeVo());
+        condition.setTargetId(customerId);
+        Page<CustomerRechargeVo> page = customerRechargeService.getAppList(pagination, condition);
+        return PageResult.of(page);
+    }
+
+
     // ============================== 微信支付 ==========================================
     /**
      * [POST] /app/wallet/details/wechat/save <br>
@@ -230,6 +246,7 @@ public class WalletAppController {
         condition.setOrderType(YllConstants.PAY_ORDER_TYPE_ONE);
         condition.setState(YllConstants.PAY_STATE_ONE);
         condition.setSigns(1);      //(0-减，1-加)
+        condition.setPrice(price * 10);      //1RMB=10粉条币
         //下单
         String orderNumber = customerWalletDetailsService.insert(condition);
         if(StringUtils.isBlank(orderNumber)){

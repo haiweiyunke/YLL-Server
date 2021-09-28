@@ -19,6 +19,7 @@ import yll.common.security.app.AppPrincipal;
 import yll.common.security.app.AppSecuritys;
 import yll.common.security.app.AppSecuritysUtil;
 import yll.common.standard.CommonAttributeUtil;
+import yll.entity.CustomerRecharge;
 import yll.entity.CustomerWallet;
 import yll.entity.CustomerWalletDetails;
 import yll.entity.Dic;
@@ -45,6 +46,8 @@ public class CustomerWalletDetailsService {
     private CustomerWalletMapper customerWalletMapper;
     @Autowired
     private CustomerWalletService customerWalletService;
+    @Autowired
+    private CustomerRechargeService customerRechargeService;
     @Autowired
     private DicService dicService;
     @Autowired
@@ -79,6 +82,8 @@ public class CustomerWalletDetailsService {
         entity.setSigns(vo.getSigns());
         entity.setPayType(vo.getRemark());  //remark为前端传入的支付方式标识
         entity.setRemark(vo.getRemark());
+        entity.setRemarks(vo.getRemarks());
+        entity.setOtherId(vo.getOtherId());
 
         //内部充值订单号处理
         String orderNumber = vo.getOrderNumber();
@@ -108,7 +113,18 @@ public class CustomerWalletDetailsService {
             //更改金额
             changePrice(vo.getTargetId(), entity);
         } else if(YllConstants.PAY_ORDER_TYPE_ONE.equals(entity.getOrderType())){
-            entity.setRemark("充值");
+             //新增支付明细记录
+             CustomerRecharge customerRecharge = new CustomerRecharge();
+             customerRecharge.setState(YllConstants.PAY_STATE_ONE);
+             customerRecharge.setSigns(1);
+             customerRecharge.setPrice(entity.getPrice() / 10);
+             customerRecharge.setTargetId(principal.getCustomerId());
+             customerRecharge.setOrderNumber(entity.getOrderNumber());
+             customerRecharge.setPayType(entity.getRemark());
+             customerRecharge.setRemark("充值");
+             customerRechargeService.insert(customerRecharge);
+             //修改钱包流水明细备注
+             entity.setRemark("充值");
         }
 
         customerWalletDetailsMapper.insert(entity);
@@ -151,7 +167,8 @@ public class CustomerWalletDetailsService {
         entity.setSigns(vo.getSigns());
         entity.setPayType(vo.getPayType());
         entity.setRemark(vo.getRemark());
-        entity.setRemark(vo.getRemark());
+        entity.setRemarks(vo.getRemarks());
+        entity.setOtherId(vo.getOtherId());
 
         if(null != vo.getState()){
             entity.setState(vo.getState());
@@ -164,6 +181,14 @@ public class CustomerWalletDetailsService {
         if(YllConstants.PAY_ORDER_TYPE_ONE.equals(entity.getOrderType()) && (YllConstants.PAY_STATE_TWO.equals(entity.getState()))){
             //充值订单，且态为已支付时，获取钱包金额
             changePrice(vo.getTargetId(), entity);
+            //修改支付明细状态
+            CustomerRecharge customerRecharge = new CustomerRecharge();
+            customerRecharge.setOrderNumber(entity.getOrderNumber());
+            customerRecharge = customerRechargeService.findBy(customerRecharge);
+            if(null != customerRecharge){
+                customerRecharge.setState(YllConstants.PAY_STATE_TWO);
+                customerRechargeService.update(customerRecharge);
+            }
             log.error("============微信支付-成功！修改钱包余额，订单号为：" + entity.getOrderNumber() + "；============" + "总金额：" + entity.getPrice() + "============");
         }
         customerWalletDetailsMapper.update(entity);
@@ -269,6 +294,15 @@ public class CustomerWalletDetailsService {
         if(YllConstants.PAY_ORDER_TYPE_ONE.equals(vo.getOrderType()) && (YllConstants.PAY_STATE_ONE.equals(vo.getState()))){
             String prepayId = getPrepayId(principal.getCustomerId(), vo);     //TODO 服务器正式代码，测试后恢复
             // String prepayId = getPrepayId(vo.getTargetId(), vo);     //TODO 封闭测试代码，测试后注释
+            //将微信返回的预支付prepay_id存入充值明细表
+            //修改支付明细状态
+            CustomerRecharge customerRecharge = new CustomerRecharge();
+            customerRecharge.setOrderNumber(vo.getOrderNumber());
+            customerRecharge = customerRechargeService.findBy(customerRecharge);
+            if(null != customerRecharge){
+                customerRecharge.setPrepayId(prepayId);
+                customerRechargeService.update(customerRecharge);
+            }
 //            log.error("============微信支付-下单成功！订单号为：" + vo.getOrderNumber() + "；============" + "prepayId为：" + prepayId + "============");
             return prepayId;
         }
