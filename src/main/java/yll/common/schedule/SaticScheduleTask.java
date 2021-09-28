@@ -35,8 +35,16 @@ public class SaticScheduleTask {
     //招聘信息定时任务 - 每天0点 的10秒 触发一次
     @Scheduled(cron = "10 0 0 * * ?")
     private void recruitTasks() {
-        System.err.println("执行招聘下架静态定时任务时间: " + LocalDateTime.now());
+        System.out.println("*******执行招聘下架静态定时任务时间: " + LocalDateTime.now() + "*******");
         myScheduleMethods.recruitEnterpriseDetailsStateExecute();
+    }
+
+
+    //处理支付订单过期定时任务 - 每天1点、7点、13点、19点 的10秒 都触发一次
+    @Scheduled(cron = "10 0 1,7,13,19 * * ?")
+    private void rechargeTasks() {
+        System.out.println("*******处理支付订单过期静态定时任务时间: " + LocalDateTime.now() + "*******");
+        myScheduleMethods.customerRechargeStateExecute();
     }
 
 

@@ -10,9 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import yll.entity.Activities;
+import yll.entity.CustomerRecharge;
+import yll.entity.CustomerWalletDetails;
 import yll.entity.RecruitEnterpriseDetails;
 import yll.service.ActivitiesService;
+import yll.service.CustomerRechargeService;
+import yll.service.CustomerWalletDetailsService;
 import yll.service.RecruitEnterpriseDetailsService;
+import yll.service.model.vo.CustomerRechargeVo;
 import yll.service.model.vo.RecruitEnterpriseDetailsVo;
 
 import java.io.IOException;
@@ -27,6 +32,10 @@ public class MyScheduleMethods {
     // ==============================Fields===========================================
     @Autowired
     private RecruitEnterpriseDetailsService recruitEnterpriseDetailsService;
+    @Autowired
+    private CustomerRechargeService customerRechargeService;
+    @Autowired
+    private CustomerWalletDetailsService customerWalletDetailsService;
 
 
     // ==============================Methods==========================================
@@ -34,7 +43,7 @@ public class MyScheduleMethods {
      * 招聘信息上下架
      */
     public void recruitEnterpriseDetailsStateExecute() {
-        System.err.println("=========更新招聘信息上下架启用开始=========");
+        System.out.println("=========更新招聘信息上下架启用开始=========");
         RecruitEnterpriseDetailsVo condition = new RecruitEnterpriseDetailsVo();
         condition.setState(1);
         List<RecruitEnterpriseDetailsVo> todoList = recruitEnterpriseDetailsService.findBySchedule(condition);
@@ -46,7 +55,36 @@ public class MyScheduleMethods {
                 recruitEnterpriseDetailsService.update(vo);
             }
         }
-        System.err.println("=========更新招聘信息上下架启用结束=========");
+        System.out.println("=========更新招聘信息上下架启用结束=========");
+    }
+
+
+    /**
+     * 支付订单过期
+     */
+    public void customerRechargeStateExecute() {
+        System.out.println("=========处理支付订单过期开始=========");
+        CustomerRechargeVo condition = new CustomerRechargeVo();
+        condition.setState(21);
+        List<CustomerRechargeVo> todoList = customerRechargeService.findBySchedule(condition);
+        for (CustomerRechargeVo vo :
+                todoList) {
+            String dayNum = vo.getDayNum();
+            if(!"0".equals(dayNum)){
+                vo.setState(23);     //（21-待支付，22-已支付，23-取消支付）
+                //修改充值明细状态
+                customerRechargeService.update(vo);
+                //修改钱包流水明细状态
+                CustomerWalletDetails customerWalletDetails = new CustomerWalletDetails();
+                customerWalletDetails.setOrderNumber(vo.getOrderNumber());
+                customerWalletDetails = customerWalletDetailsService.findBy(customerWalletDetails);
+                if(null != customerWalletDetails){
+                    customerWalletDetails.setState(23);
+                    customerWalletDetailsService.update(customerWalletDetails);
+                }
+            }
+        }
+        System.out.println("=========处理支付订单过期结束=========");
     }
 
 
