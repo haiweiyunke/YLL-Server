@@ -23,5 +23,7 @@ public class CustomerRechargeVo extends CustomerRecharge {
     /** 下单日期与当前时间差天数 */
     private String dayNum;
 
+    /** 订单中台-中文 */
+    private String stateStr;
 
 }

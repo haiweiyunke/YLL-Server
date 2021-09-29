@@ -233,7 +233,7 @@
 		WHERE id != '0'
 		<include refid="WHERES" />
 		<if test=" orderType != null and orderType != ''">
-			and m.type = #{order_type}
+			and m.order_type = #{orderType}
 		</if>
 		AND state NOT IN (21,23)
 		ORDER BY  m.created_time DESC
@@ -246,8 +246,8 @@
 		<include refid="TABLE" /> m
 		WHERE id != '0'
 		<include refid="WHERES" />
-		<if test=" type != null and type != ''">
-			and m.type = #{type}
+		<if test=" orderType != null and orderType != ''">
+			and m.order_type = #{orderType}
 			<![CDATA[   and DATE_FORMAT(created_time , '%Y-%m-%d') = CURDATE()   ]]>
 		</if>
 		limit 0,1

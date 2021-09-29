@@ -27,7 +27,8 @@
 	<resultMap id="RESULT_VO_MAP" type="yll.service.model.vo.CustomerRechargeVo" extends="RESULT_MAP">
 		<result property="username" column="username" jdbcType="VARCHAR" />
 		<result property="num" column="num" jdbcType="INTEGER" />
-		<result property="dayNum" column="dayNum" jdbcType="INTEGER" />
+		<result property="dayNum" column="dayNum" jdbcType="VARCHAR" />
+		<result property="stateStr" column="stateStr" jdbcType="INTEGER" />
 	</resultMap>
 
 	<sql id="TABLE">customer_recharge</sql>
@@ -222,20 +223,20 @@
 		m.signs, m.price, m.remark, m.order_number, m.prepay_id,
 		DATE_FORMAT(m.created_time , '%Y-%m-%d  %H:%i') appCreatedTime,
 		CASE
-		WHEN m.state = '21' THEN
+		WHEN m.state = 21 THEN
 		'待支付'
-		WHEN m.state = '22' THEN
+		WHEN m.state = 22 THEN
 		'已支付 '
-		WHEN m.state = '23' THEN
+		WHEN m.state = 23 THEN
 		'取消支付'
 		ELSE '未知状态'
-		END AS state
+		END AS stateStr
 		FROM
 		<include refid="TABLE" /> m
 		WHERE id != '0'
 		<include refid="WHERES" />
-		<if test=" type != null and type != ''">
-			and m.type = #{type}
+		<if test=" payType != null and payType != ''">
+			and m.pay_type = #{payType}
 		</if>
 		ORDER BY  m.created_time DESC
 	</select>
@@ -247,8 +248,8 @@
 		<include refid="TABLE" /> m
 		WHERE id != '0'
 		<include refid="WHERES" />
-		<if test=" type != null and type != ''">
-			and m.type = #{type}
+		<if test=" payType != null and payType != ''">
+			and m.pay_type = #{payType}
 			<![CDATA[   and DATE_FORMAT(created_time , '%Y-%m-%d') = CURDATE()   ]]>
 		</if>
 		limit 0,1
@@ -259,11 +260,11 @@
 		<include refid="COLUMNS" />,
 		CASE
 		WHEN
-		TIMESTAMPDIFF(DAY,now(), end_time) = 0
+		TIMESTAMPDIFF(DAY,now(), created_time) = 0
 		THEN
 		0
 		ELSE
-		TIMESTAMPDIFF(DAY,now(), end_time)
+		TIMESTAMPDIFF(DAY,now(), created_time)
 		END
 		AS dayNum
 		FROM

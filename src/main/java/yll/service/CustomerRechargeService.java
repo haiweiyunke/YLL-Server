@@ -69,7 +69,7 @@ public class CustomerRechargeService {
         entity.setPayType(vo.getPayType());
         entity.setRemark(vo.getRemark());
 
-        entity.setState(YllConstants.ONE);
+        entity.setState(vo.getState());
         entity.setDeleted(YllConstants.ZERO);
         entity.setEnabled(YllConstants.ONE);
 

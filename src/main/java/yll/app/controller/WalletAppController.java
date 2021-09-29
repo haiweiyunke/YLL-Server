@@ -209,11 +209,11 @@ public class WalletAppController {
 
 
     /**
-     * [POST] /app/wallet/recharge//list <br>
+     * [POST] /app/wallet/pay/recharge/list <br>
      * 查询钱包流水列表
      */
-    @PostMapping(value = "/recharge/list")
-    public Result<?> rechargeList(Pagination pagination, CustomerRechargeVo condition) {
+    @PostMapping(value = "/pay/recharge/list")
+    public Result<?> payRechargeList(Pagination pagination, CustomerRechargeVo condition) {
         String customerId = AppSecuritysUtil.getCustomerId();
         //金额明细
         condition = ObjectUtils.defaultIfNull(condition, new CustomerRechargeVo());
